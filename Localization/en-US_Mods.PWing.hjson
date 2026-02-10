@@ -1,0 +1,39 @@
+Items: {
+	GildedBladeWings: {
+		DisplayName: Gilded Blade Wings
+		Tooltip: ""
+	}
+
+	耀刃之翼: {
+		Tooltip: ""
+		DisplayName: 耀刃之翼
+	}
+}
+
+Configs: {
+	PWingConfig: {
+		DisplayName: P Wing Config
+
+		lowFidelityMode: {
+			Label: low Fidelity Mode
+			Tooltip: ""
+		}
+
+		WingFunction: {
+			Label: Wing Function
+			Tooltip: ""
+		}
+
+		CreateFlight: {
+			Label: Create Flight
+			Tooltip: ""
+		}
+
+		Headers.WingConfigs: Wing Configs Header
+
+		WeaponWithGrowingDamageToggle: {
+			Tooltip: ""
+			Label: Weapon With Growing Damage Toggle
+		}
+	}
+}

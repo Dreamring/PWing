@@ -1,0 +1,396 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using Microsoft.Xna.Framework;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
+using PWing.Helpers;
+using static PWing.PWing;
+using static Terraria.ModLoader.ModContent;
+
+namespace PWing.Common.Systems
+{
+    public static class ImportantTileID
+    {
+        //public const int MaxTileLocations = 15;
+        //public const int AcediaPortal = 0;
+        //public const int AvaritiaPortal = 1;
+        //public const int gemlockAmethyst = 2;
+        //public const int gemlockTopaz = 3;
+        //public const int gemlockSapphire = 4;
+        //public const int gemlockEmerald = 5;
+        //public const int gemlockRuby = 6;
+        //public const int gemlockDiamond = 7;
+        //public const int gemlockAmber = 8;
+        //public const int iceMonument = 9;
+        //public const int coconutIslandMonumentBroken = 10;
+        //public const int coconutIslandMonument = 11;
+        //public const int dreamLamp = 12;
+        public const int damoclesChain = 13;
+        //public const int bigCrystal = 14;
+        //public const int GulaPortal = 15;
+        //public const int InvidiaPortal = 16;
+        //public const int IraPortal = 17;
+    }
+    public class ImportantTile(int id, ushort TileType, int TileFrame = -1, int offsetX = 0, int offsetY = 0, Point16? pos = null)
+    {
+        public Point16? Position = pos;
+        public int ID = id;
+        public ushort TileType = TileType;
+        public int TileFrame = TileFrame;
+        public bool IsArchaeologistSpot = true;
+        public void AssignPoint(Tile tile, int i, int j, bool force = false)
+        {
+            if ((Position == null || force) && tile.TileType == TileType && (TileFrame == -1 || tile.TileFrameX == TileFrame) /*&& tile.HasTile*/) //Do not check hasTile cause that can be done faster outside this method
+            {
+                Position = new Point16(i, j);
+                if (!force)
+                    CenterPoint(offsetX, offsetY);
+            }
+        }
+        public void CenterPoint(int iOffset, int jOffset)
+        {
+            if (Position == null)
+                return;
+            else
+                Position = new Point16(Position.Value.X + iOffset, Position.Value.Y + jOffset);
+        }
+        public bool TileInCorrectLocation()
+        {
+            if (Position == null)
+            {
+                if (ImportantTilesWorld.DebugChatMessages)
+                    if (Main.netMode == NetmodeID.Server)
+                        Terraria.Chat.ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(TileType + ": Does not have a location"), Color.Gray);
+                    else
+                        Main.NewText(TileType + ": Does not have a location");
+                return false;
+            }
+            int x = Position.Value.X;
+            int y = Position.Value.Y;
+            Tile tile = Main.tile[x, y];
+            if (tile.HasTile && tile.TileType == TileType)
+            {
+                return true;
+            }
+            else
+            {
+                Position = null;
+                if (ImportantTilesWorld.DebugChatMessages)
+                    if (Main.netMode == NetmodeID.Server)
+                        Terraria.Chat.ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral(TileType + ": Reset tile location (" + x + ", " + y + ")"), Color.Gray);
+                    else
+                        Main.NewText(TileType + ": Reset tile location");
+                ImportantTilesWorld.TileLocationJustReset = true;
+            }
+            return false;
+        }
+        public Point16 Value => Position.Value;
+        public bool HasValue => Position.HasValue;
+    }
+    //public class GatewayImportantTile(int id, ushort TileType, int TileFrame = -1, int offsetX = 0, int offsetY = 0, Point16? pos = null) : ImportantTile(id, TileType, TileFrame, offsetX, offsetY, pos)
+    //{
+    //    public bool IsPowered = false;
+    //    public int LeftElementType;
+    //    public int RightElementType;
+    //    public bool IsConnectedLeftElement = false;
+    //    public bool IsConnectedRightElement = false;
+    //    public float MiddlePercent = 0f;
+    //    public Color ConnectionColor()
+    //    {
+    //        return ColorHelper.AcediaColor;
+    //    }
+    //    public void ResetConduitValues()
+    //    {
+    //        IsConnectedLeftElement = false;
+    //        IsConnectedRightElement = false;
+    //        MiddlePercent = 0;
+    //    }
+    //}
+    public class ImportantTilesWorld : ModSystem
+    {
+        private static int ListIndex = 0;
+        private static readonly List<ImportantTile> List = [];
+        //public static readonly List<GatewayImportantTile> GatewayList = [];
+        //private static ImportantTile AddToList(int TileType, int TileFrame = -1, int offsetX = 0, int offsetY = 0, Point16? pos = null)
+        //{
+        //    ImportantTile i = new(ListIndex++, (ushort)TileType, TileFrame, offsetX, offsetY, pos);
+        //    List.Add(i);
+        //    return i;
+        //}
+        //private static GatewayImportantTile AddGatewayToList(int TileType, int TileFrame = -1, int offsetX = 0, int offsetY = 0, Point16? pos = null)
+        //{
+        //    GatewayImportantTile i = new(ListIndex++, (ushort)TileType, TileFrame, offsetX, offsetY, pos);
+        //    List.Add(i);
+        //    GatewayList.Add(i);
+        //    return i;
+        //}
+        
+        
+        //public static GatewayImportantTile AcediaPortal { get; private set; }
+        //public static GatewayImportantTile AvaritiaPortal { get; private set; }
+        //public static ImportantTile GemlockAmethyst { get; private set; }
+        //public static ImportantTile GemlockTopaz { get; private set; }
+        //public static ImportantTile GemlockSapphire { get; private set; }
+        //public static ImportantTile GemlockEmerald { get; private set; }
+        //public static ImportantTile GemlockRuby { get; private set; }
+        //public static ImportantTile GemlockDiamond { get; private set; }
+        //public static ImportantTile GemlockAmber { get; private set; }
+        //public static ImportantTile IceMonument { get; private set; }
+        //public static ImportantTile CoconutIslandMonumentBroken { get; private set; }
+        //public static ImportantTile CoconutIslandMonument { get; private set; }
+        //public static ImportantTile DreamLamp { get; private set; }
+        //public static ImportantTile DamoclesChain { get; private set; }
+        //public static ImportantTile BigCrystal { get; private set; }
+        //public static GatewayImportantTile GulaPortal { get; private set; }
+        //public static GatewayImportantTile InvidiaPortal { get; private set; }
+        //public static GatewayImportantTile IraPortal { get; private set; }
+        public static bool DebugChatMessages = false;
+        public static void HandlePacket(BinaryReader reader, int whoAmI, int msgType)
+        {
+            if (msgType == (int)PWingMessageType.SyncTileLocations)
+            {
+                int playernumber2 = reader.ReadInt32();
+                int pointType = reader.ReadInt32();
+                int pointX = reader.ReadInt32();
+                int pointY = reader.ReadInt32();
+                Point16? ptToSync;
+                if (pointX == -1 || pointY == -1)
+                    ptToSync = null;
+                else
+                    ptToSync = new Point16(pointX, pointY);
+                List[pointType].Position = ptToSync;
+                if (Main.netMode == NetmodeID.Server)
+                {
+                    var packet = Instance.GetPacket();
+                    packet.Write((byte)msgType);
+                    packet.Write(playernumber2);
+                    packet.Write(pointType);
+                    packet.Write(pointX);
+                    packet.Write(pointY);
+                    packet.Send(-1, playernumber2);
+                }
+            }
+            if (msgType == (int)PWingMessageType.RequestTileLocations)
+            {
+                if (Main.netMode == NetmodeID.Server)
+                {
+                    newPlayerRequestingPackets = true;
+                }
+            }
+        }
+        public static void RequestNewPackets()
+        {
+            var packet = Instance.GetPacket();
+            packet.Write((byte)PWingMessageType.RequestTileLocations);
+            packet.Send();
+        }
+        public static void SyncImportantTileLocations(Player clientSender, ImportantTile landmark, int destinationClient = -1)
+        {
+            int x = 0;
+            int y = 0;
+            if (!landmark.Position.HasValue)
+                x = y = -1;
+            else
+            {
+                x = landmark.Position.Value.X;
+                y = landmark.Position.Value.Y;
+            }
+            int playerWhoAmI = clientSender != null ? clientSender.whoAmI : -1;
+            var packet = Instance.GetPacket();
+            packet.Write((byte)PWingMessageType.SyncTileLocations);
+            packet.Write(playerWhoAmI);
+            packet.Write(landmark.ID);
+            packet.Write(x);
+            packet.Write(y);
+            packet.Send(destinationClient);
+        }
+        public static void SyncAllLocations(int toClient = -1)
+        {
+            foreach (ImportantTile landmark in List)
+                SyncImportantTileLocations(null, landmark, toClient);
+        }
+        public static bool awaitTileCheck = true;
+        public static bool finishedThreading = false;
+        public static bool finishedFirstPacketSend = false;
+        public static bool newPlayerRequestingPackets = false;
+        public override void OnWorldLoad()
+        {
+            awaitTileCheck = true;
+        }
+        public override void OnWorldUnload()
+        {
+            awaitTileCheck = true;
+        }
+        public override void PostUpdateEverything()
+        {
+            if (Main.netMode != NetmodeID.MultiplayerClient)
+            {
+                if (awaitTileCheck)
+                {
+                    ThreadTileResetting();
+                    awaitTileCheck = false;
+                    if (Main.netMode == NetmodeID.Server && DebugChatMessages)
+                        Terraria.Chat.ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("Server runs this"), Color.Gray);
+                }
+                if ((finishedThreading || (finishedFirstPacketSend && newPlayerRequestingPackets)) && Main.netMode == NetmodeID.Server)
+                {
+                    if (DebugChatMessages)
+                        Terraria.Chat.ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("SyncedData"), Color.Gray);
+                    SyncAllLocations();
+                    newPlayerRequestingPackets = false;
+                    finishedThreading = false;
+                    finishedFirstPacketSend = true;
+                }
+                if ((finishedFirstPacketSend || Main.netMode == NetmodeID.SinglePlayer) && PWingWorld.GlobalCounter % 120 == 0 && PWingWorld.GlobalCounter > 600) //this will be checked every 2 second
+                {
+                    TileLocationJustReset = false;
+                    CheckCurrentLocations();
+                    if (TileLocationJustReset && Main.netMode == NetmodeID.Server)
+                    {
+                        if (DebugChatMessages)
+                            Terraria.Chat.ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("SyncedData"), Color.Gray);
+                        SyncAllLocations();
+                    }
+                }
+            }
+        }
+        public static void AddNewNumberToPrevious(int toAdd)
+        {
+            PreviousTeleports[4] = PreviousTeleports[3];
+            PreviousTeleports[3] = PreviousTeleports[2];
+            PreviousTeleports[2] = PreviousTeleports[1];
+            PreviousTeleports[1] = PreviousTeleports[0];
+            PreviousTeleports[0] = toAdd;
+        }
+        public static int[] PreviousTeleports = new int[5] { -1, -1, -1, -1, -1 };
+        ///<summary>
+        /// Gets the location of a random important tile
+        /// Also yield the direction for the Archaeologist to face and the ID of the tile
+        ///</summary>
+        public static Vector2? RandomImportantLocation(ref int importantTileID, ref int directionToGo)
+        {
+            importantTileID = -1;
+            List<ImportantTile> validLandmarks = new();
+            foreach (ImportantTile landmark in List)
+                if (landmark.IsArchaeologistSpot)
+                    validLandmarks.Add(landmark);
+            Vector2? myDestination = null;
+            int totalAttempts = 0;
+            while (myDestination == null && validLandmarks.Count > 0)
+            {
+                int yOffset = 0;
+                int randomPossibilites = Main.rand.Next(validLandmarks.Count);
+                ImportantTile destination = validLandmarks[randomPossibilites];
+                importantTileID = destination.ID;
+                if (destination.HasValue && (!PreviousTeleports.Contains(importantTileID) || Main.rand.NextBool(4) || validLandmarks.Count < 4))
+                {
+                    Vector2 testDestination = new Vector2(destination.Position.Value.X * 16, destination.Position.Value.Y * 16);
+                    bool valid = false;
+                    int attempts = 55;
+                    while (attempts > 0)
+                    {
+                        if (importantTileID == ImportantTileID.damoclesChain)
+                        {
+                            yOffset = 5;
+                        }
+                        int xOffset = Main.rand.Next(-10, 11);
+                        if (xOffset == 0 || xOffset == -1)
+                            xOffset = -2;
+                        if (xOffset == 1)
+                            xOffset = 2;
+                        directionToGo = -Math.Sign(xOffset);
+                        int tileX = destination.Position.Value.X + xOffset;
+                        int tileY = destination.Position.Value.Y + yOffset;
+                        bool tileSpace = false;
+                        for (int j = -6; j <= 12; j++)
+                        {
+                            if (WorldgenHelpers.PWingWorldgenHelper.TrueTileSolid(tileX, tileY + j, false))
+                            {
+                                bool validLiquidAndClear = true;
+                                for (int i = -4; i >= -1; i--)
+                                {
+                                    if (WorldgenHelpers.PWingWorldgenHelper.TrueTileSolid(tileX, tileY + j + i, false) ||
+                                        Framing.GetTileSafely(tileX, tileY + j + i).LiquidType == LiquidID.Lava ||
+                                        Framing.GetTileSafely(tileX, tileY + j + i).LiquidType == LiquidID.Honey)
+                                    {
+                                        validLiquidAndClear = false;
+                                    }
+                                }
+                                if (validLiquidAndClear)
+                                {
+                                    tileSpace = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (tileSpace)
+                        {
+                            testDestination = new Vector2(tileX * 16, tileY * 16 - 24);
+                            valid = true;
+                            break;
+                        }
+                        attempts--;
+                    }
+                    if (valid)
+                        myDestination = testDestination;
+                    else
+                        validLandmarks.RemoveAt(randomPossibilites);
+                }
+                else
+                    validLandmarks.RemoveAt(randomPossibilites);
+                totalAttempts++;
+            }
+            if (!myDestination.HasValue)
+                return null;
+            AddNewNumberToPrevious(importantTileID);
+            return myDestination + new Vector2(8, 8);
+        }
+        ///<summary>
+        /// Searches for special tiles in a world in order to record their positions
+        ///</summary>
+        public static void ThreadTileResetting()
+        {
+            ThreadPool.QueueUserWorkItem(ResetTileLocations, null);
+        }
+        public static void ResetTileLocations(object state)
+        {
+            foreach (ImportantTile landmark in List)
+                landmark.Position = null;
+            for (int i = 25; i < Main.maxTilesX - 25; i++)
+            {
+                for (int j = 25; j < Main.maxTilesY - 25; j++)
+                {
+                    if (!WorldGen.InWorld(i, j))
+                        continue;
+                    Tile tile = Main.tile[i, j];
+                    if (tile.HasTile)
+                    {
+                        foreach (ImportantTile landmark in List)
+                        {
+                            landmark.AssignPoint(tile, i, j);
+                        }
+                    }
+                }
+            }
+            finishedThreading = true;
+        }
+        public static bool TileLocationJustReset { get; set; }
+        ///<summary>
+        /// Checks if a saved value for a special tile position is still valid. If not, the tile is removed from being a special position tile
+        ///</summary>
+        public static void CheckCurrentLocations()
+        {
+            foreach (ImportantTile landmark in List)
+            {
+                landmark.TileInCorrectLocation();
+            }
+        }
+    }
+}
