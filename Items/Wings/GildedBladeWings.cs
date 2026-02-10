@@ -18,7 +18,7 @@ namespace PWing.Items.Wings
         {
             this.SetResearchCost(1);
             //初始设置为雏翼的基础飞行能力
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(60, 3f, 1f); //雏翼基础：1秒飞行时间
+            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(60, 2f, 1f); //雏翼基础：1秒飞行时间
         }
         public override void SetDefaults()
         {
@@ -36,37 +36,72 @@ namespace PWing.Items.Wings
         // 设置基础工具提示
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
+            // 保存物品名称提示行
+            TooltipLine nameLine = null;
+            foreach (var line in tooltips)
+            {
+                if (line.Name == "ItemName")
+                {
+                    nameLine = line;
+                    break;
+                }
+            }
+            
             // 清除默认工具提示
             tooltips.Clear();
+            
+            // 重新添加物品名称提示行
+            if (nameLine != null)
+            {
+                tooltips.Add(nameLine);
+            }
             
             // 添加基础工具提示
             tooltips.Add(new TooltipLine(Mod, "BaseTooltip", "一个能够成长的神奇翅膀"));
             tooltips.Add(new TooltipLine(Mod, "GrowthTooltip", "随着你击败更多BOSS，它会变得更加强大"));
             tooltips.Add(new TooltipLine(Mod, "BonusTooltip", "每击败一个BOSS，增加0.5秒飞行时间和少量飞行速度"));
             
+            // 添加空行
+            tooltips.Add(new TooltipLine(Mod, "EmptyLine1", ""));
+            
             int bossKills = PWingWorld.BossKillCount;
             
             //计算当前飞行能力
             float baseFlightTime = 1f;
             float currentFlightTime = baseFlightTime + bossKills * 0.5f;
-            float baseFlightSpeed = 3f;
+            float baseFlightSpeed = 2f;
             float currentFlightSpeed = baseFlightSpeed + bossKills * 0.1f;
             
             //添加动态工具提示行
-            tooltips.Add(new TooltipLine(Mod, "FlightTime", $"当前飞行时间: {currentFlightTime:F1}秒"));
-            tooltips.Add(new TooltipLine(Mod, "FlightSpeed", $"当前飞行速度: {currentFlightSpeed:F1}"));
-            tooltips.Add(new TooltipLine(Mod, "BossKills", $"已击败BOSS数量: {bossKills}"));
+            TooltipLine flightTimeLine = new TooltipLine(Mod, "FlightTime", $"当前飞行时间: {currentFlightTime:F1}秒");
+            flightTimeLine.OverrideColor = Color.LightBlue;
+            tooltips.Add(flightTimeLine);
+            
+            TooltipLine flightSpeedLine = new TooltipLine(Mod, "FlightSpeed", $"当前飞行速度: {currentFlightSpeed:F1}");
+            flightSpeedLine.OverrideColor = Color.LightGreen;
+            tooltips.Add(flightSpeedLine);
+            
+            TooltipLine bossKillsLine = new TooltipLine(Mod, "BossKills", $"已击败BOSS数量: {bossKills}");
+            bossKillsLine.OverrideColor = Color.Yellow;
+            tooltips.Add(bossKillsLine);
+            
+            // 添加空行
+            tooltips.Add(new TooltipLine(Mod, "EmptyLine2", ""));
             
             //添加成长提示
             if (bossKills == 0)
             {
-                tooltips.Add(new TooltipLine(Mod, "GrowthHint", "击败第一个BOSS后开始成长"));
+                TooltipLine growthHintLine = new TooltipLine(Mod, "GrowthHint", "击败第一个BOSS后开始成长");
+                growthHintLine.OverrideColor = Color.Orange;
+                tooltips.Add(growthHintLine);
             }
             else
             {
                 float nextFlightTime = currentFlightTime + 0.5f;
                 float nextFlightSpeed = currentFlightSpeed + 0.1f;
-                tooltips.Add(new TooltipLine(Mod, "NextGrowth", $"下一级: {nextFlightTime:F1}秒飞行时间, {nextFlightSpeed:F1}飞行速度"));
+                TooltipLine nextGrowthLine = new TooltipLine(Mod, "NextGrowth", $"下一级: {nextFlightTime:F1}秒飞行时间, {nextFlightSpeed:F1}飞行速度");
+                nextGrowthLine.OverrideColor = Color.Pink;
+                tooltips.Add(nextGrowthLine);
             }
         }
         public override bool CanAccessoryBeEquippedWith(Item equippedItem, Item incomingItem, Player player)
@@ -77,10 +112,11 @@ namespace PWing.Items.Wings
         // 添加配方，将雏翼丢入微光转化为成长翅膀
         public override void AddRecipes()
         {
-            // 创建微光转化配方
+            // 创建工作台合成配方
             CreateRecipe(1)
-                .AddIngredient(ItemID.FairyWings) // 仙女翅膀
-                .AddTile(TileID.LunarCraftingStation) // 月球制造站
+                .AddIngredient(ItemID.IronBar, 20) // 20个铁锭
+                .AddIngredient(ItemID.Star, 20) // 20个落星
+                .AddTile(TileID.WorkBenches) // 工作台
                 .Register();
         }
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -95,7 +131,7 @@ namespace PWing.Items.Wings
             //计算当前飞行能力
             float baseFlightTime = 1f; // 基础1秒
             float currentFlightTime = baseFlightTime + flightTimeIncrease;
-            float baseFlightSpeed = 3f; // 基础飞行速度
+            float baseFlightSpeed = 2f; // 基础飞行速度
             float currentFlightSpeed = baseFlightSpeed + speedIncrease;
             float baseAcceleration = 1f; // 基础加速度
             float currentAcceleration = baseAcceleration + speedIncrease * 0.5f;

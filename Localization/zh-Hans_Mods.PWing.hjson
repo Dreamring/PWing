@@ -1,7 +1,7 @@
 Items: {
 	GildedBladeWings: {
 		DisplayName: 耀刃之翼
-		Tooltip: 华丽的大翅膀！
+		// Tooltip: ""
 	}
 
 	耀刃之翼: {

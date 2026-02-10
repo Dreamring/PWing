@@ -1,12 +1,12 @@
 using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace PWing
 {
     public class PWingPlayer : ModPlayer
     {
-        // 标记玩家是否已经获得过翅膀
-        public bool hasReceivedWing = false;
+        // 空的玩家类，用于未来可能的扩展
     }
 }
