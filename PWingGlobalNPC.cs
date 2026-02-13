@@ -6,17 +6,36 @@ namespace PWing
 {
     public class PWingGlobalNPC : GlobalNPC
     {
+        // 检测是否为BOSS
+        private bool IsBoss(NPC npc)
+        {
+            // 使用tModLoader的内置BOSS判断
+            return npc.boss;
+        }
+        
         // 处理BOSS击败事件
         public override void OnKill(NPC npc)
         {
-            // 检查是否是BOSS
-            if (npc.boss)
+            // 检测是否为BOSS
+            if (IsBoss(npc))
             {
-                // 游戏会自动记录BOSS击败状态，不需要手动处理
-                // 仅在服务器端同步全局计数器
-                if (Main.netMode == NetmodeID.Server)
+                // 遍历所有玩家，更新他们的BOSS击杀记录
+                foreach (Player player in Main.player)
                 {
-                    PWingWorld.SyncGlobalCounter();
+                    if (player.active)
+                    {
+                        PWingPlayer modPlayer = player.GetModPlayer<PWingPlayer>();
+                        // 记录BOSS击杀
+                        if (!modPlayer.DefeatedBosses.Contains(npc.type))
+                        {
+                            modPlayer.DefeatedBosses.Add(npc.type);
+                            // 仅在服务器端同步
+                            if (Main.netMode == NetmodeID.Server)
+                            {
+                                PWingWorld.SyncBossKills(player);
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -26,33 +26,33 @@ namespace PWing
         public static float MoonPhasePercent;
         public static bool awaitTileCheck = true;
         
-        // 获取已击败的BOSS数量
-        public static int BossKillCount
+        // 获取玩家已击败的BOSS数量
+        public static int GetBossKillCount(Player player)
         {
-            get
+            PWingPlayer modPlayer = player.GetModPlayer<PWingPlayer>();
+            return modPlayer.BossKillCount;
+        }
+        
+        // 同步BOSS击杀记录
+        public static void SyncBossKills(Player player)
+        {
+            PWingPlayer modPlayer = player.GetModPlayer<PWingPlayer>();
+            
+            // 创建数据包
+            var packet = Instance.GetPacket();
+            packet.Write((byte)PWingMessageType.SyncBossKills);
+            packet.Write(player.whoAmI);
+            
+            // 写入BOSS击杀数量
+            packet.Write(modPlayer.DefeatedBosses.Count);
+            
+            // 写入每个BOSS类型
+            foreach (int bossType in modPlayer.DefeatedBosses)
             {
-                int count = 0;
-                // 检查游戏内置的BOSS击败记录
-                if (NPC.downedBoss1) count++;
-                if (NPC.downedBoss2) count++;
-                if (NPC.downedBoss3) count++;
-                if (NPC.downedQueenBee) count++;
-                if (NPC.downedMechBoss1) count++;
-                if (NPC.downedMechBoss2) count++;
-                if (NPC.downedMechBoss3) count++;
-                if (NPC.downedMechBossAny) count++;
-                if (NPC.downedPlantBoss) count++;
-                if (NPC.downedGolemBoss) count++;
-                if (NPC.downedFishron) count++;
-                if (NPC.downedAncientCultist) count++;
-                if (NPC.downedMoonlord) count++;
-                if (NPC.downedHalloweenKing) count++;
-                if (NPC.downedHalloweenTree) count++;
-                if (NPC.downedChristmasIceQueen) count++;
-                if (NPC.downedChristmasSantank) count++;
-                if (NPC.downedChristmasTree) count++;
-                return count;
+                packet.Write(bossType);
             }
+            
+            packet.Send();
         }
         public override void PreUpdateEntities()
         {
@@ -77,6 +77,28 @@ namespace PWing
             {
                 case PWingMessageType.SyncGlobalCounter:
                     GlobalCounter = reader.ReadInt32();
+                    break;
+                case PWingMessageType.SyncBossKills:
+                    int playerIndex = reader.ReadInt32();
+                    int bossCount = reader.ReadInt32();
+                    
+                    // 确保玩家索引有效
+                    if (playerIndex >= 0 && playerIndex < Main.player.Length)
+                    {
+                        Player player = Main.player[playerIndex];
+                        if (player != null && player.active)
+                        {
+                            PWingPlayer modPlayer = player.GetModPlayer<PWingPlayer>();
+                            modPlayer.DefeatedBosses.Clear();
+                            
+                            // 读取并添加每个BOSS类型
+                            for (int i = 0; i < bossCount; i++)
+                            {
+                                int bossType = reader.ReadInt32();
+                                modPlayer.DefeatedBosses.Add(bossType);
+                            }
+                        }
+                    }
                     break;
             }
         }

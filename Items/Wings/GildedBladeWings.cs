@@ -8,6 +8,8 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.Default;
+using Terraria.Localization;
 namespace PWing.Items.Wings
 {
     //自动加载翅膀物品类型
@@ -18,7 +20,7 @@ namespace PWing.Items.Wings
         {
             this.SetResearchCost(1);
             //初始设置为雏翼的基础飞行能力
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(60, 2f, 1f); //雏翼基础：1秒飞行时间
+            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(60, 1.5f, 1f); //雏翼基础：1秒飞行时间
         }
         public override void SetDefaults()
         {
@@ -59,17 +61,24 @@ namespace PWing.Items.Wings
             // 添加基础工具提示
             tooltips.Add(new TooltipLine(Mod, "BaseTooltip", "一个能够成长的神奇翅膀"));
             tooltips.Add(new TooltipLine(Mod, "GrowthTooltip", "随着你击败更多BOSS，它会变得更加强大"));
-            tooltips.Add(new TooltipLine(Mod, "BonusTooltip", "每击败一个BOSS，增加0.5秒飞行时间和少量飞行速度"));
+            tooltips.Add(new TooltipLine(Mod, "BonusTooltip", "每击败一个BOSS，增加0.5秒飞行时间、少量飞行速度和多种属性增益"));
+            tooltips.Add(new TooltipLine(Mod, "BonusDetails", "属性增益: 生命+5，伤害减免+0.5%，防御力+1，基础攻击力+0.2，生命恢复+0.1，魔力上限+5"));
+            tooltips.Add(new TooltipLine(Mod, "SlotBonus", "每击败5个BOSS，额外增加一个召唤栏和哨兵栏"));
             
             // 添加空行
             tooltips.Add(new TooltipLine(Mod, "EmptyLine1", ""));
             
-            int bossKills = PWingWorld.BossKillCount;
+            int bossKills = 0;
+            // 在ModifyTooltips中，我们可以使用Main.LocalPlayer来获取本地玩家
+            if (Main.LocalPlayer != null)
+            {
+                bossKills = PWingWorld.GetBossKillCount(Main.LocalPlayer);
+            }
             
             //计算当前飞行能力
             float baseFlightTime = 1f;
             float currentFlightTime = baseFlightTime + bossKills * 0.5f;
-            float baseFlightSpeed = 2f;
+            float baseFlightSpeed = 1.5f;
             float currentFlightSpeed = baseFlightSpeed + bossKills * 0.1f;
             
             //添加动态工具提示行
@@ -84,6 +93,46 @@ namespace PWing.Items.Wings
             TooltipLine bossKillsLine = new TooltipLine(Mod, "BossKills", $"已击败BOSS数量: {bossKills}");
             bossKillsLine.OverrideColor = Color.Yellow;
             tooltips.Add(bossKillsLine);
+            
+            // 添加空行
+            tooltips.Add(new TooltipLine(Mod, "EmptyLine1_5", ""));
+            
+            // 添加属性增益信息
+            int lifeBonus = bossKills * 5;
+            float enduranceBonus = bossKills * 0.5f;
+            int defenseBonus = bossKills;
+            float attackBonus = bossKills * 0.2f;
+            float lifeRegenBonus = bossKills * 0.1f;
+            int manaBonus = bossKills * 5;
+            int extraSlots = bossKills / 5;
+            
+            TooltipLine lifeBonusLine = new TooltipLine(Mod, "LifeBonus", $"生命增益: +{lifeBonus}");
+            lifeBonusLine.OverrideColor = Color.Red;
+            tooltips.Add(lifeBonusLine);
+            
+            TooltipLine enduranceBonusLine = new TooltipLine(Mod, "EnduranceBonus", $"伤害减免增益: +{enduranceBonus:F1}%");
+            enduranceBonusLine.OverrideColor = Color.Orange;
+            tooltips.Add(enduranceBonusLine);
+            
+            TooltipLine defenseBonusLine = new TooltipLine(Mod, "DefenseBonus", $"防御力增益: +{defenseBonus}");
+            defenseBonusLine.OverrideColor = Color.Green;
+            tooltips.Add(defenseBonusLine);
+            
+            TooltipLine attackBonusLine = new TooltipLine(Mod, "AttackBonus", $"基础攻击力增益: +{attackBonus:F1}");
+            attackBonusLine.OverrideColor = Color.Cyan;
+            tooltips.Add(attackBonusLine);
+            
+            TooltipLine lifeRegenBonusLine = new TooltipLine(Mod, "LifeRegenBonus", $"生命恢复增益: +{lifeRegenBonus:F1}");
+            lifeRegenBonusLine.OverrideColor = Color.Pink;
+            tooltips.Add(lifeRegenBonusLine);
+            
+            TooltipLine manaBonusLine = new TooltipLine(Mod, "ManaBonus", $"魔力上限增益: +{manaBonus}");
+            manaBonusLine.OverrideColor = Color.Purple;
+            tooltips.Add(manaBonusLine);
+            
+            TooltipLine slotBonusLine = new TooltipLine(Mod, "SlotBonus", $"额外召唤/哨兵栏: +{extraSlots}");
+            slotBonusLine.OverrideColor = Color.Gold;
+            tooltips.Add(slotBonusLine);
             
             // 添加空行
             tooltips.Add(new TooltipLine(Mod, "EmptyLine2", ""));
@@ -122,7 +171,7 @@ namespace PWing.Items.Wings
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             //根据BOSS击败数量动态调整飞行能力
-            int bossKills = PWingWorld.BossKillCount;
+            int bossKills = PWingWorld.GetBossKillCount(player);
             
             //每击败一个BOSS，增加0.5秒飞行时间和少量飞行速度
             float flightTimeIncrease = bossKills * 0.5f; // 每BOSS增加0.5秒
@@ -131,13 +180,28 @@ namespace PWing.Items.Wings
             //计算当前飞行能力
             float baseFlightTime = 1f; // 基础1秒
             float currentFlightTime = baseFlightTime + flightTimeIncrease;
-            float baseFlightSpeed = 2f; // 基础飞行速度
+            float baseFlightSpeed = 1.5f; // 基础飞行速度
             float currentFlightSpeed = baseFlightSpeed + speedIncrease;
             float baseAcceleration = 1f; // 基础加速度
             float currentAcceleration = baseAcceleration + speedIncrease * 0.5f;
             
             //更新翅膀统计
             ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats((int)(currentFlightTime * 60), currentFlightSpeed, currentAcceleration);
+            
+            //添加新的成长属性增益
+            //每击败一个BOSS，增加以下属性：
+            //生命+5，全伤害+1%，暴击率+1%，防御力+1，基础攻击力+1，生命恢复+0.1，魔力上限+5
+            player.statLifeMax2 += bossKills * 5; // 生命+5 per BOSS
+            player.endurance += bossKills * 0.005f; // 伤害减免+0.5% per BOSS (作为全伤害的替代)
+            player.statDefense += bossKills; // 防御力+1 per BOSS
+            player.GetDamage(DamageClass.Generic) += bossKills * 0.2f; // 基础攻击力+0.2 per BOSS
+            player.lifeRegen += (int)(bossKills * 0.1f * 60); // 生命恢复+0.1 per BOSS (转换为每分钟恢复值)
+            player.statManaMax2 += bossKills * 5; // 魔力上限+5 per BOSS
+            
+            //每击败5个BOSS增加一个召唤栏和哨兵栏
+            int extraSlots = bossKills / 5;
+            player.maxMinions += extraSlots; // 增加召唤栏
+            player.maxTurrets += extraSlots; // 增加哨兵栏
             
             //添加额外的视觉效果
             if (bossKills > 0)
@@ -160,7 +224,7 @@ namespace PWing.Items.Wings
         }
         public override void VerticalWingSpeeds(Player player, ref float ascentWhenFalling, ref float ascentWhenRising, ref float maxCanAscendMultiplier, ref float maxAscentMultiplier, ref float constantAscend)
         {
-            int bossKills = PWingWorld.BossKillCount;
+            int bossKills = PWingWorld.GetBossKillCount(player);
             float bonus = bossKills * 0.05f; // 每BOSS增加的额外能力
             
             // 设置上限
@@ -176,15 +240,15 @@ namespace PWing.Items.Wings
         
         public override void HorizontalWingSpeeds(Player player, ref float speed, ref float acceleration)
         {
-            int bossKills = PWingWorld.BossKillCount;
+            int bossKills = PWingWorld.GetBossKillCount(player);
             float bonus = bossKills * 0.1f; // 每BOSS增加的额外水平速度
             
             // 设置上限
             float maxBonus = 3.0f; // 最大额外水平速度
             bonus = Math.Min(bonus, maxBonus);
             
-            speed = 8f + bonus; // 基础水平速度 + 额外速度
-            acceleration = 2f + bonus * 0.5f; // 基础加速度 + 额外加速度
+            speed = 6f + bonus; // 基础水平速度 + 额外速度 (从8f降低到6f)
+            acceleration = 1.5f + bonus * 0.5f; // 基础加速度 + 额外加速度 (从2f降低到1.5f)
         }
 
         //通用绘制方法

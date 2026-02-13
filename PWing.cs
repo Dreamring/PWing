@@ -26,7 +26,8 @@ namespace PWing
             SyncGlobalCounter,//同步全局计数器
             SyncCreativeFlight,//同步创造飞行
             SyncTileLocations,//同步位置信息
-            RequestTileLocations//请求定位图块位置
+            RequestTileLocations,//请求定位图块位置
+            SyncBossKills//同步BOSS击杀记录
         }
         
         //处理网络包
