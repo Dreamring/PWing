@@ -1,3 +1,3 @@
-displayName = 暗影奥秘翅膀
+displayName = 耀刃之翼
 author = pfrybzxy
-version = 1.3
+version = 1.4

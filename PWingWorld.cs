@@ -10,6 +10,7 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.IO;
+using PWing.Common.Configs;
 using static PWing.PWing;
 
 
@@ -25,6 +26,7 @@ namespace PWing
         private static float PrevMoonProgress = 0;
         public static float MoonPhasePercent;
         public static bool awaitTileCheck = true;
+        private static int lastAutoSaveTime = 0;//上次自动保存时间
         
         // 获取玩家已击败的BOSS数量
         public static int GetBossKillCount(Player player)
@@ -117,6 +119,16 @@ namespace PWing
                     SyncGlobalCounter();
             }
             
+            // 定时自动保存功能
+            if (PWingConfig.Instance.autoSaveEnabled)
+            {
+                int intervalTicks = PWingConfig.Instance.autoSaveInterval * 60; // 转换为游戏刻
+                if (GlobalCounter - lastAutoSaveTime >= intervalTicks)
+                {
+                    PerformAutoSave("定时保存");
+                }
+            }
+            
             LastLightingMode = Lighting.Mode;
             MoonPhasePercent = SantuaryMoonPhase();
         }
@@ -135,6 +147,43 @@ namespace PWing
                 PrevMoonProgress = progressToTheNextMoon;
             }
             return 1 - MathF.Abs(MathF.Sin((-moonPhaseOffset + MoonPhase + progressToTheNextMoon - moonSwitch / 24f) / 8f * MathF.PI));
+        }
+        
+        // 执行自动保存的方法
+        public static void PerformAutoSave(string reason = "")
+        {
+            if (PWingConfig.Instance.autoSaveEnabled)
+            {
+                if (Main.netMode == NetmodeID.Server || Main.netMode == NetmodeID.SinglePlayer)
+                {
+                    // 执行自动保存
+                    Main.SaveSettings();
+                    lastAutoSaveTime = GlobalCounter;
+                    
+                    // 向玩家发送保存通知
+                    string message = "世界已自动保存";
+                    if (!string.IsNullOrEmpty(reason))
+                    {
+                        message += " (" + reason + ")";
+                    }
+                    
+                    if (Main.netMode == NetmodeID.Server)
+                    {
+                        // 在服务器端，使用网络消息
+                        foreach (Player player in Main.player)
+                        {
+                            if (player != null && player.active)
+                            {
+                                NetMessage.SendData(MessageID.ChatText, -1, -1, NetworkText.FromLiteral(message), 255, 0, 255, 0);
+                            }
+                        }
+                    }
+                    else if (Main.netMode == NetmodeID.SinglePlayer)
+                    {
+                        Main.NewText(message, Color.Green);
+                    }
+                }
+            }
         }
         
         // 当世界加载时触发

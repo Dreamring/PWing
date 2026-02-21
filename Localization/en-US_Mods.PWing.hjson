@@ -29,11 +29,24 @@ Configs: {
 			Tooltip: ""
 		}
 
-		Headers.WingConfigs: Wing Configs Header
+		Headers: {
+			WingConfigs: Wing Configs Header
+			AutoSaveConfigs: Auto Save Configs Header
+		}
 
 		WeaponWithGrowingDamageToggle: {
 			Tooltip: ""
 			Label: Weapon With Growing Damage Toggle
+		}
+
+		autoSaveInterval: {
+			Tooltip: ""
+			Label: auto Save Interval
+		}
+
+		autoSaveEnabled: {
+			Tooltip: ""
+			Label: auto Save Enabled
 		}
 	}
 }

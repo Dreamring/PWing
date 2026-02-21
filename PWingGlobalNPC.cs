@@ -37,6 +37,9 @@ namespace PWing
                         }
                     }
                 }
+                
+                // BOSS击败时自动保存
+                PWingWorld.PerformAutoSave("击败BOSS");
             }
         }
     }

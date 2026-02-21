@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using Terraria.ModLoader.Config;
 
 namespace PWing.Common.Configs
@@ -17,6 +17,16 @@ namespace PWing.Common.Configs
         [DefaultValue(false)]  // 这会设置配置的默认值。
         [ReloadRequired] // 将其标记为 [ReloadRequired] 可使 tModLoader 在选项发生更改时强制重新加载模组。此功能应用于诸如物品切换等仅在模组加载期间生效的事项。         
         public bool lowFidelityMode { get; set; }//模型精度
+
+        [BackgroundColor(45, 50, 65, 192)]
+        [Header("AutoSaveConfigs")]
+        [DefaultValue(true)]
+        public bool autoSaveEnabled { get; set; }//自动保存功能开关
+
+        [DefaultValue(300)]
+        [Range(60, 3600)]
+        [Increment(30)]
+        public int autoSaveInterval { get; set; }//自动保存时间间隔（秒）
 
     }
 }

@@ -1,1 +1,155 @@
-This description will show up on the steam page, check out https://steamcommunity.com/comment/Guide/formattinghelp.
+# Gilded Blade Wings
+
+A unique wings mod with growth mechanics and auto-save features for Terraria.
+
+## Key Features
+
+### Wings Growth System
+- Wings grow stronger as you defeat bosses
+- Each boss defeat increases flight time by 0.5 seconds
+- Horizontal flight speed improves with each boss defeated
+- Additional stat boosts per boss:
+  - +5 Max HP
+  - +1% All Damage
+  - +1% Critical Strike Chance
+  - +1 Defense
+  - +0.2 Base Attack Damage
+  - +0.1 Life Regeneration
+  - +5 Max Mana
+- Every 5 boss defeats:
+  - +1 Minion Slot
+  - +1 Sentinel Slot
+
+### Auto-Save System
+- Configurable auto-save intervals (60-3600 seconds)
+- Auto-save when defeating bosses
+- Toggleable auto-save functionality
+- Save notifications to keep you informed
+
+### Visual Effects
+- Dynamic aura effects
+- Glowing textures with multiple layers
+- Smooth animations
+- Performance optimization with low-fidelity mode
+
+## How to Obtain
+
+Craft at a Workbench with:
+- 20 Iron Bars
+- 20 Fallen Stars
+
+## Configuration
+
+Access mod settings to:
+- Adjust flight parameters
+- Toggle low-fidelity mode
+- Configure auto-save settings
+- Customize your experience
+
+## Version History
+
+### v1.4
+- Added auto-save functionality
+- Updated wings name to "Gilded Blade Wings"
+- Improved growth system
+- Enhanced visual effects
+
+### v1.3
+- Added growth mechanics
+- Improved flight controls
+- Added stat boosts
+
+### v1.2
+- Added horizontal flight speed
+- Improved visual effects
+
+### v1.1
+- Initial release
+- Basic wings functionality
+
+## Notes
+
+- This mod is standalone and does not require any other mods
+- Inspired by wings designs from other mods, but completely redeveloped
+- Compatible with most Terraria versions
+- Regular updates planned with new features
+
+Enjoy your journey with the Gilded Blade Wings!
+
+# 耀刃之翼
+
+一个具有成长机制和自动保存功能的独特翅膀模组。
+
+## 主要特性
+
+### 翅膀成长系统
+- 翅膀会随着你击败BOSS而变得更强大
+- 每击败一个BOSS，飞行时间增加0.5秒
+- 水平飞行速度随击败BOSS数量提升
+- 每个BOSS提供的额外属性加成：
+  - +5 最大生命值
+  - +1% 全伤害
+  - +1% 暴击率
+  - +1 防御力
+  - +0.2 基础攻击力
+  - +0.1 生命恢复
+  - +5 最大魔力
+- 每击败5个BOSS：
+  - +1 召唤栏
+  - +1 哨兵栏
+
+### 自动保存系统
+- 可配置的自动保存间隔（60-3600秒）
+- 击败BOSS时自动保存
+- 可开关的自动保存功能
+- 保存通知让你随时了解保存状态
+
+### 视觉效果
+- 动态光环效果
+- 多层发光纹理
+- 流畅的动画
+- 低精度模式优化性能
+
+## 获取方式
+
+在工作台合成：
+- 20个铁锭
+- 20个落星
+
+## 配置
+
+访问模组设置可：
+- 调整飞行参数
+- 切换低精度模式
+- 配置自动保存设置
+- 自定义你的游戏体验
+
+## 版本历史
+
+### v1.4
+- 添加自动保存功能
+- 更新翅膀名称为"耀刃之翼"
+- 改进成长系统
+- 增强视觉效果
+
+### v1.3
+- 添加成长机制
+- 改进飞行控制
+- 添加属性加成
+
+### v1.2
+- 添加水平飞行速度
+- 改进视觉效果
+
+### v1.1
+- 初始发布
+- 基础翅膀功能
+
+## 注意事项
+
+- 本模组为独立模组，不依赖其他模组
+- 灵感来源于其他模组的翅膀设计，但完全重新开发
+- 兼容大多数Terraria版本
+- 计划定期更新并添加新功能
+
+享受你与耀刃之翼的冒险之旅！
