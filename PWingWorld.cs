@@ -149,18 +149,15 @@ namespace PWing
             return 1 - MathF.Abs(MathF.Sin((-moonPhaseOffset + MoonPhase + progressToTheNextMoon - moonSwitch / 24f) / 8f * MathF.PI));
         }
         
-        // 执行自动保存的方法
         public static void PerformAutoSave(string reason = "")
         {
             if (PWingConfig.Instance.autoSaveEnabled)
             {
                 if (Main.netMode == NetmodeID.Server || Main.netMode == NetmodeID.SinglePlayer)
                 {
-                    // 执行自动保存
-                    Main.SaveSettings();
+                    WorldFile.SaveWorld();
                     lastAutoSaveTime = GlobalCounter;
                     
-                    // 向玩家发送保存通知
                     string message = "世界已自动保存";
                     if (!string.IsNullOrEmpty(reason))
                     {
@@ -169,7 +166,6 @@ namespace PWing
                     
                     if (Main.netMode == NetmodeID.Server)
                     {
-                        // 在服务器端，使用网络消息
                         foreach (Player player in Main.player)
                         {
                             if (player != null && player.active)
