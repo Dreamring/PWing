@@ -48,6 +48,11 @@ Access mod settings to:
 
 ## Version History
 
+### v1.5
+- Code optimization: Refactored duplicate code for better maintainability
+- Performance improvements: Optimized visual effects rendering
+- Bug fixes and stability improvements
+
 ### v1.4
 - Added auto-save functionality
 - Updated wings name to "Gilded Blade Wings"
@@ -125,6 +130,11 @@ Enjoy your journey with the Gilded Blade Wings!
 - 自定义你的游戏体验
 
 ## 版本历史
+
+### v1.5
+- 代码优化：重构重复代码，提升可维护性
+- 性能改进：优化视觉效果渲染逻辑
+- 修复已知问题，提升稳定性
 
 ### v1.4
 - 添加自动保存功能

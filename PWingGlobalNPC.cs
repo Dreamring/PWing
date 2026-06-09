@@ -6,18 +6,9 @@ namespace PWing
 {
     public class PWingGlobalNPC : GlobalNPC
     {
-        // 检测是否为BOSS
-        private bool IsBoss(NPC npc)
-        {
-            // 使用tModLoader的内置BOSS判断
-            return npc.boss;
-        }
-        
-        // 处理BOSS击败事件
         public override void OnKill(NPC npc)
         {
-            // 检测是否为BOSS
-            if (IsBoss(npc))
+            if (PWingUtils.IsBoss(npc))
             {
                 // 遍历所有玩家，更新他们的BOSS击杀记录
                 foreach (Player player in Main.player)
