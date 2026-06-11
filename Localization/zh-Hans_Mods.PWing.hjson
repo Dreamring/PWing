@@ -1,12 +1,12 @@
 Items: {
 	GildedBladeWings: {
-		DisplayName: 耀刃之翼
-		// Tooltip: ""
+		DisplayName: 梦环
+		Tooltip: 「此梦环者，非世间所有，乃幻想之境所化」
 	}
 
-	耀刃之翼: {
-		// Tooltip: ""
-		// DisplayName: 耀刃之翼
+	梦环: {
+		Tooltip: 「此梦环者，非世间所有，乃幻想之境所化」
+		DisplayName: 梦环
 	}
 }
 

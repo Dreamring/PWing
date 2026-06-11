@@ -1,10 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace PWing.Dusts
+namespace PWing.Content.Dusts
 {
-    public class CopyDust4 : ModDust
+	public class CopyDust2 : ModDust
     {
         public override void OnSpawn(Dust dust)
         {

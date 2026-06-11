@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using PWing.Items.Wings;
+using PWing.Content.Items.Wings;
+using PWing.Common.Systems;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -7,7 +8,7 @@ using Terraria.ModLoader;
 using static PWing.Common.PlayerDrawing.MachinaBooster;
 using static Terraria.ModLoader.ModContent;
 
-namespace PWing
+namespace PWing.Common.GlobalItems
 {
     public class PWingItem: GlobalItem
     {

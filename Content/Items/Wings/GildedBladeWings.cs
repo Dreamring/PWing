@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using PWing.Helpers;
+using PWing.Common;
+using PWing.Common.Systems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Default;
 using Terraria.Localization;
-namespace PWing.Items.Wings
+namespace PWing.Content.Items.Wings
 {
     //自动加载翅膀物品类型
     [AutoloadEquip(EquipType.Wings)]
@@ -38,6 +39,9 @@ namespace PWing.Items.Wings
         // 设置基础工具提示
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
+            Color goldenColor = new Color(255, 215, 0);
+            Color brightGold = new Color(255, 236, 139);
+            
             // 保存物品名称提示行
             TooltipLine nameLine = null;
             foreach (var line in tooltips)
@@ -45,59 +49,50 @@ namespace PWing.Items.Wings
                 if (line.Name == "ItemName")
                 {
                     nameLine = line;
+                    nameLine.Text = "梦环";
+                    nameLine.OverrideColor = brightGold;
                     break;
                 }
             }
             
-            // 清除默认工具提示
             tooltips.Clear();
             
-            // 重新添加物品名称提示行
             if (nameLine != null)
             {
                 tooltips.Add(nameLine);
             }
             
-            // 添加基础工具提示
-            tooltips.Add(new TooltipLine(Mod, "BaseTooltip", "一个能够成长的神奇翅膀"));
-            tooltips.Add(new TooltipLine(Mod, "GrowthTooltip", "随着你击败更多BOSS，它会变得更加强大"));
-            tooltips.Add(new TooltipLine(Mod, "BonusTooltip", "每击败一个BOSS，增加0.5秒飞行时间、少量飞行速度和多种属性增益"));
-            tooltips.Add(new TooltipLine(Mod, "BonusDetails", "属性增益: 生命+5，伤害减免+0.5%，防御力+1，基础攻击力+0.2，生命恢复+0.1，魔力上限+5"));
-            tooltips.Add(new TooltipLine(Mod, "SlotBonus", "每击败5个BOSS，额外增加一个召唤栏和哨兵栏"));
+            tooltips.Add(new TooltipLine(Mod, "Lore1", "「此梦环者，非世间所有，乃幻想之境所化」"));
+            tooltips.Add(new TooltipLine(Mod, "Lore2", "「随主人征战四方，共成长，同进退」"));
+            tooltips.Add(new TooltipLine(Mod, "Lore3", "「每斩一魔，其力愈增，终成神器」"));
             
-            // 添加空行
             tooltips.Add(new TooltipLine(Mod, "EmptyLine1", ""));
             
             int bossKills = 0;
-            // 在ModifyTooltips中，我们可以使用Main.LocalPlayer来获取本地玩家
             if (Main.LocalPlayer != null)
             {
                 bossKills = PWingWorld.GetBossKillCount(Main.LocalPlayer);
             }
             
-            //计算当前飞行能力
             float baseFlightTime = 1f;
             float currentFlightTime = baseFlightTime + bossKills * 0.5f;
             float baseFlightSpeed = 1.5f;
             float currentFlightSpeed = baseFlightSpeed + bossKills * 0.1f;
             
-            //添加动态工具提示行
-            TooltipLine flightTimeLine = new TooltipLine(Mod, "FlightTime", $"当前飞行时间: {currentFlightTime:F1}秒");
-            flightTimeLine.OverrideColor = Color.LightBlue;
+            TooltipLine flightTimeLine = new TooltipLine(Mod, "FlightTime", $"【飞行时长】{currentFlightTime:F1}秒");
+            flightTimeLine.OverrideColor = new Color(135, 206, 250);
             tooltips.Add(flightTimeLine);
             
-            TooltipLine flightSpeedLine = new TooltipLine(Mod, "FlightSpeed", $"当前飞行速度: {currentFlightSpeed:F1}");
-            flightSpeedLine.OverrideColor = Color.LightGreen;
+            TooltipLine flightSpeedLine = new TooltipLine(Mod, "FlightSpeed", $"【飞行速度】{currentFlightSpeed:F1}");
+            flightSpeedLine.OverrideColor = new Color(144, 238, 144);
             tooltips.Add(flightSpeedLine);
             
-            TooltipLine bossKillsLine = new TooltipLine(Mod, "BossKills", $"已击败BOSS数量: {bossKills}");
-            bossKillsLine.OverrideColor = Color.Yellow;
+            TooltipLine bossKillsLine = new TooltipLine(Mod, "BossKills", $"【悟道层数】{bossKills}层");
+            bossKillsLine.OverrideColor = goldenColor;
             tooltips.Add(bossKillsLine);
             
-            // 添加空行
-            tooltips.Add(new TooltipLine(Mod, "EmptyLine1_5", ""));
+            tooltips.Add(new TooltipLine(Mod, "EmptyLine2", ""));
             
-            // 添加属性增益信息
             int lifeBonus = bossKills * 5;
             float enduranceBonus = bossKills * 0.5f;
             int defenseBonus = bossKills;
@@ -106,50 +101,51 @@ namespace PWing.Items.Wings
             int manaBonus = bossKills * 5;
             int extraSlots = bossKills / 5;
             
-            TooltipLine lifeBonusLine = new TooltipLine(Mod, "LifeBonus", $"生命增益: +{lifeBonus}");
-            lifeBonusLine.OverrideColor = Color.Red;
+            TooltipLine lifeBonusLine = new TooltipLine(Mod, "LifeBonus", $"气血 +{lifeBonus}");
+            lifeBonusLine.OverrideColor = new Color(255, 99, 71);
             tooltips.Add(lifeBonusLine);
             
-            TooltipLine enduranceBonusLine = new TooltipLine(Mod, "EnduranceBonus", $"伤害减免增益: +{enduranceBonus:F1}%");
-            enduranceBonusLine.OverrideColor = Color.Orange;
+            TooltipLine enduranceBonusLine = new TooltipLine(Mod, "EnduranceBonus", $"减伤 +{enduranceBonus:F1}%");
+            enduranceBonusLine.OverrideColor = new Color(255, 165, 0);
             tooltips.Add(enduranceBonusLine);
             
-            TooltipLine defenseBonusLine = new TooltipLine(Mod, "DefenseBonus", $"防御力增益: +{defenseBonus}");
-            defenseBonusLine.OverrideColor = Color.Green;
+            TooltipLine defenseBonusLine = new TooltipLine(Mod, "DefenseBonus", $"护体 +{defenseBonus}");
+            defenseBonusLine.OverrideColor = new Color(50, 205, 50);
             tooltips.Add(defenseBonusLine);
             
-            TooltipLine attackBonusLine = new TooltipLine(Mod, "AttackBonus", $"基础攻击力增益: +{attackBonus:F1}");
-            attackBonusLine.OverrideColor = Color.Cyan;
+            TooltipLine attackBonusLine = new TooltipLine(Mod, "AttackBonus", $"力道 +{attackBonus:F1}");
+            attackBonusLine.OverrideColor = new Color(0, 191, 255);
             tooltips.Add(attackBonusLine);
             
-            TooltipLine lifeRegenBonusLine = new TooltipLine(Mod, "LifeRegenBonus", $"生命恢复增益: +{lifeRegenBonus:F1}");
-            lifeRegenBonusLine.OverrideColor = Color.Pink;
+            TooltipLine lifeRegenBonusLine = new TooltipLine(Mod, "LifeRegenBonus", $"回春 +{lifeRegenBonus:F1}");
+            lifeRegenBonusLine.OverrideColor = new Color(255, 182, 193);
             tooltips.Add(lifeRegenBonusLine);
             
-            TooltipLine manaBonusLine = new TooltipLine(Mod, "ManaBonus", $"魔力上限增益: +{manaBonus}");
-            manaBonusLine.OverrideColor = Color.Purple;
+            TooltipLine manaBonusLine = new TooltipLine(Mod, "ManaBonus", $"真元 +{manaBonus}");
+            manaBonusLine.OverrideColor = new Color(148, 0, 211);
             tooltips.Add(manaBonusLine);
             
-            TooltipLine slotBonusLine = new TooltipLine(Mod, "SlotBonus", $"额外召唤/哨兵栏: +{extraSlots}");
-            slotBonusLine.OverrideColor = Color.Gold;
-            tooltips.Add(slotBonusLine);
+            if (extraSlots > 0)
+            {
+                TooltipLine slotBonusLine = new TooltipLine(Mod, "SlotBonus", $"【神通格】+{extraSlots}");
+                slotBonusLine.OverrideColor = goldenColor;
+                tooltips.Add(slotBonusLine);
+            }
             
-            // 添加空行
-            tooltips.Add(new TooltipLine(Mod, "EmptyLine2", ""));
+            tooltips.Add(new TooltipLine(Mod, "EmptyLine3", ""));
             
-            //添加成长提示
             if (bossKills == 0)
             {
-                TooltipLine growthHintLine = new TooltipLine(Mod, "GrowthHint", "击败第一个BOSS后开始成长");
-                growthHintLine.OverrideColor = Color.Orange;
+                TooltipLine growthHintLine = new TooltipLine(Mod, "GrowthHint", "「初醒待悟，斩魔启灵」");
+                growthHintLine.OverrideColor = new Color(255, 165, 0);
                 tooltips.Add(growthHintLine);
             }
             else
             {
                 float nextFlightTime = currentFlightTime + 0.5f;
                 float nextFlightSpeed = currentFlightSpeed + 0.1f;
-                TooltipLine nextGrowthLine = new TooltipLine(Mod, "NextGrowth", $"下一级: {nextFlightTime:F1}秒飞行时间, {nextFlightSpeed:F1}飞行速度");
-                nextGrowthLine.OverrideColor = Color.Pink;
+                TooltipLine nextGrowthLine = new TooltipLine(Mod, "NextGrowth", $"下一层：{nextFlightTime:F1}秒 · {nextFlightSpeed:F1}速");
+                nextGrowthLine.OverrideColor = new Color(255, 182, 193);
                 tooltips.Add(nextGrowthLine);
             }
         }
@@ -313,7 +309,7 @@ namespace PWing.Items.Wings
             {
                 if (_wingTexture == null)
                 {
-                    _wingTexture = Mod.Assets.Request<Texture2D>("Items/Wings/GildedBladeWings").Value;
+                    _wingTexture = Mod.Assets.Request<Texture2D>("Assets/Items/Wings/GildedBladeWings").Value;
                 }
                 return _wingTexture;
             }
@@ -325,7 +321,7 @@ namespace PWing.Items.Wings
             {
                 if (_wingGlowTexture == null)
                 {
-                    _wingGlowTexture = Mod.Assets.Request<Texture2D>("Items/Wings/GildedBladeWingsGlow").Value;
+                    _wingGlowTexture = Mod.Assets.Request<Texture2D>("Assets/Items/Wings/GildedBladeWingsGlow").Value;
                 }
                 return _wingGlowTexture;
             }
@@ -337,7 +333,7 @@ namespace PWing.Items.Wings
             {
                 if (_wingGlowTexture2 == null)
                 {
-                    _wingGlowTexture2 = Mod.Assets.Request<Texture2D>("Items/Wings/GildedBladeWingsGlow2").Value;
+                    _wingGlowTexture2 = Mod.Assets.Request<Texture2D>("Assets/Items/Wings/GildedBladeWingsGlow2").Value;
                 }
                 return _wingGlowTexture2;
             }
@@ -349,7 +345,7 @@ namespace PWing.Items.Wings
             {
                 if (_pixelTexture == null)
                 {
-                    _pixelTexture = Mod.Assets.Request<Texture2D>("Items/Secrets/WhitePixel", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+                    _pixelTexture = Mod.Assets.Request<Texture2D>("Assets/Items/Secrets/WhitePixel", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
                 }
                 return _pixelTexture;
             }

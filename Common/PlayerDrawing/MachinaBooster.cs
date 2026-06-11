@@ -1,7 +1,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using PWing.Dusts;
-using PWing.Helpers;
+using PWing.Content.Dusts;
+using PWing.Common;
+using PWing.Common.Systems;
 using System;
 using System.Collections.Generic;
 using Terraria;
@@ -100,13 +101,13 @@ namespace PWing.Common.PlayerDrawing
             List<DrawData> dataBack = new List<DrawData>();
             List<DrawData> dataMiddle = new List<DrawData>();
             List<DrawData> dataFront = new List<DrawData>();
-            Texture2D blade = Mod.Assets.Request<Texture2D>("Items/Wings/BladeWing", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-            Texture2D bladeF = Mod.Assets.Request<Texture2D>("Items/Wings/BladeWingFlipped", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-            Texture2D bladeOutline = Mod.Assets.Request<Texture2D>("Items/Wings/BladeWingOutline", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-            Texture2D bladeOutlineF = Mod.Assets.Request<Texture2D>("Items/Wings/BladeWingOutlineFlipped", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-            Texture2D bladeHandle = Mod.Assets.Request<Texture2D>("Items/Wings/BladeWingHandle", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-            Texture2D bladeHandleF = Mod.Assets.Request<Texture2D>("Items/Wings/BladeWingHandleFlipped", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-            Texture2D pixel = Mod.Assets.Request<Texture2D>("Items/Secrets/WhitePixel", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D blade = Mod.Assets.Request<Texture2D>("Assets/Items/Wings/BladeWing", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D bladeF = Mod.Assets.Request<Texture2D>("Assets/Items/Wings/BladeWingFlipped", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D bladeOutline = Mod.Assets.Request<Texture2D>("Assets/Items/Wings/BladeWingOutline", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D bladeOutlineF = Mod.Assets.Request<Texture2D>("Assets/Items/Wings/BladeWingOutlineFlipped", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D bladeHandle = Mod.Assets.Request<Texture2D>("Assets/Items/Wings/BladeWingHandle", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D bladeHandleF = Mod.Assets.Request<Texture2D>("Assets/Items/Wings/BladeWingHandleFlipped", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D pixel = Mod.Assets.Request<Texture2D>("Assets/Items/Secrets/WhitePixel", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
             float drawX = (int)drawInfo.Position.X + drawPlayer.width / 2;
             float drawY = (int)drawInfo.Position.Y + drawPlayer.height / 2 + (drawPlayer.portableStoolInfo.IsInUse ? 14 : 0);
@@ -542,7 +543,7 @@ namespace PWing.Common.PlayerDrawing
             List<DrawData> drawData0 = new List<DrawData>();
             List<DrawData> drawData1 = new List<DrawData>();
             List<DrawData> drawData2 = new List<DrawData>();
-            Texture2D pixel = Mod.Assets.Request<Texture2D>("Items/Secrets/WhitePixel", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D pixel = Mod.Assets.Request<Texture2D>("Assets/Items/Secrets/WhitePixel", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
             int repeats = 40;
             Vector2 center = new Vector2((int)drawPlayer.Center.X, (int)drawPlayer.Center.Y + drawPlayer.gfxOffY) + new Vector2(-10 * drawPlayer.direction, -(drawPlayer.height / 2 + 6) * drawPlayer.gravDir);
             Vector2[] points = new Vector2[repeats];

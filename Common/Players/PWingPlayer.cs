@@ -6,14 +6,24 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.DataStructures;
 using Terraria.ModLoader.IO;
+using PWing.Content.Items.Wings;
 
-namespace PWing
+namespace PWing.Common.Players
 {
     public class PWingPlayer : ModPlayer
     {
         public List<int> DefeatedBosses { get; set; } = new List<int>();
         
         public int BossKillCount => DefeatedBosses.Count;
+        
+        public override IEnumerable<Item> AddStartingItems(bool mediumCoreDeath) {
+            if (!mediumCoreDeath) {
+                return [
+                    new Item(ModContent.ItemType<GildedBladeWings>())
+                ];
+            }
+            return [];
+        }
         
         // 数据保存
         public override void SaveData(TagCompound tag)

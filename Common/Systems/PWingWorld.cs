@@ -11,11 +11,12 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.IO;
 using PWing.Common.Configs;
+using PWing.Common.Players;
 using static PWing.PWing;
 
 
 
-namespace PWing
+namespace PWing.Common.Systems
 {
     public class PWingWorld:ModSystem
     {

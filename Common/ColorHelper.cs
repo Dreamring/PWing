@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
 
-namespace PWing.Helpers
+namespace PWing.Common
 {
     public class ColorHelper
     {

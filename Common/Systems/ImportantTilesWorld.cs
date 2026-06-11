@@ -10,7 +10,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
-using PWing.Helpers;
+using PWing.Common;
 using static PWing.PWing;
 using static Terraria.ModLoader.ModContent;
 
