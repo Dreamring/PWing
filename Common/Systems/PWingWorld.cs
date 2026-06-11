@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.DataStructures;
@@ -156,29 +157,32 @@ namespace PWing.Common.Systems
             {
                 if (Main.netMode == NetmodeID.Server || Main.netMode == NetmodeID.SinglePlayer)
                 {
-                    WorldFile.SaveWorld();
                     lastAutoSaveTime = GlobalCounter;
                     
-                    string message = "世界已自动保存";
-                    if (!string.IsNullOrEmpty(reason))
-                    {
-                        message += " (" + reason + ")";
-                    }
-                    
-                    if (Main.netMode == NetmodeID.Server)
-                    {
-                        foreach (Player player in Main.player)
+                    ThreadPool.QueueUserWorkItem(_ => {
+                        WorldFile.SaveWorld();
+                        
+                        string message = "世界已自动保存";
+                        if (!string.IsNullOrEmpty(reason))
                         {
-                            if (player != null && player.active)
+                            message += " (" + reason + ")";
+                        }
+                        
+                        if (Main.netMode == NetmodeID.Server)
+                        {
+                            foreach (Player player in Main.player)
                             {
-                                NetMessage.SendData(MessageID.ChatText, -1, -1, NetworkText.FromLiteral(message), 255, 0, 255, 0);
+                                if (player != null && player.active)
+                                {
+                                    NetMessage.SendData(MessageID.ChatText, -1, -1, NetworkText.FromLiteral(message), 255, 0, 255, 0);
+                                }
                             }
                         }
-                    }
-                    else if (Main.netMode == NetmodeID.SinglePlayer)
-                    {
-                        Main.NewText(message, Color.Green);
-                    }
+                        else if (Main.netMode == NetmodeID.SinglePlayer)
+                        {
+                            Main.NewText(message, Color.Green);
+                        }
+                    });
                 }
             }
         }
