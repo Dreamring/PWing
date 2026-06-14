@@ -1,6 +1,6 @@
 # Gilded Blade Wings
 
-A unique wings mod with growth mechanics and auto-save features for Terraria.
+A unique wings mod with growth mechanics, auto-save features, and a digital miner for Terraria.
 
 ## Key Features
 
@@ -20,6 +20,14 @@ A unique wings mod with growth mechanics and auto-save features for Terraria.
   - +1 Minion Slot
   - +1 Sentinel Slot
 
+### Azafure Digital Miner
+- Automatically mines ores from the world
+- 6 filter slots to specify which ore types to mine
+- 35 item storage slots
+- Supports gem mining (Amethyst, Topaz, Sapphire, Emerald, Ruby, Diamond)
+- Whitelist feature to add custom ores or items
+- Visual feedback with particle effects
+
 ### Auto-Save System
 - Configurable auto-save intervals (60-3600 seconds)
 - Auto-save when defeating bosses
@@ -34,9 +42,14 @@ A unique wings mod with growth mechanics and auto-save features for Terraria.
 
 ## How to Obtain
 
+### Gilded Blade Wings
 Craft at a Workbench with:
 - 20 Iron Bars
 - 20 Fallen Stars
+
+### Azafure Miner
+Craft at a Heavy Work Bench with:
+- 10 Iron Bars
 
 ## Configuration
 
@@ -44,11 +57,13 @@ Access mod settings to:
 - Adjust flight parameters
 - Toggle low-fidelity mode
 - Configure auto-save settings
+- Manage miner whitelist
 - Customize your experience
 
 ## Version History
 
 ### v1.5
+- NEW: Azafure Digital Miner - Automatically mine and filter ores
 - Code optimization: Refactored duplicate code for better maintainability
 - Performance improvements: Optimized visual effects rendering
 - Bug fixes and stability improvements
@@ -74,16 +89,16 @@ Access mod settings to:
 
 ## Notes
 
-- This mod is standalone and does not require any other mods
+- This mod requires CalamityMod and InnoVault
 - Inspired by wings designs from other mods, but completely redeveloped
 - Compatible with most Terraria versions
 - Regular updates planned with new features
 
-Enjoy your journey with the Gilded Blade Wings!
+Enjoy your journey with the Gilded Blade Wings and Azafure Miner!
 
 # 耀刃之翼
 
-一个具有成长机制和自动保存功能的独特翅膀模组。
+一个具有成长机制、自动保存功能和数字采矿机的独特模组。
 
 ## 主要特性
 
@@ -103,6 +118,14 @@ Enjoy your journey with the Gilded Blade Wings!
   - +1 召唤栏
   - +1 哨兵栏
 
+### 阿萨福勒数字型采矿机
+- 自动挖掘世界中的矿石
+- 6个过滤器槽位用于设置要挖掘的矿石类型
+- 35个物品存储槽位
+- 支持宝石挖掘（紫宝石、黄宝石、蓝宝石、绿宝石、红宝石、钻石）
+- 白名单功能可添加自定义矿石或物品
+- 粒子效果提供视觉反馈
+
 ### 自动保存系统
 - 可配置的自动保存间隔（60-3600秒）
 - 击败BOSS时自动保存
@@ -117,9 +140,14 @@ Enjoy your journey with the Gilded Blade Wings!
 
 ## 获取方式
 
+### 耀刃之翼
 在工作台合成：
 - 20个铁锭
 - 20个落星
+
+### 阿萨福勒采矿机
+在重型工作台合成：
+- 10个铁锭
 
 ## 配置
 
@@ -127,11 +155,13 @@ Enjoy your journey with the Gilded Blade Wings!
 - 调整飞行参数
 - 切换低精度模式
 - 配置自动保存设置
+- 管理采矿机白名单
 - 自定义你的游戏体验
 
 ## 版本历史
 
 ### v1.5
+- 新增：阿萨福勒数字型采矿机 - 自动挖掘并过滤矿石
 - 代码优化：重构重复代码，提升可维护性
 - 性能改进：优化视觉效果渲染逻辑
 - 修复已知问题，提升稳定性
@@ -157,9 +187,9 @@ Enjoy your journey with the Gilded Blade Wings!
 
 ## 注意事项
 
-- 本模组为独立模组，不依赖其他模组
+- 本模组依赖灾厄模组（CalamityMod）和创新 vaults（InnoVault）
 - 灵感来源于其他模组的翅膀设计，但完全重新开发
 - 兼容大多数Terraria版本
 - 计划定期更新并添加新功能
 
-享受你与耀刃之翼的冒险之旅！
+享受你与耀刃之翼和阿萨福勒采矿机的冒险之旅！

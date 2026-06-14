@@ -1,2 +1,121 @@
-SlotInfo2: 存放原矿
-AzMinerOreWarning: 筛选槽位只能放置矿石物品！
+Items: {
+	GildedBladeWings: {
+		DisplayName: 梦环
+		Tooltip: 「此梦环者，非世间所有，乃幻想之境所化」
+	}
+
+	梦环: {
+		Tooltip: 「此梦环者，非世间所有，乃幻想之境所化」
+		DisplayName: 梦环
+	}
+
+	AzafureMiner: {
+		DisplayName: 阿萨福勒数字型采矿机
+		Tooltip: 自动挖掘并过滤收集矿石的智能设备
+	}
+
+	SlotInfo2: 放入矿石以设置过滤器
+	AzMinerOreWarning: 筛选槽位只能放置矿石物品！
+}
+
+Configs: {
+	PWingConfig: {
+		DisplayName: PWing 模组配置
+
+		lowFidelityMode: {
+			Label: 低精度模型
+			Tooltip: 启用低精度渲染模式以提升游戏性能。启用后视觉效果会有所降低。
+		}
+
+		WingFunction: {
+			Label: 翅膀功能
+			Tooltip: 翅膀的飞行功能开关
+		}
+
+		CreateFlight: {
+			Label: 创造模式飞行
+			Tooltip: 在创造模式下启用飞行能力
+		}
+
+		Headers: {
+			WingConfigs: 翅膀配置
+			AutoSaveConfigs: 自动保存配置
+			AzafureMiner: 阿萨福勒采矿机
+			AzafureMinerConfigs: 采矿机配置
+		}
+
+		WeaponWithGrowingDamageToggle: {
+			Label: 武器伤害成长
+			Tooltip: 启用后武器伤害会随BOSS击杀数量成长
+		}
+
+		autoSaveInterval: {
+			Label: 自动保存间隔
+			Tooltip: 自动保存的时间间隔，单位为秒。范围：60-3600秒。
+		}
+
+		autoSaveEnabled: {
+			Label: 开启自动保存
+			Tooltip: 启用后会在指定时间间隔自动保存游戏，并在击败BOSS时保存。
+		}
+
+		UltraSpeedMode: {
+			Label: 超速模式
+			Tooltip: 启用后飞行速度将大幅提升
+		}
+
+		UltraSpeedMultiplier: {
+			Label: 超速倍率
+			Tooltip: 飞行速度的倍数增益
+		}
+
+		azafureMinerWhitelistEnabled: {
+			Label: 采矿机白名单
+			Tooltip: 启用后可添加额外的矿石或物品到采矿机的白名单中
+		}
+
+		azafureMinerWhitelistTileIDs: {
+			Label: 采矿机白名单图块ID
+			Tooltip: 用于直接指定图块ID的白名单
+		}
+
+		azafureMinerWhitelistItems: {
+			Label: 采矿机白名单物品
+			Tooltip: 添加额外的矿石或物品到采矿机白名单，用于补充无法被通用条件匹配的方块
+		}
+	}
+
+	AzafureMinerConfig: {
+		DisplayName: 阿萨福勒数字型采矿机配置
+
+		Headers: {
+			挖掘参数: 挖掘参数
+			存储参数: 存储参数
+		}
+
+		MiningSpeed: {
+			Label: 挖掘速度
+			Tooltip: 采矿机的挖掘速度，单位为游戏帧数。数值越小速度越快。
+		}
+
+		MiningRange: {
+			Label: 挖掘范围
+			Tooltip: 采矿机的挖掘范围半径。范围越大，一次挖掘覆盖的区域越广。
+		}
+
+		ParticleChance: {
+			Label: 挖掘粒子效果概率
+			Tooltip: 挖掘时产生粒子效果的概率，数值越小概率越高。设置为0则始终产生效果。
+		}
+
+		ItemsCount: {
+			Label: 物品槽数量
+			Tooltip: 采矿机的物品存储槽数量。
+		}
+
+		FiltersCount: {
+			Label: 过滤器槽数量
+			Tooltip: 采矿机的过滤器槽数量，用于指定挖掘的矿石类型。
+		}
+	}
+}
