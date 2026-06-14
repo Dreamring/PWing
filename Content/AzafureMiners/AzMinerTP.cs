@@ -76,8 +76,8 @@ namespace PWing.Content.AzafureMiners
 				}
 				for (int j = 0; j < ItemLoader.ItemCount; j++)
 				{
-					Item item = new Item(j, 1, 0);
-					if (item.type != 0)
+					Item item = new(j, 1, 0);
+					if (item.type != ItemID.None)
 					{
 						bool isGem = IsGemItem(j);
 						bool createsOre = oreTileIDs.Contains(item.createTile);
@@ -155,7 +155,7 @@ namespace PWing.Content.AzafureMiners
 
 		public override void OnKill()
 		{
-			if (Main.netMode == 1)
+			if (Main.netMode == NetmodeID.MultiplayerClient)
 			{
 				return;
 			}
@@ -198,13 +198,13 @@ namespace PWing.Content.AzafureMiners
 			IsWork = false;
 			foreach (Item item in filters)
 			{
-				if (item.type != 0)
+				if (item.type != ItemID.None)
 				{
 					types.Add(item.type);
 					IsWork = true;
 				}
 			}
-			if (Main.netMode == 1)
+			if (Main.netMode == NetmodeID.MultiplayerClient)
 			{
 				return;
 			}
