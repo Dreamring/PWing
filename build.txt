@@ -1,3 +1,4 @@
 displayName = 耀刃之翼
 author = pfrybzxy
 version = 1.5
+modReferences = CalamityMod, InnoVault

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<!-- Import tModLoader mod properties -->
 	<Import Project="..\tModLoader.targets" />
@@ -9,5 +9,19 @@
 	</PropertyGroup>
 
 	<!-- References -->
+	<ItemGroup>
+		<Reference Include="CalamityEntropy">
+			<HintPath>..\ModAssemblies\CalamityEntropy_v2.91.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="CalamityMod">
+			<HintPath>..\ModAssemblies\CalamityMod_v2.2.1.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="InnoVault">
+			<HintPath>..\ModAssemblies\InnoVault_v1.9.94.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+	</ItemGroup>
 
 </Project>

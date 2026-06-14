@@ -8,6 +8,13 @@ Items: {
 		Tooltip: This Dream Ring is not of this world, but born from the realm of fantasy
 		DisplayName: Dream Ring
 	}
+
+	AzafureMiner: {
+		DisplayName: Azafure Miner
+		Tooltip: ""
+	}
+
+	SlotInfo2: Place an ore to filter
 }
 
 Configs: {
@@ -32,6 +39,8 @@ Configs: {
 		Headers: {
 			WingConfigs: Wing Configs Header
 			AutoSaveConfigs: Auto Save Configs Header
+			AzafureMiner: Azafure Miner Header
+			AzafureMinerConfigs: Azafure Miner Configs Header
 		}
 
 		WeaponWithGrowingDamageToggle: {
@@ -47,6 +56,65 @@ Configs: {
 		autoSaveEnabled: {
 			Tooltip: ""
 			Label: auto Save Enabled
+		}
+
+		UltraSpeedMode: {
+			Label: Ultra Speed Mode
+			Tooltip: ""
+		}
+
+		UltraSpeedMultiplier: {
+			Label: Ultra Speed Multiplier
+			Tooltip: ""
+		}
+
+		azafureMinerWhitelistEnabled: {
+			Label: azafure Miner Whitelist Enabled
+			Tooltip: ""
+		}
+
+		azafureMinerWhitelistTileIDs: {
+			Label: azafure Miner Whitelist Tile I Ds
+			Tooltip: ""
+		}
+
+		azafureMinerWhitelistItems: {
+			Label: azafure Miner Whitelist Items
+			Tooltip: ""
+		}
+	}
+
+	AzafureMinerConfig: {
+		DisplayName: 阿萨福勒数字型采矿机配置
+
+		Headers: {
+			挖掘参数: 挖掘参数 Header
+			存储参数: 存储参数 Header
+		}
+
+		MiningSpeed: {
+			Label: 挖掘速度
+			Tooltip: 采矿机的挖掘速度，单位为游戏帧数。数值越小速度越快。
+		}
+
+		MiningRange: {
+			Label: 挖掘范围
+			Tooltip: 采矿机的挖掘范围半径。范围越大，一次挖掘覆盖的区域越广。
+		}
+
+		ParticleChance: {
+			Label: 挖掘粒子效果概率
+			Tooltip: 挖掘时产生粒子效果的概率，数值越小概率越高。设置为0则始终产生效果。
+		}
+
+		ItemsCount: {
+			Label: 物品槽数量
+			Tooltip: 采矿机的物品存储槽数量。
+		}
+
+		FiltersCount: {
+			Label: 过滤器槽数量
+			Tooltip: 采矿机的过滤器槽数量，用于指定挖掘的矿石类型。
 		}
 	}
 }
