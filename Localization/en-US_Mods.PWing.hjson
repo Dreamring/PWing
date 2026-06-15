@@ -15,6 +15,11 @@ Items: {
 	}
 
 	SlotInfo2: Place an ore to filter
+
+	PWingAzafureMiner: {
+		Tooltip: ""
+		DisplayName: Mods.PWing.Items.PWingAzafureMiner.DisplayName
+	}
 }
 
 Configs: {

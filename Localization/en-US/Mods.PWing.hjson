@@ -1,2 +1,111 @@
-SlotInfo2: Insert Raw Ore
-AzMinerOreWarning: Only ore items can be placed in filter slots!
+Items: {
+	PWingAzafureMiner: {
+		DisplayName: Azafure Digital Miner
+		Tooltip: An intelligent device that automatically mines and filters ores
+	}
+
+	SlotInfo2: Insert Raw Ore
+	AzMinerOreWarning: Only ore items can be placed in filter slots!
+}
+
+Configs: {
+	PWingConfig: {
+		DisplayName: PWing Mod Configuration
+
+		lowFidelityMode: {
+			Label: Low Fidelity Mode
+			Tooltip: Enable low-fidelity rendering mode to improve game performance. Visual effects will be reduced.
+		}
+
+		WingFunction: {
+			Label: Wing Function
+			Tooltip: Toggle flight functionality for the wings
+		}
+
+		CreateFlight: {
+			Label: Creative Flight
+			Tooltip: Enable flight in creative mode
+		}
+
+		Headers: {
+			WingConfigs: Wing Configuration
+			AutoSaveConfigs: Auto Save Configuration
+			AzafureMiner: Azafure Miner
+			AzafureMinerConfigs: Miner Configuration
+		}
+
+		WeaponWithGrowingDamageToggle: {
+			Label: Weapon Damage Growth
+			Tooltip: Enable weapon damage growth based on boss kills
+		}
+
+		autoSaveInterval: {
+			Label: Auto Save Interval
+			Tooltip: Auto save interval in seconds. Range: 60-3600 seconds.
+		}
+
+		autoSaveEnabled: {
+			Label: Enable Auto Save
+			Tooltip: Enable automatic saving at specified intervals and when defeating bosses.
+		}
+
+		UltraSpeedMode: {
+			Label: Ultra Speed Mode
+			Tooltip: Enable to significantly increase flight speed
+		}
+
+		UltraSpeedMultiplier: {
+			Label: Ultra Speed Multiplier
+			Tooltip: Speed multiplier for flight
+		}
+
+		azafureMinerWhitelistEnabled: {
+			Label: Miner Whitelist
+			Tooltip: Enable to add additional ores or items to the miner's whitelist
+		}
+
+		azafureMinerWhitelistTileIDs: {
+			Label: Miner Whitelist Tile IDs
+			Tooltip: Whitelist for directly specifying tile IDs
+		}
+
+		azafureMinerWhitelistItems: {
+			Label: Miner Whitelist Items
+			Tooltip: Add additional ores or items to the miner whitelist for blocks that cannot be matched by general conditions
+		}
+	}
+
+	AzafureMinerConfig: {
+		DisplayName: Azafure Digital Miner Configuration
+
+		Headers: {
+			挖掘参数: Mining Parameters
+			存储参数: Storage Parameters
+		}
+
+		MiningSpeed: {
+			Label: Mining Speed
+			Tooltip: Mining speed in game frames. Lower values mean faster mining.
+		}
+
+		MiningRange: {
+			Label: Mining Range
+			Tooltip: Radius of mining range. Larger values cover more area.
+		}
+
+		ParticleChance: {
+			Label: Particle Effect Chance
+			Tooltip: Chance of producing particle effects when mining. Lower values mean higher chance. Set to 0 for always on.
+		}
+
+		ItemsCount: {
+			Label: Item Slots
+			Tooltip: Number of item storage slots in the miner.
+		}
+
+		FiltersCount: {
+			Label: Filter Slots
+			Tooltip: Number of filter slots for specifying ore types to mine.
+		}
+	}
+}

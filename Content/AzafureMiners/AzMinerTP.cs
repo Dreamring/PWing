@@ -17,7 +17,7 @@ using Terraria.ModLoader.IO;
 
 namespace PWing.Content.AzafureMiners
 {
-	public class AzMinerTP : TileProcessor
+	public class PWingAzMinerTP : TileProcessor
 	{
 		public List<Item> filters;
 
@@ -43,7 +43,7 @@ namespace PWing.Content.AzafureMiners
 
 		public bool SmartCursorHover = false;
 
-		public override int TargetTileID => ModContent.TileType<AzafureMinerTile>();
+		public override int TargetTileID => ModContent.TileType<PWingAzafureMinerTile>();
 
 		public static void SetUpList()
 		{

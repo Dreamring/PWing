@@ -1,15 +1,5 @@
 Items: {
-	GildedBladeWings: {
-		DisplayName: 梦环
-		Tooltip: 「此梦环者，非世间所有，乃幻想之境所化」
-	}
-
-	梦环: {
-		Tooltip: 「此梦环者，非世间所有，乃幻想之境所化」
-		DisplayName: 梦环
-	}
-
-	AzafureMiner: {
+	PWingAzafureMiner: {
 		DisplayName: 阿萨福勒数字型采矿机
 		Tooltip: 自动挖掘并过滤收集矿石的智能设备
 	}

@@ -5,7 +5,7 @@ using Terraria.ModLoader;
 
 namespace PWing.Content.AzafureMiners
 {
-	public class AzafureMiner : ModItem
+	public class PWingAzafureMiner : ModItem
 	{
 		public override void SetDefaults()
 		{
@@ -18,7 +18,7 @@ namespace PWing.Content.AzafureMiners
 			((ModItem)this).Item.useTime = 6;
 			((ModItem)this).Item.useStyle = 1;
 			((ModItem)this).Item.consumable = true;
-			((ModItem)this).Item.createTile = ModContent.TileType<AzafureMinerTile>();
+			((ModItem)this).Item.createTile = ModContent.TileType<PWingAzafureMinerTile>();
 			((ModItem)this).Item.rare = 3;
 			((ModItem)this).Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
 		}

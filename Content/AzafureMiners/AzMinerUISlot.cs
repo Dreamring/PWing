@@ -17,7 +17,7 @@ using Terraria.UI;
 
 namespace PWing.Content.AzafureMiners
 {
-	public class AzMinerUISlot : UIHandle
+	public class PWingAzMinerUISlot : UIHandle
 	{
 		public int itemIndex = 0;
 		public int type = 0;
@@ -36,26 +36,26 @@ namespace PWing.Content.AzafureMiners
 			{
 				if (type == 0)
 				{
-					return AzMinerUI.AzMinerTP.filters[itemIndex];
+					return PWingAzMinerUI.AzMinerTP.filters[itemIndex];
 				}
-				return AzMinerUI.AzMinerTP.items[itemIndex];
+				return PWingAzMinerUI.AzMinerTP.items[itemIndex];
 			}
 			set
 			{
 				if (type == 0)
 				{
-					AzMinerUI.AzMinerTP.filters[itemIndex] = value;
+					PWingAzMinerUI.AzMinerTP.filters[itemIndex] = value;
 				}
 				else
 				{
-					AzMinerUI.AzMinerTP.items[itemIndex] = value;
+					PWingAzMinerUI.AzMinerTP.items[itemIndex] = value;
 				}
 			}
 		}
 
 		public override void Update()
 		{
-			base.DrawPosition = ((UIHandle)AzMinerUI.Instance).DrawPosition + OffsetPos;
+			base.DrawPosition = ((UIHandle)PWingAzMinerUI.Instance).DrawPosition + OffsetPos;
 			base.UIHitBox = new Rectangle((int)(base.DrawPosition.X - 22f), (int)(base.DrawPosition.Y - 22f), 44, 44);
 			base.hoverInMainPage = base.UIHitBox.Contains(MouseHitBox);
 			if (!base.hoverInMainPage)
@@ -82,7 +82,7 @@ namespace PWing.Content.AzafureMiners
 			{
 				HandleRightClick();
 				HandleLeftClick();
-				((TileProcessor)AzMinerUI.AzMinerTP).SendData();
+				((TileProcessor)PWingAzMinerUI.AzMinerTP).SendData();
 			}
 		}
 
@@ -117,7 +117,7 @@ namespace PWing.Content.AzafureMiners
 		{
 			if ((int)((UIHandle)this).keyLeftPressState == 1)
 			{
-				AzMinerUI.Instance.dontDragTime = 2;
+				PWingAzMinerUI.Instance.dontDragTime = 2;
 				KeyboardState state = Keyboard.GetState();
 				if (state.IsKeyDown(Keys.LeftShift))
 				{
@@ -191,7 +191,7 @@ namespace PWing.Content.AzafureMiners
 		private void TryMergeStacks()
 		{
 			bool merged = false;
-			foreach (AzMinerUISlot slot in AzMinerUI.Items)
+			foreach (PWingAzMinerUISlot slot in PWingAzMinerUI.Items)
 			{
 				if (slot.itemIndex != itemIndex && Item.type == slot.Item.type && Item.stack < Item.maxStack)
 				{
@@ -219,17 +219,17 @@ namespace PWing.Content.AzafureMiners
 		{
 			if (type == 0)
 			{
-				AzMinerUI.AzMinerTP.filters[itemIndex].TurnToAir(false);
+				PWingAzMinerUI.AzMinerTP.filters[itemIndex].TurnToAir(false);
 			}
 			else
 			{
-				AzMinerUI.AzMinerTP.items[itemIndex].TurnToAir(false);
+				PWingAzMinerUI.AzMinerTP.items[itemIndex].TurnToAir(false);
 			}
 		}
 
 		private Item GetSlotRef()
 		{
-			return (type == 0) ? AzMinerUI.AzMinerTP.filters[itemIndex] : AzMinerUI.AzMinerTP.items[itemIndex];
+			return (type == 0) ? PWingAzMinerUI.AzMinerTP.filters[itemIndex] : PWingAzMinerUI.AzMinerTP.items[itemIndex];
 		}
 
 		private bool IsOre(Item item)
@@ -239,7 +239,7 @@ namespace PWing.Content.AzafureMiners
 				return false;
 			}
 			
-			if (AzMinerTP.ItemIsOre.TryGetValue(item.type, out bool isOre) && isOre)
+			if (PWingAzMinerTP.ItemIsOre.TryGetValue(item.type, out bool isOre) && isOre)
 			{
 				return true;
 			}
@@ -260,7 +260,7 @@ namespace PWing.Content.AzafureMiners
 
 		public override void Draw(SpriteBatch spriteBatch)
 		{
-			float alpha = AzMinerUI.uiAlpha;
+			float alpha = PWingAzMinerUI.uiAlpha;
 			if (alpha < 0.01f)
 			{
 				return;

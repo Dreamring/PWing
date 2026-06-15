@@ -10,7 +10,7 @@ namespace PWing.Content.AzafureMiners
 {
 	internal class AzMinerStorageProvider : IStorageProvider
 	{
-		private readonly AzMinerTP _azMinerTP;
+		private readonly PWingAzMinerTP _azMinerTP;
 		private readonly Point16 _position;
 
 		public string Identifier => "CE.AzMiner";
@@ -48,8 +48,8 @@ namespace PWing.Content.AzafureMiners
 				{
 					return false;
 				}
-				AzMinerTP tempTP = null;
-				if (!TileProcessorLoader.AutoPositionGetTP<AzMinerTP>(_position, out tempTP))
+				PWingAzMinerTP tempTP = null;
+				if (!TileProcessorLoader.AutoPositionGetTP<PWingAzMinerTP>(_position, out tempTP))
 				{
 					return false;
 				}
@@ -83,7 +83,7 @@ namespace PWing.Content.AzafureMiners
 			}
 		}
 
-		public AzMinerStorageProvider(AzMinerTP azMinerTP)
+		public AzMinerStorageProvider(PWingAzMinerTP azMinerTP)
 		{
 			_azMinerTP = azMinerTP;
 			_position = azMinerTP?.Position ?? Point16.NegativeOne;
@@ -91,8 +91,8 @@ namespace PWing.Content.AzafureMiners
 
 		public static AzMinerStorageProvider FromPosition(Point16 position)
 		{
-			AzMinerTP tempTP = null;
-			if (!TileProcessorLoader.AutoPositionGetTP<AzMinerTP>(position, out tempTP))
+			PWingAzMinerTP tempTP = null;
+			if (!TileProcessorLoader.AutoPositionGetTP<PWingAzMinerTP>(position, out tempTP))
 			{
 				return null;
 			}
@@ -101,7 +101,7 @@ namespace PWing.Content.AzafureMiners
 
 		public static AzMinerStorageProvider FindNearPosition(Point16 position, int range, Item item)
 		{
-			AzMinerTP tp = TileProcessorLoader.FindModuleRangeSearch<AzMinerTP>(position, range);
+			PWingAzMinerTP tp = TileProcessorLoader.FindModuleRangeSearch<PWingAzMinerTP>(position, range);
 			if (tp == null)
 			{
 				return null;
@@ -116,8 +116,8 @@ namespace PWing.Content.AzafureMiners
 
 		public static AzMinerStorageProvider GetAtPosition(Point16 position, Item item)
 		{
-			AzMinerTP tempTP = null;
-			if (!TileProcessorLoader.AutoPositionGetTP<AzMinerTP>(position, out tempTP))
+			PWingAzMinerTP tempTP = null;
+			if (!TileProcessorLoader.AutoPositionGetTP<PWingAzMinerTP>(position, out tempTP))
 			{
 				return null;
 			}

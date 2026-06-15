@@ -15,6 +15,11 @@ Items: {
 	}
 
 	SlotInfo2: 放入矿石以设置过滤器
+
+	PWingAzafureMiner: {
+		// Tooltip: ""
+		// DisplayName: Mods.PWing.Items.PWingAzafureMiner.DisplayName
+	}
 }
 
 Configs: {
@@ -27,94 +32,94 @@ Configs: {
 		}
 
 		WingFunction: {
-			// Label: Wing Function
-			// Tooltip: ""
+			Label: 翅膀功能
+			Tooltip: 翅膀的飞行功能开关
 		}
 
 		CreateFlight: {
-			// Label: Create Flight
-			// Tooltip: ""
+			Label: 创造模式飞行
+			Tooltip: 在创造模式下启用飞行能力
 		}
 
 		Headers: {
 			WingConfigs: 翅膀配置
 			AutoSaveConfigs: 自动保存配置
-			// AzafureMiner: Azafure Miner Header
-			// AzafureMinerConfigs: Azafure Miner Configs Header
+			AzafureMiner: 阿萨福勒采矿机
+			AzafureMinerConfigs: 采矿机配置
 		}
 
 		WeaponWithGrowingDamageToggle: {
-			// Tooltip: ""
-			// Label: Weapon With Growing Damage Toggle
+			Tooltip: 启用后武器伤害会随BOSS击杀数量成长
+			Label: 武器伤害成长
 		}
 
 		autoSaveInterval: {
-			// Tooltip: ""
+			Tooltip: 自动保存的时间间隔，单位为秒。范围：60-3600秒。
 			Label: 自动保存间隔
 		}
 
 		autoSaveEnabled: {
-			// Tooltip: ""
+			Tooltip: 启用后会在指定时间间隔自动保存游戏，并在击败BOSS时保存。
 			Label: 开启自动保存
 		}
 
 		UltraSpeedMode: {
-			// Label: Ultra Speed Mode
-			// Tooltip: ""
+			Label: 超速模式
+			Tooltip: 启用后飞行速度将大幅提升
 		}
 
 		UltraSpeedMultiplier: {
-			// Label: Ultra Speed Multiplier
-			// Tooltip: ""
+			Label: 超速倍率
+			Tooltip: 飞行速度的倍数增益
 		}
 
 		azafureMinerWhitelistEnabled: {
-			// Label: azafure Miner Whitelist Enabled
-			// Tooltip: ""
+			Label: 采矿机白名单
+			Tooltip: 启用后可添加额外的矿石或物品到采矿机的白名单中
 		}
 
 		azafureMinerWhitelistTileIDs: {
-			// Label: azafure Miner Whitelist Tile I Ds
-			// Tooltip: ""
+			Label: 采矿机白名单图块ID
+			Tooltip: 用于直接指定图块ID的白名单
 		}
 
 		azafureMinerWhitelistItems: {
-			// Label: azafure Miner Whitelist Items
-			// Tooltip: ""
+			Label: 采矿机白名单物品
+			Tooltip: 添加额外的矿石或物品到采矿机白名单，用于补充无法被通用条件匹配的方块
 		}
 	}
 
 	AzafureMinerConfig: {
-		// DisplayName: 阿萨福勒数字型采矿机配置
+		DisplayName: 阿萨福勒数字型采矿机配置
 
 		Headers: {
-			// 挖掘参数: 挖掘参数 Header
-			// 存储参数: 存储参数 Header
+			挖掘参数: 挖掘参数
+			存储参数: 存储参数
 		}
 
 		MiningSpeed: {
-			// Label: 挖掘速度
-			// Tooltip: 采矿机的挖掘速度，单位为游戏帧数。数值越小速度越快。
+			Label: 挖掘速度
+			Tooltip: 采矿机的挖掘速度，单位为游戏帧数。数值越小速度越快。
 		}
 
 		MiningRange: {
-			// Label: 挖掘范围
-			// Tooltip: 采矿机的挖掘范围半径。范围越大，一次挖掘覆盖的区域越广。
+			Label: 挖掘范围
+			Tooltip: 采矿机的挖掘范围半径。范围越大，一次挖掘覆盖的区域越广。
 		}
 
 		ParticleChance: {
-			// Label: 挖掘粒子效果概率
-			// Tooltip: 挖掘时产生粒子效果的概率，数值越小概率越高。设置为0则始终产生效果。
+			Label: 挖掘粒子效果概率
+			Tooltip: 挖掘时产生粒子效果的概率，数值越小概率越高。设置为0则始终产生效果。
 		}
 
 		ItemsCount: {
-			// Label: 物品槽数量
-			// Tooltip: 采矿机的物品存储槽数量。
+			Label: 物品槽数量
+			Tooltip: 采矿机的物品存储槽数量。
 		}
 
 		FiltersCount: {
-			// Label: 过滤器槽数量
-			// Tooltip: 采矿机的过滤器槽数量，用于指定挖掘的矿石类型。
+			Label: 过滤器槽数量
+			Tooltip: 采矿机的过滤器槽数量，用于指定挖掘的矿石类型。
 		}
 	}
 }

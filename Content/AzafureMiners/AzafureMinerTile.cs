@@ -17,25 +17,25 @@ using Terraria.ObjectData;
 
 namespace PWing.Content.AzafureMiners
 {
-	public class AzafureMinerTile : ModTile
+	public class PWingAzafureMinerTile : ModTile
 	{
 		public override void Load()
 		{
-			AzMinerUI.Items = new List<AzMinerUISlot>();
-			AzMinerUI.Filters = new List<AzMinerUISlot>();
-			for (int i = 0; i < AzMinerTP.FiltersCount; i++)
+			PWingAzMinerUI.Items = new List<PWingAzMinerUISlot>();
+			PWingAzMinerUI.Filters = new List<PWingAzMinerUISlot>();
+			for (int i = 0; i < PWingAzMinerTP.FiltersCount; i++)
 			{
-				AzMinerUI.Filters.Add(new AzMinerUISlot
+				PWingAzMinerUI.Filters.Add(new PWingAzMinerUISlot
 				{
-					OffsetPos = new Vector2(-168f, -100f + 240f / (float)AzMinerTP.FiltersCount * (float)i),
+					OffsetPos = new Vector2(-168f, -100f + 240f / (float)PWingAzMinerTP.FiltersCount * (float)i),
 					itemIndex = i
 				});
 			}
 			int z = 0;
 			Vector2 pos = new Vector2(-110f, -100f);
-			for (int j = 0; j < AzMinerTP.ItemsCount; j++)
+			for (int j = 0; j < PWingAzMinerTP.ItemsCount; j++)
 			{
-				AzMinerUI.Items.Add(new AzMinerUISlot
+				PWingAzMinerUI.Items.Add(new PWingAzMinerUISlot
 				{
 					OffsetPos = new Vector2(pos.X, pos.Y),
 					type = 1,
@@ -54,8 +54,8 @@ namespace PWing.Content.AzafureMiners
 
 		public override void Unload()
 		{
-			AzMinerUI.Filters = null;
-			AzMinerUI.Items = null;
+			PWingAzMinerUI.Filters = null;
+			PWingAzMinerUI.Items = null;
 		}
 
 		public override void SetStaticDefaults()
@@ -65,7 +65,7 @@ namespace PWing.Content.AzafureMiners
 			Main.tileNoAttach[Type] = true;
 			Main.tileLavaDeath[Type] = false;
 			Main.tileWaterDeath[Type] = false;
-			AddMapEntry(new Color(190, 72, 81), VaultUtils.GetLocalizedItemName<AzafureMiner>());
+			AddMapEntry(new Color(190, 72, 81), VaultUtils.GetLocalizedItemName<PWingAzafureMiner>());
 			TileObjectData.newTile.CopyFrom(TileObjectData.Style3x3);
 			TileObjectData.newTile.Width = 4;
 			TileObjectData.newTile.Height = 3;
@@ -83,23 +83,23 @@ namespace PWing.Content.AzafureMiners
 
 		public override void MouseOver(int i, int j)
 		{
-			VaultUtils.SetMouseOverByTile<AzafureMiner>(Main.LocalPlayer);
+			VaultUtils.SetMouseOverByTile<PWingAzafureMiner>(Main.LocalPlayer);
 		}
 
 		public override bool RightClick(int i, int j)
 		{
-			AzMinerTP tempTP = null;
-			if (TileProcessorLoader.AutoPositionGetTP<AzMinerTP>(i, j, out tempTP))
+			PWingAzMinerTP tempTP = null;
+			if (TileProcessorLoader.AutoPositionGetTP<PWingAzMinerTP>(i, j, out tempTP))
 			{
-				bool sameMachine = AzMinerUI.AzMinerTP == tempTP;
-				AzMinerUI.AzMinerTP = tempTP;
+				bool sameMachine = PWingAzMinerUI.AzMinerTP == tempTP;
+				PWingAzMinerUI.AzMinerTP = tempTP;
 				if (sameMachine)
 				{
-					((UIHandle)AzMinerUI.Instance).Active = !((UIHandle)AzMinerUI.Instance).Active;
+					((UIHandle)PWingAzMinerUI.Instance).Active = !((UIHandle)PWingAzMinerUI.Instance).Active;
 				}
 				else
 				{
-					((UIHandle)AzMinerUI.Instance).Active = true;
+					((UIHandle)PWingAzMinerUI.Instance).Active = true;
 				}
 				Main.playerInventory = true;
 				SoundStyle menuOpen = SoundID.MenuOpen;
@@ -117,8 +117,8 @@ namespace PWing.Content.AzafureMiners
 			{
 				return false;
 			}
-			AzMinerTP tempTP = null;
-			if (!TileProcessorLoader.ByPositionGetTP<AzMinerTP>(point, out tempTP))
+			PWingAzMinerTP tempTP = null;
+			if (!TileProcessorLoader.ByPositionGetTP<PWingAzMinerTP>(point, out tempTP))
 			{
 				return false;
 			}

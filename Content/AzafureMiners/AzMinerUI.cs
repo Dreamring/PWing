@@ -11,7 +11,7 @@ using Terraria.GameContent;
 
 namespace PWing.Content.AzafureMiners
 {
-	public class AzMinerUI : UIHandle
+	public class PWingAzMinerUI : UIHandle
 	{
 		private class TechParticle
 		{
@@ -118,10 +118,10 @@ namespace PWing.Content.AzafureMiners
 
 		public static bool InitDragPos = true;
 
-		public static AzMinerUI Instance => UIHandleLoader.GetUIHandleOfType<AzMinerUI>();
-		public static AzMinerTP AzMinerTP { get; set; } = null;
-		public static List<AzMinerUISlot> Filters { get; set; }
-		public static List<AzMinerUISlot> Items { get; set; }
+		public static PWingAzMinerUI Instance => UIHandleLoader.GetUIHandleOfType<PWingAzMinerUI>();
+		public static PWingAzMinerTP AzMinerTP { get; set; } = null;
+		public static List<PWingAzMinerUISlot> Filters { get; set; }
+		public static List<PWingAzMinerUISlot> Items { get; set; }
 
 		public override bool Active
 		{
@@ -185,14 +185,14 @@ namespace PWing.Content.AzafureMiners
 			}
 			if (Filters != null)
 			{
-				foreach (AzMinerUISlot s in Filters)
+				foreach (PWingAzMinerUISlot s in Filters)
 				{
 					((UIHandle)s).Update();
 				}
 			}
 			if (Items != null)
 			{
-				foreach (AzMinerUISlot s2 in Items)
+				foreach (PWingAzMinerUISlot s2 in Items)
 				{
 					((UIHandle)s2).Update();
 				}
@@ -264,7 +264,7 @@ namespace PWing.Content.AzafureMiners
 			bool hoveringAnySlot = false;
 			if (Filters != null)
 			{
-				foreach (AzMinerUISlot slot in Filters)
+				foreach (PWingAzMinerUISlot slot in Filters)
 				{
 					Rectangle slotRect = new Rectangle((int)(DrawPosition.X + slot.OffsetPos.X - 22f), (int)(DrawPosition.Y + slot.OffsetPos.Y - 22f), 44, 44);
 					if (slotRect.Contains(MouseHitBox))
@@ -276,7 +276,7 @@ namespace PWing.Content.AzafureMiners
 			}
 			if (!hoveringAnySlot && Items != null)
 			{
-				foreach (AzMinerUISlot slot2 in Items)
+				foreach (PWingAzMinerUISlot slot2 in Items)
 				{
 					Rectangle slotRect2 = new Rectangle((int)(DrawPosition.X + slot2.OffsetPos.X - 22f), (int)(DrawPosition.Y + slot2.OffsetPos.Y - 22f), 44, 44);
 					if (slotRect2.Contains(MouseHitBox))
@@ -314,14 +314,14 @@ namespace PWing.Content.AzafureMiners
 			DrawStatusIndicator(spriteBatch);
 			if (Filters != null)
 			{
-				foreach (AzMinerUISlot slot in Filters)
+				foreach (PWingAzMinerUISlot slot in Filters)
 				{
 					((UIHandle)slot).Draw(spriteBatch);
 				}
 			}
 			if (Items != null)
 			{
-				foreach (AzMinerUISlot slot2 in Items)
+				foreach (PWingAzMinerUISlot slot2 in Items)
 				{
 					((UIHandle)slot2).Draw(spriteBatch);
 				}
@@ -398,7 +398,7 @@ namespace PWing.Content.AzafureMiners
 			Color separatorColor = new Color(200, 90, 60) * (alpha * pulse * 0.8f);
 			sb.Draw(pixel, new Rectangle(titleBarRect.X + 8, titleBarRect.Bottom - 2, titleBarRect.Width - 16, 2), new Rectangle(0, 0, 1, 1), separatorColor);
 			DynamicSpriteFont font = FontAssets.MouseText.Value;
-			string title = VaultUtils.GetLocalizedItemName<AzafureMiner>().Value;
+			string title = VaultUtils.GetLocalizedItemName<PWingAzafureMiner>().Value;
 			Vector2 titleSize = font.MeasureString(title);
 			Vector2 titlePos = new Vector2(titleBarRect.X + (titleBarRect.Width - titleSize.X) / 2f, titleBarRect.Y + (titleBarRect.Height - titleSize.Y) / 2f);
 			Color glowColor = new Color(255, 150, 100) * (alpha * 0.5f);
