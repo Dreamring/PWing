@@ -6,6 +6,7 @@ using PWing.Content.Buffs;
 using PWing.Content.FakePlayer;
 using PWing.Content.Players;
 using PWing.Common;
+using PWing.Common.Configs;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -20,8 +21,9 @@ namespace PWing.Content.Projectiles
 
         public override void SafeSetStaticDefaults()
         {
-            Main.projPet[Type] = false;
+            Main.projPet[Type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Type] = true;
+            ProjectileID.Sets.MinionSacrificable[Type] = true;
         }
 
         public sealed override void SetDefaults()
@@ -34,6 +36,8 @@ namespace PWing.Content.Projectiles
             Projectile.ignoreWater = true;
             Projectile.netImportant = true;
             Projectile.hide = false;
+            Projectile.minion = true;
+            Projectile.minionSlots = 2f;
         }
 
         public override bool? CanHitNPC(NPC target)
@@ -47,6 +51,28 @@ namespace PWing.Content.Projectiles
         private float TotalTesseracts = 1;
         public int MyUniqueID => (int)Projectile.ai[1] % 10;
 
+        private int FindFirstAvailableID()
+        {
+            bool[] usedIds = new bool[10];
+            int type = Projectile.type;
+            for (int i = 0; i < Main.maxProjectiles; i++)
+            {
+                Projectile proj = Main.projectile[i];
+                if (proj.active && proj.type == type && proj.owner == Projectile.owner && i != Projectile.whoAmI)
+                {
+                    int id = (int)proj.ai[1] % 10;
+                    if (id >= 0 && id < 10)
+                        usedIds[id] = true;
+                }
+            }
+            for (int id = 0; id < 10; id++)
+            {
+                if (!usedIds[id])
+                    return id;
+            }
+            return 0;
+        }
+
         public override bool PreAI()
         {
             Player player = Main.player[Projectile.owner];
@@ -59,14 +85,10 @@ namespace PWing.Content.Projectiles
             {
                 if (Main.myPlayer == Projectile.owner)
                 {
-                    Projectile.ai[1] = pwingPlayer.tesseractPlayerCount;
+                    Projectile.ai[1] = FindFirstAvailableID();
                     Projectile.netUpdate = true;
                 }
                 runOnce = false;
-            }
-            else if (Projectile.ai[1] > pwingPlayer.tesseractPlayerCount)
-            {
-                Projectile.Kill();
             }
 
             if (FakePlayer == null)
@@ -401,22 +423,21 @@ namespace PWing.Content.Projectiles
             if (runOnce || FakePlayer == null || aliveCounter <= 3)
                 return false;
 
+            PWingConfig config = PWingConfig.Instance;
             Color drawColor = FakePlayer.MyBorderColor();
+            drawColor = Color.Lerp(Color.Gray, drawColor, config.tesseractColorSaturation);
+            
             bool skipDrawing = !FakePlayer.SkipDrawing || !lastSkipDraw || TrailingType != PWingTrailingID.IDLE;
-            bool drawItem = false;
+            bool drawItem = config.tesseractShowWeapon && FakePlayer != null && FakePlayer.heldItem != null && !FakePlayer.heldItem.IsAir && validItem;
 
             if (skipDrawing)
             {
-                if (!lastSkipDraw && !FakePlayer.SkipDrawing)
+                if (!lastSkipDraw && !FakePlayer.SkipDrawing && config.tesseractShowWings)
                 {
-                    DrawWings(drawColor * 0.8f, 3f);
-                    DrawWings(Color.Black, 1f);
+                    DrawWings(drawColor * 0.8f * config.tesseractGlowIntensity, 3f * config.tesseractLineThickness);
+                    DrawWings(Color.Black, 1f * config.tesseractLineThickness);
                 }
                 return false;
-            }
-            else if (FakePlayer != null && FakePlayer.heldItem != null && !FakePlayer.heldItem.IsAir && validItem)
-            {
-                drawItem = true;
             }
 
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
@@ -424,19 +445,25 @@ namespace PWing.Content.Projectiles
             int frameY = (int)Projectile.ai[1] % 10;
             int height = planetariumTexture.Height / 10;
 
-            DrawTesseract(drawColor * 0.8f, 3f);
+            DrawTesseract(drawColor * 0.8f * config.tesseractGlowIntensity, 3f * config.tesseractLineThickness);
             drawColor *= 0.5f;
             Rectangle frame = new Rectangle(0, height * frameY, planetariumTexture.Width, height);
 
-            for (int i = 0; i < 4; i++)
+            if (config.tesseractShowPlanetTexture)
             {
-                Vector2 circular = new Vector2(1f, 0).RotatedBy(i * MathHelper.PiOver2);
-                Main.spriteBatch.Draw(planetariumTexture, drawPosition + circular, frame, drawColor * 0.5f, 0f, new Vector2(planetariumTexture.Width, height) * 0.5f, 1f, SpriteEffects.None, 0f);
+                for (int i = 0; i < 4; i++)
+                {
+                    Vector2 circular = new Vector2(1f, 0).RotatedBy(i * MathHelper.PiOver2);
+                    Main.spriteBatch.Draw(planetariumTexture, drawPosition + circular, frame, drawColor * 0.5f * config.tesseractGlowIntensity, 0f, new Vector2(planetariumTexture.Width, height) * 0.5f, 1f, SpriteEffects.None, 0f);
+                }
             }
 
-            DrawTesseract(Color.Black, 1f);
+            DrawTesseract(Color.Black, 1f * config.tesseractLineThickness);
 
-            Main.spriteBatch.Draw(planetariumTexture, drawPosition, frame, drawColor * 1.5f, 0f, new Vector2(planetariumTexture.Width, height) * 0.5f, 1f, SpriteEffects.None, 0f);
+            if (config.tesseractShowPlanetTexture)
+            {
+                Main.spriteBatch.Draw(planetariumTexture, drawPosition, frame, drawColor * 1.5f * config.tesseractGlowIntensity, 0f, new Vector2(planetariumTexture.Width, height) * 0.5f, 1f, SpriteEffects.None, 0f);
+            }
 
             if (drawItem)
             {
@@ -451,12 +478,12 @@ namespace PWing.Content.Projectiles
                 }
                 Texture2D texture = Terraria.GameContent.TextureAssets.Item[heldItemType].Value;
                 Vector2 drawOrigin = new Vector2(texture.Width / 2, texture.Height / frameCount / 2);
-                Rectangle rectangleFrame = new Rectangle(0, texture.Height / frameCount * ((int)Main.GameUpdateCount / ticksPerFrame % frameCount), texture.Width, texture.Height / frameCount);
+                Rectangle rectangleFrame = new Rectangle(0, texture.Height / frameCount * ((int)(Main.GameUpdateCount * config.tesseractAnimationSpeed) / ticksPerFrame % frameCount), texture.Width, texture.Height / frameCount);
                 int topSize = Math.Max(rectangleFrame.Width, rectangleFrame.Height);
                 float scale = Math.Clamp(42f / topSize, 0, 1f);
-                float sinusoid = (float)Math.Sin(Main.GameUpdateCount * Math.PI / 180f + Projectile.ai[1]) * 0.3f;
-                float cosinusoid = MathF.Cos(Main.GameUpdateCount * MathHelper.Pi / 180f + Projectile.ai[1]) * 4f;
-                Main.spriteBatch.Draw(texture, drawPosition + new Vector2(0, cosinusoid), rectangleFrame, Color.White * 1.0f, sinusoid, drawOrigin, scale, SpriteEffects.None, 0f);
+                float sinusoid = (float)Math.Sin(Main.GameUpdateCount * Math.PI / 180f * config.tesseractAnimationSpeed + Projectile.ai[1]) * 0.3f;
+                float cosinusoid = MathF.Cos(Main.GameUpdateCount * MathHelper.Pi / 180f * config.tesseractAnimationSpeed + Projectile.ai[1]) * 4f;
+                Main.spriteBatch.Draw(texture, drawPosition + new Vector2(0, cosinusoid), rectangleFrame, Color.White * config.tesseractGlowIntensity, sinusoid, drawOrigin, scale, SpriteEffects.None, 0f);
             }
 
             return false;
@@ -464,11 +491,13 @@ namespace PWing.Content.Projectiles
 
         public void DrawWings(Color color, float innerScale)
         {
+            float animSpeed = PWingConfig.Instance.tesseractAnimationSpeed;
+            int counter = (int)(Main.GameUpdateCount * animSpeed);
             for (int j = -1; j <= 1; j += 2)
             {
                 for (int i = 1; i <= 3; i++)
                 {
-                    float sinusoid = 15 * MathF.Sin(4 * MathHelper.ToRadians(Main.GameUpdateCount + i * 15));
+                    float sinusoid = 15 * MathF.Sin(4 * MathHelper.ToRadians(counter + i * 15));
                     DrawCrystal(color, j * (sinusoid + 45f * i - 5), 9 - i, innerScale);
                 }
             }
@@ -486,6 +515,8 @@ namespace PWing.Content.Projectiles
             float bonus = 0f;
             float northDepth = 0;
             float southDepth = 0;
+            float animSpeed = PWingConfig.Instance.tesseractAnimationSpeed;
+            int counter = (int)(Main.GameUpdateCount * 2 * animSpeed);
             for (int a = 0; a < 6; a++)
             {
                 int i = a;
@@ -496,8 +527,8 @@ namespace PWing.Content.Projectiles
                     j = 0;
                     k = a == 4 ? 1 : -1;
                 }
-                float cos = j * (float)Math.Cos(MathHelper.ToRadians(Main.GameUpdateCount * 2 + degreesOffset) + i * MathHelper.PiOver2 + bonus);
-                float sin = j * (float)Math.Sin(MathHelper.ToRadians(Main.GameUpdateCount * 2 + degreesOffset) + (2 + i) * MathHelper.PiOver2 + bonus);
+                float cos = j * (float)Math.Cos(MathHelper.ToRadians(counter + degreesOffset) + i * MathHelper.PiOver2 + bonus);
+                float sin = j * (float)Math.Sin(MathHelper.ToRadians(counter + degreesOffset) + (2 + i) * MathHelper.PiOver2 + bonus);
                 float depth = 0.8f - 0.2f * sin;
                 Vector2 offset = new Vector2(size, root2 * size * k);
                 offset.X *= cos;
@@ -559,6 +590,8 @@ namespace PWing.Content.Projectiles
             Texture2D whitePixel = ModContent.Request<Texture2D>("PWing/Common/WhitePixel").Value;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float root2 = (float)Math.Sqrt(2);
+            float animSpeed = PWingConfig.Instance.tesseractAnimationSpeed;
+            int counter = (int)(Main.GameUpdateCount * animSpeed);
 
             List<Vector2> points = new List<Vector2>();
             List<float> depths = new List<float>();
@@ -574,14 +607,14 @@ namespace PWing.Content.Projectiles
                 if (a == 2) { i = 1; j = -1; }
                 if (a == 3) { i = 0; j = -1; }
 
-                float cos = (float)Math.Cos(MathHelper.ToRadians(Main.GameUpdateCount + degreesOffset) + i * MathHelper.PiOver2 + bonus);
-                float sin = (float)Math.Sin(MathHelper.ToRadians(Main.GameUpdateCount + degreesOffset) + i * MathHelper.PiOver2 + bonus);
+                float cos = (float)Math.Cos(MathHelper.ToRadians(counter + degreesOffset) + i * MathHelper.PiOver2 + bonus);
+                float sin = (float)Math.Sin(MathHelper.ToRadians(counter + degreesOffset) + i * MathHelper.PiOver2 + bonus);
                 float depth = 0.8f - 0.2f * sin;
 
                 Vector2 offset = new Vector2(size * root2, size * j);
                 offset.X *= cos;
                 offset *= depth;
-                offset = offset.RotatedBy(MathHelper.ToRadians(Main.GameUpdateCount) + bonus / 2f);
+                offset = offset.RotatedBy(MathHelper.ToRadians(counter) + bonus / 2f);
 
                 points.Add(drawPosition + offset);
                 depths.Add(depth);

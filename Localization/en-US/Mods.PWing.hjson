@@ -28,10 +28,10 @@ Configs: {
 		}
 
 		Headers: {
-			WingConfigs: Wing Configuration
-			AutoSaveConfigs: Auto Save Configuration
-			AzafureMiner: Azafure Miner
-			AzafureMinerConfigs: Miner Configuration
+			TesseractConfigs: Tesseract Configuration
+			WingConfigs: Wing Configs Header
+			AutoSaveConfigs: Auto Save Configs Header
+			AzafureMinerConfigs: Azafure Miner Configs Header
 		}
 
 		WeaponWithGrowingDamageToggle: {
@@ -72,6 +72,41 @@ Configs: {
 		azafureMinerWhitelistItems: {
 			Label: Miner Whitelist Items
 			Tooltip: Add additional ores or items to the miner whitelist for blocks that cannot be matched by general conditions
+		}
+
+		tesseractGlowIntensity: {
+			Label: Glow Intensity
+			Tooltip: Glow intensity of the Tesseract summoned minions. Higher values produce more pronounced glow effects.
+		}
+
+		tesseractLineThickness: {
+			Label: Line Thickness
+			Tooltip: Line thickness of the Tesseract summoned minion's cube structure.
+		}
+
+		tesseractColorSaturation: {
+			Label: Color Saturation
+			Tooltip: Color saturation of the Tesseract summoned minions. Higher values produce more vivid colors.
+		}
+
+		tesseractAnimationSpeed: {
+			Label: Animation Speed
+			Tooltip: Rotation and animation speed multiplier for the Tesseract summoned minions.
+		}
+
+		tesseractShowPlanetTexture: {
+			Label: Show Planet Texture
+			Tooltip: Whether to display the planet texture at the center of the summoned minion.
+		}
+
+		tesseractShowWings: {
+			Label: Show Wings
+			Tooltip: Whether to display the wing effects of the summoned minion.
+		}
+
+		tesseractShowWeapon: {
+			Label: Show Weapon
+			Tooltip: Whether to display the weapon texture held by the summoned minion.
 		}
 	}
 

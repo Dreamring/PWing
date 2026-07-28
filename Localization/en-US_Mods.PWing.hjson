@@ -34,9 +34,6 @@ Configs: {
 		CreateFlight: {
 		}
 
-		Headers: {
-		}
-
 		WeaponWithGrowingDamageToggle: {
 		}
 
@@ -59,6 +56,27 @@ Configs: {
 		}
 
 		azafureMinerWhitelistItems: {
+		}
+
+		tesseractGlowIntensity: {
+		}
+
+		tesseractLineThickness: {
+		}
+
+		tesseractColorSaturation: {
+		}
+
+		tesseractAnimationSpeed: {
+		}
+
+		tesseractShowPlanetTexture: {
+		}
+
+		tesseractShowWings: {
+		}
+
+		tesseractShowWeapon: {
 		}
 	}
 

@@ -48,6 +48,7 @@ namespace PWing.Content.Players
         }
 
         public TesseractMinionData[] tesseractData = InitializeTesseractData();
+        public bool[] activeTesseractIds = new bool[10];
         public bool foundItem = false;
         public bool servantActive = false;
         public bool servantIsVanity = false;
@@ -103,9 +104,23 @@ namespace PWing.Content.Players
 
         public override void PostUpdateMiscEffects()
         {
+            for (int i = 0; i < 10; i++)
+                activeTesseractIds[i] = false;
+            
+            int type = ModContent.ProjectileType<PWingTesseractServant>();
+            for (int i = 0; i < Main.maxProjectiles; i++)
+            {
+                Projectile proj = Main.projectile[i];
+                if (proj.active && proj.type == type && proj.owner == Player.whoAmI)
+                {
+                    int id = (int)proj.ai[1] % 10;
+                    if (id >= 0 && id < 10)
+                        activeTesseractIds[id] = true;
+                }
+            }
             for (int i = 0; i < tesseractData.Length; i++)
             {
-                if (i >= tesseractPlayerCount)
+                if (!activeTesseractIds[i])
                 {
                     tesseractData[i].Reset();
                 }

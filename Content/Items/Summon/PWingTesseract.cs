@@ -1,8 +1,10 @@
 using Microsoft.Xna.Framework;
 using PWing.Content.Projectiles;
 using PWing.Content.Buffs;
+using PWing.Content.Players;
 using PWing.Common;
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -17,6 +19,7 @@ namespace PWing.Content.Items.Summon
         {
             ItemID.Sets.GamepadWholeScreenUseRange[Item.type] = true;
             ItemID.Sets.LockOnIgnoresCollision[Item.type] = true;
+            ItemID.Sets.StaffMinionSlotsRequired[Item.type] = 2f;
             this.SetResearchCost(1);
         }
 
@@ -38,11 +41,40 @@ namespace PWing.Content.Items.Summon
             Item.shoot = ModContent.ProjectileType<PWingTesseractServant>();
         }
 
+        public override bool CanUseItem(Player player)
+        {
+            PWingPlayer pwingPlayer = player.GetModPlayer<PWingPlayer>();
+            if (pwingPlayer.tesseractPlayerCount >= 10)
+            {
+                return false;
+            }
+            return base.CanUseItem(player);
+        }
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             player.AddBuff(Item.buffType, 2);
             player.SpawnMinionOnCursor(source, player.whoAmI, type, Item.damage, knockback);
             return false;
+        }
+
+        public override void AddRecipes()
+        {
+            CreateRecipe(1)
+                .AddIngredient(ItemID.BabyBirdStaff, 1) // 雀杖 Finch Staff (ID = 4281)
+                .AddTile(TileID.WorkBenches) // 工作台
+                .Register();
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            foreach (TooltipLine line in tooltips)
+            {
+                if (line.Mod == "Terraria" && line.Name == "Damage")
+                {
+                    line.Text = System.Text.RegularExpressions.Regex.Replace(line.Text, @"\d+", "???");
+                }
+            }
         }
 
         public override bool PreDrawTooltipLine(DrawableTooltipLine line, ref int yOffset)

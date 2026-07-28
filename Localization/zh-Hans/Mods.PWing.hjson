@@ -28,10 +28,10 @@ Configs: {
 		}
 
 		Headers: {
-			WingConfigs: 翅膀配置
-			AutoSaveConfigs: 自动保存配置
-			AzafureMiner: 阿萨福勒采矿机
-			AzafureMinerConfigs: 采矿机配置
+			TesseractConfigs: 超立方杖配置
+			// WingConfigs: Wing Configs Header
+			// AutoSaveConfigs: Auto Save Configs Header
+			// AzafureMinerConfigs: Azafure Miner Configs Header
 		}
 
 		WeaponWithGrowingDamageToggle: {
@@ -72,6 +72,41 @@ Configs: {
 		azafureMinerWhitelistItems: {
 			Label: 采矿机白名单物品
 			Tooltip: 添加额外的矿石或物品到采矿机白名单，用于补充无法被通用条件匹配的方块
+		}
+
+		tesseractGlowIntensity: {
+			Label: 散光强度
+			Tooltip: 超立方杖召唤物的发光强度，数值越高发光效果越明显。
+		}
+
+		tesseractLineThickness: {
+			Label: 线条粗细
+			Tooltip: 超立方杖召唤物的立方体线条粗细。
+		}
+
+		tesseractColorSaturation: {
+			Label: 颜色饱和度
+			Tooltip: 超立方杖召唤物的颜色饱和度，数值越高颜色越鲜艳。
+		}
+
+		tesseractAnimationSpeed: {
+			Label: 动画速度
+			Tooltip: 超立方杖召唤物的旋转和动画速度倍率。
+		}
+
+		tesseractShowPlanetTexture: {
+			Label: 显示星球纹理
+			Tooltip: 是否显示召唤物中心的星球纹理。
+		}
+
+		tesseractShowWings: {
+			Label: 显示翅膀
+			Tooltip: 是否显示召唤物的翅膀特效。
+		}
+
+		tesseractShowWeapon: {
+			Label: 显示武器
+			Tooltip: 是否显示召唤物手持的武器贴图。
 		}
 	}
 

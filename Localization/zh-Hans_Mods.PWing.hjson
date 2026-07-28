@@ -18,8 +18,15 @@ Items: {
 	}
 
 	PWingTesseract: {
-		DisplayName: 超立方杖
-		Tooltip: 召唤最多10个分身，使用背包40-49号槽位的武器自动攻击敌人
+		DisplayName: 超立方体
+		Tooltip:
+			'''
+			召唤虚空分身使用物品攻击敌人
+			从物品栏左下角槽位开始到右下角槽位结束，每个分身使用不同的物品
+			首次召唤时，分身会等待命令以确定如何使用物品（左键或右键）以及持续时间（充能物品）
+			物品首次使用后，分身将按照指定方式自动使用物品
+			分身使用的物品受虚空和召唤伤害加成影响，但伤害会降低30%（乘法计算）
+			'''
 	}
 }
 
@@ -32,9 +39,6 @@ Configs: {
 		}
 
 		CreateFlight: {
-		}
-
-		Headers: {
 		}
 
 		WeaponWithGrowingDamageToggle: {
@@ -59,6 +63,27 @@ Configs: {
 		}
 
 		azafureMinerWhitelistItems: {
+		}
+
+		tesseractGlowIntensity: {
+		}
+
+		tesseractLineThickness: {
+		}
+
+		tesseractColorSaturation: {
+		}
+
+		tesseractAnimationSpeed: {
+		}
+
+		tesseractShowPlanetTexture: {
+		}
+
+		tesseractShowWings: {
+		}
+
+		tesseractShowWeapon: {
 		}
 	}
 
@@ -85,12 +110,12 @@ Configs: {
 
 Buffs: {
 	PWingTesseractBuff: {
-		DisplayName: 超立方分身
-		Description: 超立方分身正在保护你
+		DisplayName: 超立方体
+		Description: 你无处不在，无所不有，无时不在
 	}
 }
 
 Projectiles: {
-	// PWingTesseractLaser.DisplayName: P Wing Tesseract Laser
-	// PWingTesseractServant.DisplayName: P Wing Tesseract Servant
+	PWingTesseractLaser.DisplayName: 超立方体激光
+	PWingTesseractServant.DisplayName: 超立方体仆从
 }

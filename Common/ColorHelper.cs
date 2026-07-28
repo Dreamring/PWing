@@ -58,7 +58,6 @@ namespace PWing.Common
                 if (data[i].A > 0)
                 {
                     data[i] = color * (data[i].A / 255f);
-                    data[i].A = data[i].A;
                 }
             }
             return data;

@@ -72,13 +72,12 @@ namespace PWing.Content.FakePlayer
 
         public static bool SlotIsWithinTesseractSlotRange(Player player, int slot)
         {
-            PWingPlayer pwingPlayer = player.GetModPlayer<PWingPlayer>();
-            int tesCount = pwingPlayer.tesseractPlayerCount;
-            
-            if (tesCount <= 0)
+            if (slot < 40 || slot >= 50)
                 return false;
             
-            return slot >= 40 && slot < 40 + tesCount;
+            PWingPlayer pwingPlayer = player.GetModPlayer<PWingPlayer>();
+            int targetId = slot - 40;
+            return pwingPlayer.activeTesseractIds[targetId];
         }
 
         public static Color InventoryBoxStandard => new Color(210, 210, 210, 210);

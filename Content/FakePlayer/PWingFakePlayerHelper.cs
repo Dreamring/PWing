@@ -177,7 +177,7 @@ namespace PWing.Content.FakePlayer
             if (FakeOwnerIdentity == -1)
                 return;
             projectile.ownerHitCheck = false;
-            Projectile fakePlayer = Main.projectile.Where(x => x.identity == FakeOwnerIdentity).First();
+            Projectile fakePlayer = Main.projectile.Where(x => x.identity == FakeOwnerIdentity).FirstOrDefault();
             if (fakePlayer == null)
             {
                 return;
@@ -206,7 +206,7 @@ namespace PWing.Content.FakePlayer
         {
             if (FakeOwnerIdentity == -1)
                 return null;
-            Projectile fakePlayer = Main.projectile.Where(x => x.identity == FakeOwnerIdentity).First();
+            Projectile fakePlayer = Main.projectile.Where(x => x.identity == FakeOwnerIdentity).FirstOrDefault();
             if (fakePlayer == null)
                 return null;
             if (PWingFakePlayerHelper.FakePlayerPossessingProjectile.Contains(fakePlayer.type) && fakePlayer.active)

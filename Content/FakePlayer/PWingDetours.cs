@@ -240,9 +240,7 @@ namespace PWing.Content.FakePlayer
                 }
             }
             if (i < Main.maxProjectiles)
-            {
                 orig(self, i);
-            }
         }
 
         public static bool DrawingProjectileFromCache = false;
