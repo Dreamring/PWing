@@ -4,17 +4,19 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using PWing.Common.Configs;
 using PWing.Common.Systems;
+using PWing.Content.FakePlayer;
 
 namespace PWing
 {
-	// Please read https://github.com/tModLoader/tModLoader/wiki/Basic-tModLoader-Modding-Guide#mod-skeleton-contents for more information about the various files in a mod.
 	public class PWing : Mod
     {
-        internal static PWing Instance;//用例
+        internal static PWing Instance;
         public override void Load()
         {
-            //向游戏中加载内容
             Instance = ModContent.GetInstance<PWing>();
+            PWingFakePlayerHelper.Initialize();
+            PWingDetours.Initialize();
+            PlayerInventorySlotsManager.Load();
         }
         public override void Unload()
         {

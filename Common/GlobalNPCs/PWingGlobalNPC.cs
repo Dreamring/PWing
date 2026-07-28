@@ -1,7 +1,7 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using PWing.Common.Players;
+using PWing.Content.Players;
 using PWing.Common.Systems;
 
 namespace PWing.Common.GlobalNPCs
