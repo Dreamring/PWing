@@ -24,6 +24,14 @@ namespace PWing.Common.Configs
         [Increment(30)]
         public int autoSaveInterval { get; set; }
 
+        [DefaultValue(true)]
+        public bool autoSaveOnBossKill { get; set; }
+
+        [DefaultValue(30)]
+        [Range(10, 300)]
+        [Increment(10)]
+        public int minSaveInterval { get; set; }
+
         [BackgroundColor(45, 50, 65, 192)]
         [Header("AzafureMinerConfigs")]
         [DefaultValue(false)]

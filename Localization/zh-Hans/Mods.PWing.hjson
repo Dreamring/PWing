@@ -49,6 +49,16 @@ Configs: {
 			Tooltip: 启用后会在指定时间间隔自动保存游戏，并在击败BOSS时保存。
 		}
 
+		autoSaveOnBossKill: {
+			Label: BOSS击杀时保存
+			Tooltip: 启用后在击败BOSS时会自动保存游戏。可单独关闭而保留定时保存功能。
+		}
+
+		minSaveInterval: {
+			Label: 最小保存间隔
+			Tooltip: 两次自动保存之间的最小间隔时间（秒），防止频繁保存。范围：10-300秒。
+		}
+
 		UltraSpeedMode: {
 			Label: 超速模式
 			Tooltip: 启用后飞行速度将大幅提升

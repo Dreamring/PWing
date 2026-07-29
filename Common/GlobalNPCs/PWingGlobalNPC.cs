@@ -1,6 +1,7 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using PWing.Common.Configs;
 using PWing.Content.Players;
 using PWing.Common.Systems;
 
@@ -30,9 +31,12 @@ namespace PWing.Common.GlobalNPCs
                         }
                     }
                 }
-                
-                // BOSS击败时自动保存
-                PWingWorld.PerformAutoSave("击败BOSS");
+
+                // BOSS击败时自动保存（检查配置开关）
+                if (PWingConfig.Instance.autoSaveOnBossKill)
+                {
+                    PWingWorld.PerformAutoSave("击败BOSS");
+                }
             }
         }
     }

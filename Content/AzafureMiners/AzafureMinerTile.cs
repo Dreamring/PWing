@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using CalamityMod;
 using InnoVault;
 using InnoVault.TileProcessors;
 using InnoVault.UIHandles;

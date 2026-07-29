@@ -1,10 +1,10 @@
-# Gilded Blade Wings
+# Gilded Blade Wings & Tesseract Staff
 
-A unique wings mod with growth mechanics, auto-save features, and a digital miner for Terraria.
+A wings mod with growth mechanics, a tesseract summon weapon, and an auto-miner for Terraria.
 
 ## Key Features
 
-### Wings Growth System
+### Gilded Blade Wings Growth System
 - Wings grow stronger as you defeat bosses
 - Each boss defeat increases flight time by 0.5 seconds
 - Horizontal flight speed improves with each boss defeated
@@ -20,6 +20,20 @@ A unique wings mod with growth mechanics, auto-save features, and a digital mine
   - +1 Minion Slot
   - +1 Sentinel Slot
 
+### Tesseract Staff (超立方杖)
+- Summons up to 10 shadow copies that attack using items from your inventory
+- Each summon uses 2 minion slots, maximum 10 simultaneous summons
+- Copies use items from inventory slots 40-49
+- Projectiles fire from the copy's position, not the player
+- Unique cube rendering with configurable parameters:
+  - Glow intensity
+  - Line thickness
+  - Color saturation
+  - Animation speed
+  - Toggle planet texture, wings, and weapon display
+- Damage displays as "???", actual damage depends on the equipped item in each slot
+- Crafted with Finch Staff at a Workbench
+
 ### Azafure Digital Miner
 - Automatically mines ores from the world
 - 6 filter slots to specify which ore types to mine
@@ -28,17 +42,12 @@ A unique wings mod with growth mechanics, auto-save features, and a digital mine
 - Whitelist feature to add custom ores or items
 - Visual feedback with particle effects
 
-### Auto-Save System
-- Configurable auto-save intervals (60-3600 seconds)
-- Auto-save when defeating bosses
-- Toggleable auto-save functionality
-- Save notifications to keep you informed
-
-### Visual Effects
-- Dynamic aura effects
-- Glowing textures with multiple layers
-- Smooth animations
-- Performance optimization with low-fidelity mode
+### Configuration
+- Adjustable tesseract rendering: glow, lines, colors, animation speed
+- Toggle planet texture, wings, and weapon display
+- Wing flight parameter customization
+- Low-fidelity mode for performance optimization
+- Auto-save configuration with boss-triggered saves
 
 ## How to Obtain
 
@@ -47,20 +56,22 @@ Craft at a Workbench with:
 - 20 Iron Bars
 - 20 Fallen Stars
 
+### Tesseract Staff
+Craft at a Workbench with:
+- 1 Finch Staff (Item ID: 4281)
+
 ### Azafure Miner
 Craft at a Heavy Work Bench with:
 - 10 Iron Bars
 
-## Configuration
-
-Access mod settings to:
-- Adjust flight parameters
-- Toggle low-fidelity mode
-- Configure auto-save settings
-- Manage miner whitelist
-- Customize your experience
-
 ## Version History
+
+### v2.0
+- NEW: Tesseract Staff - Summon shadow copies that attack with your inventory items
+- NEW: Tesseract rendering configuration (glow, lines, saturation, animation)
+- REMOVED: CalamityMod dependency - mod is now fully independent
+- FIXED: Summon rendering issues (broken lines, invisible weapons)
+- IMPROVED: Summon ID allocation for stable inventory-to-summon mapping
 
 ### v1.5
 - NEW: Azafure Digital Miner - Automatically mine and filter ores
@@ -89,16 +100,16 @@ Access mod settings to:
 
 ## Notes
 
-- This mod requires CalamityMod and InnoVault
+- This mod requires InnoVault
 - Inspired by wings designs from other mods, but completely redeveloped
 - Compatible with most Terraria versions
 - Regular updates planned with new features
 
-Enjoy your journey with the Gilded Blade Wings and Azafure Miner!
+Enjoy your journey with the Gilded Blade Wings, Tesseract Staff, and Azafure Miner!
 
-# 耀刃之翼
+# 耀刃之翼 & 超立方杖
 
-一个具有成长机制、自动保存功能和数字采矿机的独特模组。
+一个具有成长机制、超立方召唤物和数字采矿机的独特模组。
 
 ## 主要特性
 
@@ -118,6 +129,20 @@ Enjoy your journey with the Gilded Blade Wings and Azafure Miner!
   - +1 召唤栏
   - +1 哨兵栏
 
+### 超立方杖
+- 召唤最多10个虚空分身使用背包物品攻击敌人
+- 每个分身占用2个召唤栏，最多同时存在10个
+- 分身使用背包40-49号槽位中的物品
+- 弹幕从分身位置发射，而非玩家位置
+- 独特的立方体线条渲染，支持配置：
+  - 散光强度
+  - 线条粗细
+  - 颜色饱和度
+  - 动画速度
+  - 可开关星球纹理、翅膀、武器显示
+- 攻击力显示为"???"，实际伤害取决于槽位中的物品
+- 使用雀杖在工作台合成
+
 ### 阿萨福勒数字型采矿机
 - 自动挖掘世界中的矿石
 - 6个过滤器槽位用于设置要挖掘的矿石类型
@@ -126,17 +151,12 @@ Enjoy your journey with the Gilded Blade Wings and Azafure Miner!
 - 白名单功能可添加自定义矿石或物品
 - 粒子效果提供视觉反馈
 
-### 自动保存系统
-- 可配置的自动保存间隔（60-3600秒）
-- 击败BOSS时自动保存
-- 可开关的自动保存功能
-- 保存通知让你随时了解保存状态
-
-### 视觉效果
-- 动态光环效果
-- 多层发光纹理
-- 流畅的动画
+### 配置
+- 超立方渲染参数配置：散光、线条、饱和度、动画速度
+- 可开关星球纹理、翅膀、武器显示
+- 翅膀飞行参数调整
 - 低精度模式优化性能
+- 自动保存配置
 
 ## 获取方式
 
@@ -145,20 +165,22 @@ Enjoy your journey with the Gilded Blade Wings and Azafure Miner!
 - 20个铁锭
 - 20个落星
 
+### 超立方杖
+在工作台合成：
+- 1根雀杖（Finch Staff，物品ID：4281）
+
 ### 阿萨福勒采矿机
 在重型工作台合成：
 - 10个铁锭
 
-## 配置
-
-访问模组设置可：
-- 调整飞行参数
-- 切换低精度模式
-- 配置自动保存设置
-- 管理采矿机白名单
-- 自定义你的游戏体验
-
 ## 版本历史
+
+### v2.0
+- 新增：超立方杖 - 召唤分身使用物品攻击敌人
+- 新增：超立方渲染配置（散光、线条、饱和度、动画）
+- 移除：CalamityMod依赖 - 模组完全独立
+- 修复：召唤物渲染问题（线条断裂、武器不显示）
+- 优化：召唤物ID分配，物品栏对应更稳定
 
 ### v1.5
 - 新增：阿萨福勒数字型采矿机 - 自动挖掘并过滤矿石
@@ -187,9 +209,9 @@ Enjoy your journey with the Gilded Blade Wings and Azafure Miner!
 
 ## 注意事项
 
-- 本模组依赖灾厄模组（CalamityMod）和创新 vaults（InnoVault）
+- 本模组需要 InnoVault
 - 灵感来源于其他模组的翅膀设计，但完全重新开发
 - 兼容大多数Terraria版本
 - 计划定期更新并添加新功能
 
-享受你与耀刃之翼和阿萨福勒采矿机的冒险之旅！
+享受你与耀刃之翼、超立方杖和阿萨福勒采矿机的冒险之旅！

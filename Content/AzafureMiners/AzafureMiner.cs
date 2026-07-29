@@ -1,4 +1,3 @@
-using CalamityMod.Items;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,8 +18,8 @@ namespace PWing.Content.AzafureMiners
 			((ModItem)this).Item.useStyle = 1;
 			((ModItem)this).Item.consumable = true;
 			((ModItem)this).Item.createTile = ModContent.TileType<PWingAzafureMinerTile>();
-			((ModItem)this).Item.rare = 3;
-			((ModItem)this).Item.value = CalamityGlobalItem.RarityOrangeBuyPrice;
+			((ModItem)this).Item.rare = ItemRarityID.Orange;
+			((ModItem)this).Item.value = Item.sellPrice(0, 8, 0, 0);
 		}
 
 		public override void AddRecipes()

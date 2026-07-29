@@ -49,6 +49,16 @@ Configs: {
 			Tooltip: Enable automatic saving at specified intervals and when defeating bosses.
 		}
 
+		autoSaveOnBossKill: {
+			Label: Save on Boss Kill
+			Tooltip: Enable automatic saving when defeating bosses. Can be disabled independently while keeping timer-based saves.
+		}
+
+		minSaveInterval: {
+			Label: Min Save Interval
+			Tooltip: Minimum time between auto-saves in seconds to prevent frequent saves. Range: 10-300 seconds.
+		}
+
 		UltraSpeedMode: {
 			Label: Ultra Speed Mode
 			Tooltip: Enable to significantly increase flight speed
