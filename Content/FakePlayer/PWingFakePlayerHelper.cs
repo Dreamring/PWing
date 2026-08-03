@@ -195,11 +195,6 @@ namespace PWing.Content.FakePlayer
                 FakeOwnerIdentity = -1;
                 projectile.active = false;
             }
-            else
-            {
-                projectile.position = fakePlayer.Center - new Vector2(projectile.width, projectile.height) / 2;
-                projectile.Center = fakePlayer.Center;
-            }
         }
 
         public PWingFakePlayerPossessingProjectile WhoOwnsMe(Projectile projectile)
