@@ -12,14 +12,14 @@ Items: {
 		Lore3: 「每斩一魔，其力愈增，终成神器」
 		FlightTime: 「飞行时长」{0}秒
 		FlightSpeed: 「飞行速度」{0}
-		BossKills: 「悟道层数」{0}层
-		LifeBonus: 气血 +{0}
+		BossKills: 「等级」{0}层
+		LifeBonus: 生命上限 +{0}
 		EnduranceBonus: 减伤 +{0}%
-		DefenseBonus: 护体 +{0}
+		DefenseBonus: 护甲 +{0}
 		AttackBonus: 伤害 +{0}%
 		LifeRegenBonus: 生命再生 +{0}
-		ManaBonus: 真元 +{0}
-		SlotBonus: 「神通格」+{0}
+		ManaBonus: 魔力上限 +{0}
+		SlotBonus: 「召唤栏」+{0}
 		GrowthHint: 「初醒待悟，斩魔启灵」
 		NextGrowth: 下一层：{0}秒 · {1}速
 	}
@@ -34,6 +34,103 @@ Items: {
 			物品首次使用后，分身将按照指定方式自动使用物品
 			分身使用的物品受虚空和召唤伤害加成影响，但伤害会降低30%（乘法计算）
 			'''
+	}
+
+	VanityWardrobe: {
+		DisplayName: 时装衣橱
+		Tooltip: 打开衣橱，选择并领取一套时装（领取后衣橱消失）
+	}
+
+	LilyAsukaHead: {
+		DisplayName: 莉莉·阿斯卡头饰
+		// Tooltip: ""
+	}
+
+	LilyAsukaBody: {
+		DisplayName: 莉莉·阿斯卡连衣裙
+		// Tooltip: ""
+	}
+
+	LilyAsukaLegs: {
+		DisplayName: 莉莉·阿斯卡裙裤
+		// Tooltip: ""
+	}
+
+	KhoirBachHead: {
+		DisplayName: 科尔·巴赫头饰
+		// Tooltip: ""
+	}
+
+	KhoirBachBody: {
+		DisplayName: 科尔·巴赫上衣
+		// Tooltip: ""
+	}
+
+	KhoirBachLegs: {
+		DisplayName: 科尔·巴赫下装
+		// Tooltip: ""
+	}
+
+	RiasGremoryHead: {
+		DisplayName: 莉雅丝·吉蒙里头饰
+		// Tooltip: ""
+	}
+
+	RiasGremoryBody: {
+		DisplayName: 莉雅丝·吉蒙里上衣
+		// Tooltip: ""
+	}
+
+	RiasGremoryLegs: {
+		DisplayName: 莉雅丝·吉蒙里下装
+		// Tooltip: ""
+	}
+
+	RamHead: {
+		DisplayName: 拉姆发饰
+		// Tooltip: ""
+	}
+
+	RamBody: {
+		DisplayName: 拉姆女仆装
+		// Tooltip: ""
+	}
+
+	RamLegs: {
+		DisplayName: 拉姆女仆裙
+		// Tooltip: ""
+	}
+
+	RemHead: {
+		DisplayName: 蕾姆发饰
+		// Tooltip: ""
+	}
+
+	RemBody: {
+		DisplayName: 蕾姆女仆装
+		// Tooltip: ""
+	}
+
+	RemLegs: {
+		DisplayName: 蕾姆女仆裙
+		// Tooltip: ""
+	}
+}
+
+UI: {
+	VanityWardrobe: {
+		Title: 时装衣橱
+		Subtitle: 选择一套喜欢的时装领取
+		ClaimHint: 点击卡片领取整套时装，衣橱会消失
+		CloseHint: 按 ESC 关闭
+
+		SetNames: {
+			LilyAsuka: 莉莉·阿斯卡
+			KhoirBach: 科尔·巴赫
+			RiasGremory: 莉雅丝·吉蒙里
+			Ram: 拉姆
+			Rem: 蕾姆
+		}
 	}
 }
 

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using PWing.Content.FakePlayer;
 using PWing.Content.Projectiles;
 using PWing.Content.Items.Wings;
+using PWing.Content.Vanity;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -68,7 +69,8 @@ namespace PWing.Content.Players
             if (!mediumCoreDeath)
             {
                 return [
-                    new Item(ModContent.ItemType<GildedBladeWings>())
+                    new Item(ModContent.ItemType<GildedBladeWings>()),
+                    new Item(ModContent.ItemType<VanityWardrobe>())
                 ];
             }
             return [];

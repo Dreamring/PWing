@@ -6,6 +6,7 @@ using PWing.Common.Configs;
 using PWing.Common.Systems;
 using PWing.Content.AzafureMiners;
 using PWing.Content.FakePlayer;
+using PWing.Content.Vanity;
 
 namespace PWing
 {
@@ -31,6 +32,8 @@ namespace PWing
             PWingFakePlayerHelper.Unload();
             PlayerInventorySlotsManager.Unload();
             PWingAzMinerTP.UnloadStaticData();
+            PWingVanityUI.UnloadStaticData();
+            VanitySets.Unload();
             //卸载操作
             Instance = null;
         }

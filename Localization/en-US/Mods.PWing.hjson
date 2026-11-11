@@ -35,6 +35,103 @@ Items: {
 			Clone item damage scales with void and summon damage bonuses, but is reduced by 30% (multiplicative)
 			'''
 	}
+
+	VanityWardrobe: {
+		DisplayName: Vanity Wardrobe
+		Tooltip: Opens the wardrobe to choose a vanity set. The wardrobe is consumed after claiming.
+	}
+
+	LilyAsukaHead: {
+		DisplayName: Lily Asuka Headpiece
+		Tooltip: ""
+	}
+
+	LilyAsukaBody: {
+		DisplayName: Lily Asuka Dress
+		Tooltip: ""
+	}
+
+	LilyAsukaLegs: {
+		DisplayName: Lily Asuka Legs
+		Tooltip: ""
+	}
+
+	KhoirBachHead: {
+		DisplayName: Khoir Bach Headpiece
+		Tooltip: ""
+	}
+
+	KhoirBachBody: {
+		DisplayName: Khoir Bach Torso
+		Tooltip: ""
+	}
+
+	KhoirBachLegs: {
+		DisplayName: Khoir Bach Legs
+		Tooltip: ""
+	}
+
+	RiasGremoryHead: {
+		DisplayName: Rias Gremory Headpiece
+		Tooltip: ""
+	}
+
+	RiasGremoryBody: {
+		DisplayName: Rias Gremory Torso
+		Tooltip: ""
+	}
+
+	RiasGremoryLegs: {
+		DisplayName: Rias Gremory Legs
+		Tooltip: ""
+	}
+
+	RamHead: {
+		DisplayName: Ram Hairpiece
+		Tooltip: ""
+	}
+
+	RamBody: {
+		DisplayName: Ram Maid Dress
+		Tooltip: ""
+	}
+
+	RamLegs: {
+		DisplayName: Ram Maid Skirt
+		Tooltip: ""
+	}
+
+	RemHead: {
+		DisplayName: Rem Hairpiece
+		Tooltip: ""
+	}
+
+	RemBody: {
+		DisplayName: Rem Maid Dress
+		Tooltip: ""
+	}
+
+	RemLegs: {
+		DisplayName: Rem Maid Skirt
+		Tooltip: ""
+	}
+}
+
+UI: {
+	VanityWardrobe: {
+		Title: Vanity Wardrobe
+		Subtitle: Choose a vanity set to claim
+		ClaimHint: Click a card to claim the full set. The wardrobe will be consumed.
+		CloseHint: Press ESC to close
+
+		SetNames: {
+			LilyAsuka: Lily Asuka
+			KhoirBach: Khoir Bach
+			RiasGremory: Rias Gremory
+			Ram: Ram
+			Rem: Rem
+		}
+	}
 }
 
 SlotInfo2: Insert Raw Ore
