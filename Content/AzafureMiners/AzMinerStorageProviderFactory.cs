@@ -18,13 +18,13 @@ namespace PWing.Content.AzafureMiners
 			AzMinerStorageProvider provider = AzMinerStorageProvider.FindNearPosition(position, range, item);
 			if (provider != null)
 			{
-				yield return (IStorageProvider)(object)provider;
+				yield return provider;
 			}
 		}
 
 		public IStorageProvider GetStorageProviders(Point16 position, Item item)
 		{
-			return (IStorageProvider)(object)AzMinerStorageProvider.GetAtPosition(position, item);
+			return AzMinerStorageProvider.GetAtPosition(position, item);
 		}
 	}
 }

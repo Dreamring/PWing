@@ -1,18 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using InnoVault;
 using InnoVault.TileProcessors;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using PWing.Common.Configs;
 using Terraria;
 using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.Config;
 using Terraria.ModLoader.IO;
 
 namespace PWing.Content.AzafureMiners
@@ -39,9 +36,18 @@ namespace PWing.Content.AzafureMiners
 
 		public static readonly Dictionary<int, bool> ItemIsOre = new Dictionary<int, bool>();
 
-		public static bool init = true;
+		public static void UnloadStaticData()
+		{
+			ItemIsOre.Clear();
+		}
 
-		public bool SmartCursorHover = false;
+		// 相邻四方向偏移，避免在洪水填充内层循环重复分配数组
+		private static readonly int[] NeighborDx = { 0, 0, -1, 1 };
+		private static readonly int[] NeighborDy = { -1, 1, 0, 0 };
+		private readonly int[] activeFilterTypes = new int[FiltersCount];
+		private int filterTypeCount;
+		private readonly HashSet<Point16> mineVisited = new HashSet<Point16>();
+		private readonly Queue<Point16> mineQueue = new Queue<Point16>();
 
 		public override int TargetTileID => ModContent.TileType<PWingAzafureMinerTile>();
 
@@ -49,6 +55,7 @@ namespace PWing.Content.AzafureMiners
 		{
 			try
 			{
+				ItemIsOre.Clear();
 				List<int> oreTileIDs = new List<int>();
 				// 使用 Tile 特性检测矿石：固体 + spelunker 高亮 + 矿石探测器优先级 > 0
 				for (int i = 0; i < TileLoader.TileCount; i++)
@@ -58,22 +65,7 @@ namespace PWing.Content.AzafureMiners
 						oreTileIDs.Add(i);
 					}
 				}
-				// 添加白名单中的物品
-				if (PWingConfig.Instance != null && PWingConfig.Instance.azafureMinerWhitelistEnabled)
-				{
-					foreach (ItemDefinition itemDef in PWingConfig.Instance.azafureMinerWhitelistItems)
-					{
-						if (itemDef.IsUnloaded)
-						{
-							continue;
-						}
-						int itemID = itemDef.Type;
-						if (itemID > 0 && itemID < ItemLoader.ItemCount && !ItemIsOre.ContainsKey(itemID))
-						{
-							ItemIsOre.Add(itemID, true);
-						}
-					}
-				}
+				// 白名单物品由 PWingAzMinerUISlot.IsOre 在运行时读取配置判断，这里只登记基础矿石表
 				for (int j = 0; j < ItemLoader.ItemCount; j++)
 				{
 					Item item = new(j, 1, 0);
@@ -81,7 +73,7 @@ namespace PWing.Content.AzafureMiners
 					{
 						bool isGem = IsGemItem(j);
 						bool createsOre = oreTileIDs.Contains(item.createTile);
-						ItemIsOre.Add(j, createsOre || isGem);
+						ItemIsOre[j] = createsOre || isGem;
 					}
 				}
 			}
@@ -115,11 +107,11 @@ namespace PWing.Content.AzafureMiners
 				TagCompound isave = tag.Get<TagCompound>("items");
 				for (int i = 0; i < FiltersCount; i++)
 				{
-					filters.Add(ItemIO.Load(isave.Get<TagCompound>("f" + i)));
+					filters.Add(LoadStoredItem(isave, "f" + i));
 				}
 				for (int j = 0; j < ItemsCount; j++)
 				{
-					items.Add(ItemIO.Load(isave.Get<TagCompound>("i" + j)));
+					items.Add(LoadStoredItem(isave, "i" + j));
 				}
 			}
 			else
@@ -133,6 +125,13 @@ namespace PWing.Content.AzafureMiners
 					items.Add(new Item());
 				}
 			}
+		}
+
+		//读取单个物品存档；条目缺失时补空物品，避免旧存档或损坏存档导致世界加载异常
+		private static Item LoadStoredItem(TagCompound tag, string key)
+		{
+			TagCompound itemTag = tag?.Get<TagCompound>(key);
+			return itemTag == null ? new Item() : ItemIO.Load(itemTag);
 		}
 
 		public override void SaveData(TagCompound tag)
@@ -177,11 +176,6 @@ namespace PWing.Content.AzafureMiners
 
 		public override void Update()
 		{
-			if (init)
-			{
-				init = false;
-				SetUpList();
-			}
 			if (IsWork)
 			{
 				targetOffset = targetOffset2 + new Vector2(Utils.NextFloat(Main.rand, -8f, 8f), Utils.NextFloat(Main.rand, -4f, 10f));
@@ -194,13 +188,17 @@ namespace PWing.Content.AzafureMiners
 			}
 			targetOffset2 *= 0.6f;
 			OffsetPos = new Vector2((int)currentOffset.X, (int)currentOffset.Y);
-			List<int> types = new List<int>();
 			IsWork = false;
+			filterTypeCount = 0;
 			foreach (Item item in filters)
 			{
 				if (item.type != ItemID.None)
 				{
-					types.Add(item.type);
+					if (filterTypeCount < activeFilterTypes.Length)
+					{
+						activeFilterTypes[filterTypeCount] = item.type;
+					}
+					filterTypeCount++;
 					IsWork = true;
 				}
 			}
@@ -209,7 +207,7 @@ namespace PWing.Content.AzafureMiners
 				return;
 			}
 			bool didMine = false;
-			if (types.Count > 0)
+			if (filterTypeCount > 0)
 			{
 				for (int searchCount = 0; searchCount < 1000; searchCount++)
 				{
@@ -233,64 +231,64 @@ namespace PWing.Content.AzafureMiners
 						dropItemType = gemDropID;
 					}
 					
-					if (types.Contains(dropItemType))
+					if (!IsFilterType(dropItemType))
 					{
-						// 使用洪水填充算法找到所有相连的相同矿石
-						HashSet<Point16> visited = new HashSet<Point16>();
-						Queue<Point16> queue = new Queue<Point16>();
-						queue.Enqueue(new Point16(x, y));
-						visited.Add(new Point16(x, y));
-						int maxCount = 1000;
-						int minedCount = 0;
+						continue;
+					}
+					// 使用洪水填充算法找到所有相连的相同矿石
+					mineVisited.Clear();
+					mineQueue.Clear();
+					Point16 startPos = new Point16(x, y);
+					mineQueue.Enqueue(startPos);
+					mineVisited.Add(startPos);
+					int maxCount = 1000;
+					int minedCount = 0;
+					
+					while (mineQueue.Count > 0 && minedCount < maxCount)
+					{
+						Point16 current = mineQueue.Dequeue();
+						int cx = current.X;
+						int cy = current.Y;
 						
-						while (queue.Count > 0 && minedCount < maxCount)
+						if (MineOreWithType(cx, cy, dropItemType))
 						{
-							Point16 current = queue.Dequeue();
-							int cx = current.X;
-							int cy = current.Y;
+							didMine = true;
+							minedCount++;
+						}
+						
+						// 检查相邻的4个方向
+						for (int d = 0; d < 4; d++)
+						{
+							int nx = cx + NeighborDx[d];
+							int ny = cy + NeighborDy[d];
+							Point16 nextPos = new Point16(nx, ny);
 							
-							if (MineOre(cx, cy))
+							if (!WorldGen.InWorld(nx, ny) || mineVisited.Contains(nextPos))
 							{
-								didMine = true;
-								minedCount++;
+								continue;
 							}
 							
-							// 检查相邻的4个方向
-							int[] dx = { 0, 0, -1, 1 };
-							int[] dy = { -1, 1, 0, 0 };
-							for (int d = 0; d < 4; d++)
+							Tile nearbyTile = Main.tile[nx, ny];
+							if (!nearbyTile.HasTile)
 							{
-								int nx = cx + dx[d];
-								int ny = cy + dy[d];
-								Point16 nextPos = new Point16(nx, ny);
-								
-								if (!WorldGen.InWorld(nx, ny) || visited.Contains(nextPos))
-								{
-									continue;
-								}
-								
-								Tile nearbyTile = Main.tile[nx, ny];
-								if (!nearbyTile.HasTile)
-								{
-									continue;
-								}
-								
-								int nearbyDrop = VaultUtils.GetTileDrop(nearbyTile, nx, ny);
-								if (nearbyDrop <= 0)
-								{
-									continue;
-								}
-								
-								if (IsGemTile(nearbyTile.TileType, out int nearbyGemDrop))
-								{
-									nearbyDrop = nearbyGemDrop;
-								}
-								
-								if (nearbyDrop == dropItemType)
-								{
-									visited.Add(nextPos);
-									queue.Enqueue(nextPos);
-								}
+								continue;
+							}
+							
+							int nearbyDrop = VaultUtils.GetTileDrop(nearbyTile, nx, ny);
+							if (nearbyDrop <= 0)
+							{
+								continue;
+							}
+							
+							if (IsGemTile(nearbyTile.TileType, out int nearbyGemDrop))
+							{
+								nearbyDrop = nearbyGemDrop;
+							}
+							
+							if (nearbyDrop == dropItemType)
+							{
+								mineVisited.Add(nextPos);
+								mineQueue.Enqueue(nextPos);
 							}
 						}
 					}
@@ -300,6 +298,18 @@ namespace PWing.Content.AzafureMiners
 			{
 				SendData();
 			}
+		}
+
+		private bool IsFilterType(int itemType)
+		{
+			for (int i = 0; i < filterTypeCount && i < activeFilterTypes.Length; i++)
+			{
+				if (activeFilterTypes[i] == itemType)
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 
 		public bool MineOre(int x, int y)
@@ -314,7 +324,13 @@ namespace PWing.Content.AzafureMiners
 			{
 				itemType = dropID;
 			}
-			if (!filters.Any(f => f.type == itemType))
+			return MineOreWithType(x, y, itemType);
+		}
+
+		//已在上层算好掉落物类型时直接复用，避免同一格重复调用 GetTileDrop
+		private bool MineOreWithType(int x, int y, int itemType)
+		{
+			if (!Main.tile[x, y].HasTile || !IsFilterType(itemType))
 			{
 				return false;
 			}
@@ -345,7 +361,8 @@ namespace PWing.Content.AzafureMiners
 		{
 			Tile val = Main.tile[x, y];
 			val.ClearTile();
-			if (Main.dedServ)
+			// 主机开服（host & play）时 Main.dedServ 为 false 但仍需把方块变化同步给远程客户端
+			if (Main.netMode == NetmodeID.Server)
 			{
 				NetMessage.SendTileSquare(-1, x, y);
 			}

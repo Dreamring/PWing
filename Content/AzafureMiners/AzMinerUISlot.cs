@@ -27,6 +27,7 @@ namespace PWing.Content.AzafureMiners
 		private float hoverProgress = 0f;
 		private bool hoverRightHeld;
 		private int lastHoverSlot = -1;
+		private bool dataChanged;
 
 		public override LayersModeEnum LayersMode => (LayersModeEnum)0;
 
@@ -55,7 +56,7 @@ namespace PWing.Content.AzafureMiners
 
 		public override void Update()
 		{
-			base.DrawPosition = ((UIHandle)PWingAzMinerUI.Instance).DrawPosition + OffsetPos;
+			base.DrawPosition = PWingAzMinerUI.Instance.DrawPosition + OffsetPos;
 			base.UIHitBox = new Rectangle((int)(base.DrawPosition.X - 22f), (int)(base.DrawPosition.Y - 22f), 44, 44);
 			base.hoverInMainPage = base.UIHitBox.Contains(MouseHitBox);
 			if (!base.hoverInMainPage)
@@ -74,6 +75,7 @@ namespace PWing.Content.AzafureMiners
 			{
 				Main.instance.MouseText(PWing.Instance.GetLocalization("SlotInfo2", null).Value, 0, 0, -1, -1, -1, -1, 0);
 			}
+			dataChanged = false;
 			if (!Item.IsAir && Utils.PressingShift(Main.keyState))
 			{
 				TryMergeStacks();
@@ -82,7 +84,11 @@ namespace PWing.Content.AzafureMiners
 			{
 				HandleRightClick();
 				HandleLeftClick();
-				((TileProcessor)PWingAzMinerUI.AzMinerTP).SendData();
+			}
+			// 仅在槽位数据真正发生变化时同步，避免悬停期间每帧发送全量数据
+			if (dataChanged)
+			{
+				PWingAzMinerUI.AzMinerTP.SendData();
 			}
 		}
 
@@ -98,7 +104,7 @@ namespace PWing.Content.AzafureMiners
 			{
 				return;
 			}
-			if ((int)((UIHandle)this).keyRightPressState == 3 && base.hoverInMainPage)
+			if ((int)keyRightPressState == 3 && base.hoverInMainPage)
 			{
 				if (!hoverRightHeld)
 				{
@@ -106,7 +112,7 @@ namespace PWing.Content.AzafureMiners
 					hoverRightHeld = true;
 				}
 			}
-			else if ((int)((UIHandle)this).keyRightPressState == 1)
+			else if ((int)keyRightPressState == 1)
 			{
 				AddOneFromMouse();
 				hoverRightHeld = true;
@@ -115,7 +121,7 @@ namespace PWing.Content.AzafureMiners
 
 		private void HandleLeftClick()
 		{
-			if ((int)((UIHandle)this).keyLeftPressState == 1)
+			if ((int)keyLeftPressState == 1)
 			{
 				PWingAzMinerUI.Instance.dontDragTime = 2;
 				KeyboardState state = Keyboard.GetState();
@@ -129,7 +135,7 @@ namespace PWing.Content.AzafureMiners
 				{
 					MergeWithMouse();
 				}
-				else if (type == 0 && !IsOre(Main.mouseItem) && Main.mouseItem.type != 0)
+				else if (type == 0 && !IsOre(Main.mouseItem) && Main.mouseItem.type != ItemID.None)
 				{
 					SoundEngine.PlaySound(SoundID.MenuTick, (Vector2?)null);
 					Main.NewText(PWing.Instance.GetLocalization("AzMinerOreWarning", null).Value, Color.Red);
@@ -158,11 +164,13 @@ namespace PWing.Content.AzafureMiners
 			{
 				Main.mouseItem.TurnToAir(false);
 			}
+			dataChanged = true;
 		}
 
 		private void MergeWithMouse()
 		{
 			SoundEngine.PlaySound(SoundID.Grab, (Vector2?)null);
+			dataChanged = true;
 			Item targetSlot = GetSlotRef();
 			int total = targetSlot.stack + Main.mouseItem.stack;
 			if (total > targetSlot.maxStack)
@@ -181,6 +189,7 @@ namespace PWing.Content.AzafureMiners
 		private void SwapWithMouse()
 		{
 			SoundEngine.PlaySound(SoundID.Grab, (Vector2?)null);
+			dataChanged = true;
 			Item targetSlot = GetSlotRef();
 			Item temp = targetSlot.Clone();
 			targetSlot.SetDefaults(Main.mouseItem.type);
@@ -212,11 +221,13 @@ namespace PWing.Content.AzafureMiners
 			if (merged)
 			{
 				SoundEngine.PlaySound(SoundID.Grab, (Vector2?)null);
+				dataChanged = true;
 			}
 		}
 
 		private void ClearSlot()
 		{
+			dataChanged = true;
 			if (type == 0)
 			{
 				PWingAzMinerUI.AzMinerTP.filters[itemIndex].TurnToAir(false);
@@ -234,7 +245,7 @@ namespace PWing.Content.AzafureMiners
 
 		private bool IsOre(Item item)
 		{
-			if (item == null || item.type == 0)
+			if (item == null || item.type == ItemID.None)
 			{
 				return false;
 			}
@@ -244,9 +255,10 @@ namespace PWing.Content.AzafureMiners
 				return true;
 			}
 			
-			if (PWingConfig.Instance != null && PWingConfig.Instance.azafureMinerWhitelistEnabled)
+			PWingConfig config = PWing.Config;
+			if (config != null && config.azafureMinerWhitelistEnabled)
 			{
-				foreach (ItemDefinition itemDef in PWingConfig.Instance.azafureMinerWhitelistItems)
+				foreach (ItemDefinition itemDef in config.azafureMinerWhitelistItems)
 				{
 					if (!itemDef.IsUnloaded && itemDef.Type == item.type)
 					{

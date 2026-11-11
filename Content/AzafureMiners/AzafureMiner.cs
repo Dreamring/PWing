@@ -8,23 +8,23 @@ namespace PWing.Content.AzafureMiners
 	{
 		public override void SetDefaults()
 		{
-			((Entity)((ModItem)this).Item).width = 92;
-			((Entity)((ModItem)this).Item).height = 50;
-			((ModItem)this).Item.maxStack = 9999;
-			((ModItem)this).Item.useTurn = true;
-			((ModItem)this).Item.autoReuse = true;
-			((ModItem)this).Item.useAnimation = 6;
-			((ModItem)this).Item.useTime = 6;
-			((ModItem)this).Item.useStyle = 1;
-			((ModItem)this).Item.consumable = true;
-			((ModItem)this).Item.createTile = ModContent.TileType<PWingAzafureMinerTile>();
-			((ModItem)this).Item.rare = ItemRarityID.Orange;
-			((ModItem)this).Item.value = Item.sellPrice(0, 8, 0, 0);
+			Item.width = 92;
+			Item.height = 50;
+			Item.maxStack = 9999;
+			Item.useTurn = true;
+			Item.autoReuse = true;
+			Item.useAnimation = 6;
+			Item.useTime = 6;
+			Item.useStyle = ItemUseStyleID.Swing;
+			Item.consumable = true;
+			Item.createTile = ModContent.TileType<PWingAzafureMinerTile>();
+			Item.rare = ItemRarityID.Orange;
+			Item.value = Item.sellPrice(0, 8, 0, 0);
 		}
 
 		public override void AddRecipes()
 		{
-			((ModItem)this).CreateRecipe(1).AddRecipeGroup("IronBar", 10)
+			CreateRecipe(1).AddRecipeGroup("IronBar", 10)
 				.AddTile(TileID.HeavyWorkBench)
 				.Register();
 		}

@@ -89,13 +89,8 @@ namespace PWing.Content.AzafureMiners
 			}
 		}
 
-		private const float PanelWidth = 420f;
-		private const float PanelHeight = 320f;
-		private const float TitleBarHeight = 36f;
-
 		private float scanLineTimer = 0f;
 		private float heatPulseTimer = 0f;
-		private float dataStreamTimer = 0f;
 		private float sparkTimer = 0f;
 		private float borderGlowTimer = 0f;
 
@@ -111,7 +106,6 @@ namespace PWing.Content.AzafureMiners
 		private bool isDragging = false;
 		private Vector2 dragOffset = new Vector2(800f, 440f);
 		public int dontDragTime;
-		private float hoverProgress = 0f;
 
 		private Rectangle panelRect;
 		private Rectangle titleBarRect;
@@ -123,11 +117,21 @@ namespace PWing.Content.AzafureMiners
 		public static List<PWingAzMinerUISlot> Filters { get; set; }
 		public static List<PWingAzMinerUISlot> Items { get; set; }
 
+		public static void UnloadStaticData()
+		{
+			AzMinerTP = null;
+			Filters = null;
+			Items = null;
+			IsActive = false;
+			uiAlpha = 0f;
+			InitDragPos = true;
+		}
+
 		public override bool Active
 		{
 			get
 			{
-				if (AzMinerTP == null || !((TileProcessor)AzMinerTP).Active)
+				if (AzMinerTP == null || !AzMinerTP.Active)
 				{
 					IsActive = false;
 				}
@@ -170,15 +174,7 @@ namespace PWing.Content.AzafureMiners
 			titleBarRect = new Rectangle(panelRect.X, panelRect.Y, panelRect.Width, 36);
 			UIHitBox = panelRect;
 			hoverInMainPage = panelRect.Contains(MouseHitBox);
-			if (hoverInMainPage)
-			{
-				hoverProgress = Math.Min(1f, hoverProgress + 0.08f);
-			}
-			else
-			{
-				hoverProgress = Math.Max(0f, hoverProgress - 0.06f);
-			}
-			if (!Main.playerInventory || Utils.Distance(((TileProcessor)AzMinerTP).CenterInWorld, Main.LocalPlayer.Center) > 320f)
+			if (!Main.playerInventory || Utils.Distance(AzMinerTP.CenterInWorld, Main.LocalPlayer.Center) > 320f)
 			{
 				IsActive = false;
 				return;
@@ -187,14 +183,14 @@ namespace PWing.Content.AzafureMiners
 			{
 				foreach (PWingAzMinerUISlot s in Filters)
 				{
-					((UIHandle)s).Update();
+					s.Update();
 				}
 			}
 			if (Items != null)
 			{
 				foreach (PWingAzMinerUISlot s2 in Items)
 				{
-					((UIHandle)s2).Update();
+					s2.Update();
 				}
 			}
 			if (hoverInMainPage)
@@ -207,12 +203,10 @@ namespace PWing.Content.AzafureMiners
 		{
 			scanLineTimer += 0.04f;
 			heatPulseTimer += 0.025f;
-			dataStreamTimer += 0.05f;
 			sparkTimer += 0.08f;
 			borderGlowTimer += 0.035f;
 			if (scanLineTimer > Math.PI * 2f) scanLineTimer -= (float)Math.PI * 2f;
 			if (heatPulseTimer > Math.PI * 2f) heatPulseTimer -= (float)Math.PI * 2f;
-			if (dataStreamTimer > Math.PI * 2f) dataStreamTimer -= (float)Math.PI * 2f;
 			if (sparkTimer > Math.PI * 2f) sparkTimer -= (float)Math.PI * 2f;
 			if (borderGlowTimer > Math.PI * 2f) borderGlowTimer -= (float)Math.PI * 2f;
 		}
@@ -316,14 +310,14 @@ namespace PWing.Content.AzafureMiners
 			{
 				foreach (PWingAzMinerUISlot slot in Filters)
 				{
-					((UIHandle)slot).Draw(spriteBatch);
+					slot.Draw(spriteBatch);
 				}
 			}
 			if (Items != null)
 			{
 				foreach (PWingAzMinerUISlot slot2 in Items)
 				{
-					((UIHandle)slot2).Draw(spriteBatch);
+					slot2.Draw(spriteBatch);
 				}
 			}
 			DrawScanLines(spriteBatch);

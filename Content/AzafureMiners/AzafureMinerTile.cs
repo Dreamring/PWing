@@ -53,8 +53,7 @@ namespace PWing.Content.AzafureMiners
 
 		public override void Unload()
 		{
-			PWingAzMinerUI.Filters = null;
-			PWingAzMinerUI.Items = null;
+			PWingAzMinerUI.UnloadStaticData();
 		}
 
 		public override void SetStaticDefaults()
@@ -69,7 +68,7 @@ namespace PWing.Content.AzafureMiners
 			TileObjectData.newTile.Width = 4;
 			TileObjectData.newTile.Height = 3;
 			TileObjectData.newTile.Origin = new Point16(2, 2);
-			TileObjectData.newTile.AnchorBottom = new AnchorData((AnchorType)11, TileObjectData.newTile.Width, 0);
+			TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.SolidTile | AnchorType.SolidWithTop | AnchorType.SolidSide, TileObjectData.newTile.Width, 0);
 			TileObjectData.newTile.CoordinateHeights = new int[3] { 16, 16, 16 };
 			TileObjectData.newTile.LavaDeath = false;
 			TileObjectData.addTile(Type);
@@ -94,11 +93,11 @@ namespace PWing.Content.AzafureMiners
 				PWingAzMinerUI.AzMinerTP = tempTP;
 				if (sameMachine)
 				{
-					((UIHandle)PWingAzMinerUI.Instance).Active = !((UIHandle)PWingAzMinerUI.Instance).Active;
+					PWingAzMinerUI.Instance.Active = !PWingAzMinerUI.Instance.Active;
 				}
 				else
 				{
-					((UIHandle)PWingAzMinerUI.Instance).Active = true;
+					PWingAzMinerUI.Instance.Active = true;
 				}
 				Main.playerInventory = true;
 				SoundStyle menuOpen = SoundID.MenuOpen;
@@ -131,21 +130,6 @@ namespace PWing.Content.AzafureMiners
 			if (!tempTP.IsWork)
 			{
 				drawColor = new Color(drawColor.R / 2, drawColor.G / 2, drawColor.B / 2, byte.MaxValue);
-			}
-			bool slc = false;
-			bool inArea = false;
-			tempTP.SmartCursorHover = slc;
-			if (inArea)
-			{
-				Color outlineColor = (slc ? Color.Yellow : Color.Gray);
-				if (!t.IsHalfBlock && t.Slope == 0)
-				{
-					spriteBatch.Draw(tex, drawOffset, new Rectangle(frameXPos, frameYPos, 16, 16), outlineColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.01f);
-				}
-				else if (t.IsHalfBlock)
-				{
-					spriteBatch.Draw(tex, drawOffset + Vector2.UnitY * 8f, new Rectangle(frameXPos, frameYPos, 16, 16), outlineColor, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.01f);
-				}
 			}
 			if (!t.IsHalfBlock && t.Slope == 0)
 			{
