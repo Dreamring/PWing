@@ -17,8 +17,9 @@ namespace PWing.Content.FakePlayer
     {
         public static Color SavedInventoryColor = Color.White;
         public static bool FakeBorderDrawCycle = false;
-        public static int RealBorderDrawCycleSlot = -1;
+        public static int PendingPreDrawSlot = -1;
         public static Texture2D planetariumTextures;
+        private static uint lastErrorTick;
 
         public static Texture2D tesseractBox => PWing.Instance.Assets.Request<Texture2D>("Assets/FakePlayer/TesseractUI/Box").Value;
         public static Texture2D tesseractBoxA => PWing.Instance.Assets.Request<Texture2D>("Assets/FakePlayer/TesseractUI/BoxAlt").Value;
@@ -42,6 +43,15 @@ namespace PWing.Content.FakePlayer
         public static void Load()
         {
             planetariumTextures = PWing.Instance.Assets.Request<Texture2D>("Assets/FakePlayer/TesseractUI/PlanetarySymbols").Value;
+        }
+
+        public static void Unload()
+        {
+            planetariumTextures = null;
+            SavedInventoryColor = Color.White;
+            FakeBorderDrawCycle = false;
+            PendingPreDrawSlot = -1;
+            lastErrorTick = 0;
         }
 
         public static bool DrawSubspaceSlot(Item item)
@@ -82,8 +92,10 @@ namespace PWing.Content.FakePlayer
 
         public static Color InventoryBoxStandard => new Color(210, 210, 210, 210);
 
-        public static void PreDrawSlots(Item item, SpriteBatch spriteBatch, Vector2 position, Color drawColor)
+        public static void PreDrawSlots(Item item, SpriteBatch spriteBatch, Vector2 position, Color drawColor, int slot)
         {
+            if (slot < 0)
+                return;
             try
             {
                 Player player = Main.LocalPlayer;
@@ -93,9 +105,12 @@ namespace PWing.Content.FakePlayer
                 }
                 PWingPlayer pwingPlayer = player.GetModPlayer<PWingPlayer>();
                 
-                if (DrawTesseractSlot(item, RealBorderDrawCycleSlot))
+                if (DrawTesseractSlot(item, slot))
                 {
-                    TesseractMinionData data = pwingPlayer.tesseractData[RealBorderDrawCycleSlot % 10];
+                    int dataIndex = slot % 10;
+                    if (dataIndex < 0 || dataIndex >= pwingPlayer.tesseractData.Length)
+                        return;
+                    TesseractMinionData data = pwingPlayer.tesseractData[dataIndex];
                     bool foundItem = data.FoundValidItem;
                     bool correctItem = item.type == ModContent.ItemType<PWingTesseract>() && (player.inventory.Contains(item) || player.armor.Contains(item));
                     Color color = Color.White;
@@ -139,7 +154,7 @@ namespace PWing.Content.FakePlayer
                         {
                             Color alternateColor = Color.Lerp(InventoryBoxStandard, new Color(231, 95, 203), 0.75f);
                             ItemSlot.DrawItem_GetColorAndScale(dummyItem, Main.inventoryScale, ref color, 48f, ref frame2, out var itemLight2, out var finalDrawScale2);
-                            int frameY = RealBorderDrawCycleSlot % 10;
+                            int frameY = dataIndex;
                             int height = planetariumTextures.Height / 10;
                             Rectangle frame = new Rectangle(0, height * frameY, planetariumTextures.Width, height);
                             spriteBatch.Draw(planetariumTextures, position, frame, (foundItem ? alternateColor : InventoryBoxStandard) * 0.5f, 0f, new Vector2(planetariumTextures.Width, planetariumTextures.Height / 10) / 2f, finalDrawScale2 * 1f, SpriteEffects.None, 0f);
@@ -149,7 +164,12 @@ namespace PWing.Content.FakePlayer
             }
             catch (Exception ex)
             {
-                Main.NewText($"PWing PreDrawSlots error: {ex.Message}");
+                // 限流：每 60 tick 最多记录一次，避免绘制异常刷屏
+                if (Main.GameUpdateCount - lastErrorTick > 60)
+                {
+                    lastErrorTick = Main.GameUpdateCount;
+                    PWing.Instance.Logger.Error("PWing PreDrawSlots error: " + ex);
+                }
             }
         }
     }

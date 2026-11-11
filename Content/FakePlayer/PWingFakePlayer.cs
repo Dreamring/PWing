@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Terraria;
 using Terraria.DataStructures;
@@ -47,7 +48,6 @@ namespace PWing.Content.FakePlayer
         public static bool SupressSound = false;
 
         public int OverrideUseSlot = -1;
-        public float TesseractNumber = -1;
         public int UniqueMouseX = -1;
         public int UniqueMouseY = -1;
         public bool ForceItemUse = false;
@@ -96,13 +96,9 @@ namespace PWing.Content.FakePlayer
                 return false;
             }
             bool canUseItem = true;
-            if (!Array.Exists(PWingFakePlayerHelper.FakePlayerItemWhitelist, x => x == item.type) || lastUsedItem == null)
+            if (!PWingFakePlayerHelper.FakePlayerItemWhitelist.Contains(item.type) || lastUsedItem == null)
             {
-                if (Array.Exists(PWingFakePlayerHelper.FakePlayerItemBlacklist, x => x == item.type))
-                {
-                    canUseItem = false;
-                }
-                else if (item.ammo > 0 || item.fishingPole > 0 || (item.CountsAsClass(DamageClass.Summon) && !item.CountsAsClass(DamageClass.SummonMeleeSpeed)) || lastUsedItem == null || item.mountType != -1)
+                if (item.ammo > 0 || item.fishingPole > 0 || (item.CountsAsClass(DamageClass.Summon) && !item.CountsAsClass(DamageClass.SummonMeleeSpeed)) || lastUsedItem == null || item.mountType != -1)
                 {
                     canUseItem = false;
                 }
@@ -178,13 +174,6 @@ namespace PWing.Content.FakePlayer
             SupressNetMessage13and41 = true;
             PWingPlayer pwPlayer = player.GetModPlayer<PWingPlayer>();
             Item item = player.inventory[UseItemSlot(player)];
-            if (Main.netMode != NetmodeID.Server)
-            {
-                if (!TextureAssets.Item[item.type].IsLoaded)
-                    Main.instance.LoadItem(item.type);
-            }
-            heldItem = item;
-            TrailingType = 0;
             bool saveCursorIconEnabled = player.cursorItemIconEnabled;
             int saveCursorIconID = player.cursorItemIconID;
             bool saveAutoSwing = item.autoReuse;
@@ -192,78 +181,89 @@ namespace PWing.Content.FakePlayer
             int savePick = item.pick;
             int saveAxe = item.axe;
             int saveHammer = item.hammer;
-            if (FakePlayerType == PWingFakePlayerTypeID.Tesseract)
-                item.pick = item.axe = item.hammer = 0;
-            item.autoReuse = true;
-            item.useTurn = true;
-            bool valid = CheckItemValidityFull(player, item, lastUsedItem, FakePlayerType);
-            if (item.IsAir)
+            try
             {
-                KillMyOwnedProjectiles = true;
-                RunItemCheck(player, true);
-            }
-            else if (valid)
-            {
-                if (FakePlayerType == PWingFakePlayerTypeID.Tesseract)
+                if (Main.netMode != NetmodeID.Server)
                 {
-                    int UniqueUsageSlot = OverrideUseSlot % 10;
-                    pwPlayer.tesseractData[UniqueUsageSlot].FoundValidItem = true;
+                    if (!TextureAssets.Item[item.type].IsLoaded)
+                        Main.instance.LoadItem(item.type);
                 }
-                RunItemCheck(player, true);
-            }
-            else
-            {
-                if (lastUsedItem != null && !lastUsedItem.IsAir && lastUsedItem.type != item.type)
+                heldItem = item;
+                TrailingType = 0;
+                if (FakePlayerType == PWingFakePlayerTypeID.Tesseract)
+                    item.pick = item.axe = item.hammer = 0;
+                item.autoReuse = true;
+                item.useTurn = true;
+                bool valid = CheckItemValidityFull(player, item, lastUsedItem, FakePlayerType);
+                if (item.IsAir)
                 {
-                    lastUsedItem = heldItem.Clone();
-                    if (FakePlayerType != PWingFakePlayerTypeID.Hydro)
+                    KillMyOwnedProjectiles = true;
+                    RunItemCheck(player, true);
+                }
+                else if (valid)
+                {
+                    if (FakePlayerType == PWingFakePlayerTypeID.Tesseract)
                     {
-                        RunItemCheck(player, true);
+                        int UniqueUsageSlot = OverrideUseSlot % 10;
+                        pwPlayer.tesseractData[UniqueUsageSlot].FoundValidItem = true;
+                    }
+                    RunItemCheck(player, true);
+                }
+                else
+                {
+                    if (lastUsedItem != null && !lastUsedItem.IsAir && lastUsedItem.type != item.type)
+                    {
+                        lastUsedItem = heldItem.Clone();
+                        if (FakePlayerType != PWingFakePlayerTypeID.Hydro)
+                        {
+                            RunItemCheck(player, true);
+                        }
+                        else
+                        {
+                            RunItemCheck(player, false);
+                        }
                     }
                     else
-                    {
                         RunItemCheck(player, false);
-                    }
+                    ResetVariables();
                 }
-                else
-                    RunItemCheck(player, false);
-                ResetVariables();
-            }
-            if (itemAnimation > 0)
-            {
-                ShouldUseWingsArmPosition = false;
-                if (FakePlayerType == PWingFakePlayerTypeID.Tesseract)
+                if (itemAnimation > 0)
                 {
-                    BonusItemAnimationTime = 4;
+                    ShouldUseWingsArmPosition = false;
+                    if (FakePlayerType == PWingFakePlayerTypeID.Tesseract)
+                    {
+                        BonusItemAnimationTime = 4;
+                    }
+                    else
+                        BonusItemAnimationTime = 15;
                 }
                 else
-                    BonusItemAnimationTime = 15;
+                {
+                    if (itemAnimation == 0 && (lastUsedItem == null || lastUsedItem.type != heldItem.type))
+                        lastUsedItem = heldItem.Clone();
+                    if (item.holdStyle == 0 || !valid)
+                        ShouldUseWingsArmPosition = Velocity.Length() > 2f;
+                    else
+                        ShouldUseWingsArmPosition = false;
+                }
+                if (BonusItemAnimationTime > 0)
+                {
+                    BonusItemAnimationTime--;
+                    TrailingType = ItemTrailingType(item);
+                }
             }
-            else
+            finally
             {
-                if (itemAnimation == 0)
-                    lastUsedItem = heldItem.Clone();
-                if (item.holdStyle == 0 || !valid)
-                    ShouldUseWingsArmPosition = Velocity.Length() > 2f;
-                else
-                    ShouldUseWingsArmPosition = false;
-            }
-            if (BonusItemAnimationTime > 0)
-            {
-                BonusItemAnimationTime--;
-                TrailingType = ItemTrailingType(item);
-            }
-            player.cursorItemIconEnabled = saveCursorIconEnabled;
-            player.cursorItemIconID = saveCursorIconID;
-            if (FakePlayerType == PWingFakePlayerTypeID.Tesseract)
-            {
+                // 无论中途是否抛异常，都必须还原真实物品与静态开关
                 item.pick = savePick;
                 item.axe = saveAxe;
                 item.hammer = saveHammer;
+                item.autoReuse = saveAutoSwing;
+                item.useTurn = saveUseTurn;
+                player.cursorItemIconEnabled = saveCursorIconEnabled;
+                player.cursorItemIconID = saveCursorIconID;
+                SupressNetMessage13and41 = false;
             }
-            item.autoReuse = saveAutoSwing;
-            item.useTurn = saveUseTurn;
-            SupressNetMessage13and41 = false;
         }
 
         public PWingSavedPlayerValues PlayerSavedProperties;
@@ -841,10 +841,10 @@ namespace PWing.Content.FakePlayer
 
         public void SetPlayerItemUsesThisAnimationViaReflection(Player player, int setUses)
         {
-            Type type = player.GetType();
-            PropertyInfo prop = type.GetProperty("ItemUsesThisAnimation");
-            prop.SetValue(player, setUses, null);
+            itemUsesThisAnimationProperty ??= typeof(Player).GetProperty("ItemUsesThisAnimation");
+            itemUsesThisAnimationProperty?.SetValue(player, setUses, null);
         }
+        private static PropertyInfo itemUsesThisAnimationProperty;
 
         public SpriteEffects playerEffect;
         public SpriteEffects itemEffect;
@@ -854,11 +854,17 @@ namespace PWing.Content.FakePlayer
             if (green)
             {
                 ConvertItemTextureToSolid(drawInfo.heldItem);
-                Draw27_HeldItem(ref drawInfo, new Vector2(1, 0));
-                Draw27_HeldItem(ref drawInfo, new Vector2(-1, 0));
-                Draw27_HeldItem(ref drawInfo, new Vector2(0, 1));
-                Draw27_HeldItem(ref drawInfo, new Vector2(0, -1));
-                ConvertItemTextureBackToNormal(drawInfo.heldItem);
+                try
+                {
+                    Draw27_HeldItem(ref drawInfo, new Vector2(1, 0));
+                    Draw27_HeldItem(ref drawInfo, new Vector2(-1, 0));
+                    Draw27_HeldItem(ref drawInfo, new Vector2(0, 1));
+                    Draw27_HeldItem(ref drawInfo, new Vector2(0, -1));
+                }
+                finally
+                {
+                    ConvertItemTextureBackToNormal(drawInfo.heldItem);
+                }
             }
             else
             {
@@ -893,90 +899,96 @@ namespace PWing.Content.FakePlayer
             PWingFakePlayerProjectile.OwnerOfThisDrawCycle = FakePlayerID;
             SaveRealPlayerValues(player);
             CopyFakeToReal(player);
-            PWingFakePlayerDrawing.SetupCompositeDrawing(ref drawInfo, this, player);
-            drawInfo.shadow = 0f;
-            drawInfo.heldItem = heldItem;
-            drawInfo.ItemLocation = itemLocation;
-            drawInfo.playerEffect = playerEffect;
-            drawInfo.itemEffect = itemEffect;
-            drawInfo.Position = Position;
-
-            SetupSpriteDirection(ref drawInfo, player);
-
-            drawInfo.compFrontArmFrame = this.compFrontArmFrame;
-            drawInfo.compBackArmFrame = this.compBackArmFrame;
-            drawInfo.compositeFrontArmRotation = this.compositeFrontArmRotation;
-            drawInfo.compositeBackArmRotation = this.compositeBackArmRotation;
-            drawInfo.projectileDrawPosition = this.projectileDrawPosition;
-            drawInfo.heldProjOverHand = this.heldProjOverHand;
-            drawInfo.bodyVect = this.bodyVect;
-
-            if (!SkipDrawing)
+            try
             {
-                if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.Border)
+                PWingFakePlayerDrawing.SetupCompositeDrawing(ref drawInfo, this, player);
+                drawInfo.shadow = 0f;
+                drawInfo.heldItem = heldItem;
+                drawInfo.ItemLocation = itemLocation;
+                drawInfo.playerEffect = playerEffect;
+                drawInfo.itemEffect = itemEffect;
+                drawInfo.Position = Position;
+
+                SetupSpriteDirection(ref drawInfo, player);
+
+                drawInfo.compFrontArmFrame = this.compFrontArmFrame;
+                drawInfo.compBackArmFrame = this.compBackArmFrame;
+                drawInfo.compositeFrontArmRotation = this.compositeFrontArmRotation;
+                drawInfo.compositeBackArmRotation = this.compositeBackArmRotation;
+                drawInfo.projectileDrawPosition = this.projectileDrawPosition;
+                drawInfo.heldProjOverHand = this.heldProjOverHand;
+                drawInfo.bodyVect = this.bodyVect;
+
+                if (!SkipDrawing)
                 {
-                    PWingFakePlayerDrawing.DrawTail(this, ref drawInfo, true);
-                    HijackItemDrawing(ref drawInfo, true);
-                    PWingFakePlayerDrawing.DrawBackArm(this, ref drawInfo, true);
-                    PWingFakePlayerDrawing.DrawBody(this, ref drawInfo, true);
-                    PWingFakePlayerDrawing.DrawFrontArm(this, ref drawInfo, true);
-                    PWingFakePlayerDrawing.DrawWings(this, ref drawInfo, WingFrame, true);
-                }
-                if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.Wings)
-                {
-                    PWingFakePlayerDrawing.DrawWings(this, ref drawInfo, WingFrame, false);
-                }
-                if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.HeldItemAndProjectilesBeforeBackArm)
-                {
-                    if (weaponDrawOrder == 0)
-                        HijackItemDrawing(ref drawInfo, false);
-                }
-                if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.Body)
-                {
-                    PWingFakePlayerDrawing.DrawBackArm(this, ref drawInfo, false);
-                    PWingFakePlayerDrawing.DrawTail(this, ref drawInfo, false);
-                    PWingFakePlayerDrawing.DrawBody(this, ref drawInfo, false);
-                }
-                if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.HeldItemAndProjectilesBeforeFrontArm)
-                {
-                    if (weaponDrawOrder == 1)
-                        HijackItemDrawing(ref drawInfo, false);
-                }
-                if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.FrontArm)
-                {
-                    if (player.heldProj == -1 || heldProjOverHand)
+                    if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.Border)
                     {
-                        PWingFakePlayerDrawing.DrawFrontArm(this, ref drawInfo, false);
+                        PWingFakePlayerDrawing.DrawTail(this, ref drawInfo, true);
+                        HijackItemDrawing(ref drawInfo, true);
+                        PWingFakePlayerDrawing.DrawBackArm(this, ref drawInfo, true);
+                        PWingFakePlayerDrawing.DrawBody(this, ref drawInfo, true);
+                        PWingFakePlayerDrawing.DrawFrontArm(this, ref drawInfo, true);
+                        PWingFakePlayerDrawing.DrawWings(this, ref drawInfo, WingFrame, true);
+                    }
+                    if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.Wings)
+                    {
+                        PWingFakePlayerDrawing.DrawWings(this, ref drawInfo, WingFrame, false);
+                    }
+                    if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.HeldItemAndProjectilesBeforeBackArm)
+                    {
+                        if (weaponDrawOrder == 0)
+                            HijackItemDrawing(ref drawInfo, false);
+                    }
+                    if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.Body)
+                    {
+                        PWingFakePlayerDrawing.DrawBackArm(this, ref drawInfo, false);
+                        PWingFakePlayerDrawing.DrawTail(this, ref drawInfo, false);
+                        PWingFakePlayerDrawing.DrawBody(this, ref drawInfo, false);
+                    }
+                    if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.HeldItemAndProjectilesBeforeFrontArm)
+                    {
+                        if (weaponDrawOrder == 1)
+                            HijackItemDrawing(ref drawInfo, false);
+                    }
+                    if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.FrontArm)
+                    {
+                        if (player.heldProj == -1 || heldProjOverHand)
+                        {
+                            PWingFakePlayerDrawing.DrawFrontArm(this, ref drawInfo, false);
+                        }
+                    }
+                    if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.HeldItemAndProjectilesAfterFrontArm)
+                    {
+                        if (weaponDrawOrder == 2)
+                            HijackItemDrawing(ref drawInfo, false);
                     }
                 }
-                if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.HeldItemAndProjectilesAfterFrontArm)
+
+                compFrontArmFrame = drawInfo.compFrontArmFrame;
+                compBackArmFrame = drawInfo.compBackArmFrame;
+                compositeFrontArmRotation = drawInfo.compositeFrontArmRotation;
+                compositeBackArmRotation = drawInfo.compositeBackArmRotation;
+                projectileDrawPosition = drawInfo.projectileDrawPosition;
+                heldProjOverHand = drawInfo.heldProjOverHand;
+                bodyVect = drawInfo.bodyVect;
+                itemLocation = drawInfo.ItemLocation;
+                heldItem = drawInfo.heldItem;
+                playerEffect = drawInfo.playerEffect;
+                itemEffect = drawInfo.itemEffect;
+                Position = drawInfo.Position;
+
+                if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.Border)
                 {
-                    if (weaponDrawOrder == 2)
-                        HijackItemDrawing(ref drawInfo, false);
+                    DrawMyProjectiles(player);
                 }
+                return true;
             }
-
-            compFrontArmFrame = drawInfo.compFrontArmFrame;
-            compBackArmFrame = drawInfo.compBackArmFrame;
-            compositeFrontArmRotation = drawInfo.compositeFrontArmRotation;
-            compositeBackArmRotation = drawInfo.compositeBackArmRotation;
-            projectileDrawPosition = drawInfo.projectileDrawPosition;
-            heldProjOverHand = drawInfo.heldProjOverHand;
-            bodyVect = drawInfo.bodyVect;
-            itemLocation = drawInfo.ItemLocation;
-            heldItem = drawInfo.heldItem;
-            playerEffect = drawInfo.playerEffect;
-            itemEffect = drawInfo.itemEffect;
-            Position = drawInfo.Position;
-
-            if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.Border)
+            finally
             {
-                DrawMyProjectiles(player);
+                CopyRealToFake(player);
+                LoadRealPlayerValues(player);
+                PWingFakePlayerProjectile.OwnerOfThisDrawCycle = -1;
             }
-            CopyRealToFake(player);
-            LoadRealPlayerValues(player);
-            PWingFakePlayerProjectile.OwnerOfThisDrawCycle = -1;
-            return true;
         }
 
         public void DrawFrontHandAndHeldProj(SpriteBatch spriteBatch, Player player, int DrawState)
@@ -985,45 +997,54 @@ namespace PWing.Content.FakePlayer
             {
                 SaveRealPlayerValues(player);
                 CopyFakeToReal(player);
-                if (!heldProjOverHand)
+                try
                 {
-                    if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.HeldItemAndProjectilesBeforeFrontArm)
+                    if (!heldProjOverHand)
                     {
-                        DrawMyHeldProjectile(player);
+                        if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.HeldItemAndProjectilesBeforeFrontArm)
+                        {
+                            DrawMyHeldProjectile(player);
+                        }
+                    }
+                    else
+                    {
+                        if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.HeldItemAndProjectilesAfterFrontArm)
+                        {
+                            DrawMyHeldProjectile(player);
+                        }
+                    }
+                    if (!heldProjOverHand && (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.FrontArm))
+                    {
+                        PWingFakePlayerDrawing.DrawFrontArm(this, spriteBatch);
                     }
                 }
-                else
+                finally
                 {
-                    if (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.HeldItemAndProjectilesAfterFrontArm)
-                    {
-                        DrawMyHeldProjectile(player);
-                    }
+                    CopyRealToFake(player);
+                    LoadRealPlayerValues(player);
                 }
-                if (!heldProjOverHand && (DrawState == PWingDrawStateID.All || DrawState == PWingDrawStateID.FrontArm))
-                {
-                    PWingFakePlayerDrawing.DrawFrontArm(this, spriteBatch);
-                }
-                CopyRealToFake(player);
-                LoadRealPlayerValues(player);
             }
         }
 
-        public Texture2D saveGreenTexture;
         public Texture2D saveNormalTexture;
-        public int lastItemID = -1;
+        // 单色描边贴图按 (物品, 分身类型, 槽位) 缓存，避免每次换武器都新建 GPU 贴图
+        private static readonly Dictionary<(int, int, int), Texture2D> solidTextureCache = new();
+        private static readonly Dictionary<Type, FieldInfo> ownValueFieldCache = new();
 
         public void ConvertItemTextureToSolid(Item item)
         {
             saveNormalTexture = TextureAssets.Item[item.type].Value;
-            if (item.type != lastItemID)
+            int slotKey = FakePlayerType == PWingFakePlayerTypeID.Tesseract ? OverrideUseSlot % 10 : 0;
+            var key = (item.type, FakePlayerType, slotKey);
+            if (!solidTextureCache.TryGetValue(key, out Texture2D solidTexture) || solidTexture == null || solidTexture.IsDisposed)
             {
                 Texture2D itemTexture = TextureAssets.Item[item.type].Value;
-                lastItemID = item.type;
                 Color[] colors = ColorHelper.ConvertToSingleColor(itemTexture, MyBorderColor());
-                saveGreenTexture = new Texture2D(Main.graphics.GraphicsDevice, itemTexture.Width, itemTexture.Height);
-                saveGreenTexture.SetData(0, null, colors, 0, itemTexture.Width * itemTexture.Height);
+                solidTexture = new Texture2D(Main.graphics.GraphicsDevice, itemTexture.Width, itemTexture.Height);
+                solidTexture.SetData(0, null, colors, 0, itemTexture.Width * itemTexture.Height);
+                solidTextureCache[key] = solidTexture;
             }
-            SetTextureValueViaReflection(TextureAssets.Item[item.type], saveGreenTexture);
+            SetTextureValueViaReflection(TextureAssets.Item[item.type], solidTexture);
         }
 
         public Color MyBorderColor()
@@ -1051,40 +1072,56 @@ namespace PWing.Content.FakePlayer
         public void SetTextureValueViaReflection(object texture, Texture2D newValue)
         {
             Type type = texture.GetType();
-            FieldInfo fieldInfo = type.GetField("ownValue", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (!ownValueFieldCache.TryGetValue(type, out FieldInfo fieldInfo))
+            {
+                fieldInfo = type.GetField("ownValue", BindingFlags.NonPublic | BindingFlags.Instance);
+                ownValueFieldCache[type] = fieldInfo;
+            }
             if (fieldInfo == null)
                 return;
             fieldInfo.SetValue(texture, newValue);
         }
 
+        //释放缓存贴图，供模组卸载时调用
+        public static void ClearTextureCache()
+        {
+            foreach (Texture2D texture in solidTextureCache.Values)
+            {
+                if (texture != null && !texture.IsDisposed)
+                    texture.Dispose();
+            }
+            solidTextureCache.Clear();
+            ownValueFieldCache.Clear();
+        }
+
         public void SetupSpriteDirection(ref PlayerDrawSet drawInfo, Player player)
         {
-            drawInfo.playerEffect = (SpriteEffects)0;
-            drawInfo.itemEffect = (SpriteEffects)1;
+            drawInfo.playerEffect = SpriteEffects.None;
+            drawInfo.itemEffect = SpriteEffects.FlipHorizontally;
             if (player.gravDir == 1f)
             {
                 if (player.direction == 1)
                 {
-                    drawInfo.playerEffect = 0;
-                    drawInfo.itemEffect = 0;
+                    drawInfo.playerEffect = SpriteEffects.None;
+                    drawInfo.itemEffect = SpriteEffects.None;
                 }
                 else
                 {
-                    drawInfo.playerEffect = (SpriteEffects)1;
-                    drawInfo.itemEffect = (SpriteEffects)1;
+                    drawInfo.playerEffect = SpriteEffects.FlipHorizontally;
+                    drawInfo.itemEffect = SpriteEffects.FlipHorizontally;
                 }
             }
             else
             {
                 if (player.direction == 1)
                 {
-                    drawInfo.playerEffect = (SpriteEffects)2;
-                    drawInfo.itemEffect = (SpriteEffects)2;
+                    drawInfo.playerEffect = SpriteEffects.FlipVertically;
+                    drawInfo.itemEffect = SpriteEffects.FlipVertically;
                 }
                 else
                 {
-                    drawInfo.playerEffect = (SpriteEffects)3;
-                    drawInfo.itemEffect = (SpriteEffects)3;
+                    drawInfo.playerEffect = SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically;
+                    drawInfo.itemEffect = SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically;
                 }
             }
         }
@@ -1141,7 +1178,7 @@ namespace PWing.Content.FakePlayer
             for (int i = 0; i < Main.maxProjectiles; i++)
             {
                 Projectile projectile = Main.projectile[i];
-                if (projectile.active && projectile.type > 0 && !projectile.hide && projectile.whoAmI != HeldProj)
+                if (projectile.active && projectile.type > ProjectileID.None && !projectile.hide && projectile.whoAmI != HeldProj)
                 {
                     PWingFakePlayerProjectile fPPInstance;
                     bool canGetGlobal = projectile.TryGetGlobalProjectile(out fPPInstance);
@@ -1159,8 +1196,14 @@ namespace PWing.Content.FakePlayer
         public void DrawMyHeldProjectile(Player player)
         {
             PWingFakePlayerProjectile.OwnerOfThisDrawCycle = FakePlayerID;
-            DrawHeldProj(player, Main.projectile[player.heldProj]);
-            PWingFakePlayerProjectile.OwnerOfThisDrawCycle = -1;
+            try
+            {
+                DrawHeldProj(player, Main.projectile[player.heldProj]);
+            }
+            finally
+            {
+                PWingFakePlayerProjectile.OwnerOfThisDrawCycle = -1;
+            }
         }
 
         public static void DrawHeldProj(Player player, Projectile proj)
@@ -1179,20 +1222,6 @@ namespace PWing.Content.FakePlayer
                 proj.active = false;
             }
             player.gfxOffY = saveGFX;
-        }
-
-        public void LoadValuesForCachedProjectileDraw(Player player, bool load)
-        {
-            if (load)
-            {
-                SaveRealPlayerValues(player);
-                CopyFakeToReal(player);
-            }
-            else
-            {
-                CopyRealToFake(player);
-                LoadRealPlayerValues(player);
-            }
         }
     }
 
@@ -1256,14 +1285,9 @@ namespace PWing.Content.FakePlayer
     {
         public static bool overrideLightColor = false;
         public static bool runOnce = false;
-        public static bool superOverrideLightColor = false;
 
         public override Color? GetAlpha(Item item, Color lightColor)
         {
-            if (superOverrideLightColor)
-            {
-                return Color.White;
-            }
             if (overrideLightColor)
             {
                 lightColor = Color.White;

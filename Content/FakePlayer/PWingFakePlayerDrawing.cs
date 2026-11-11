@@ -11,6 +11,11 @@ namespace PWing.Content.FakePlayer
 {
     public static class PWingFakePlayerDrawing
     {
+        // 绘制缓冲复用，避免每帧为每个分身重复分配列表
+        private static readonly List<Vector2> tailPositions = new List<Vector2>();
+        private static readonly List<float> tailRotations = new List<float>();
+        private static readonly List<PWingFakePlayer> fakePlayerBuffer = new List<PWingFakePlayer>();
+
         public static Color DrawColor(PWingFakePlayer fakePlayer)
         {
             if (fakePlayer.FakePlayerType == PWingFakePlayerTypeID.Tesseract)
@@ -125,8 +130,10 @@ namespace PWing.Content.FakePlayer
                 Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
                 Vector2 velo = new Vector2(0, 4f);
                 float scale = 1f;
-                List<Vector2> positions = new List<Vector2>();
-                List<float> rotations = new List<float>();
+                List<Vector2> positions = tailPositions;
+                List<float> rotations = tailRotations;
+                positions.Clear();
+                rotations.Clear();
                 for (int i = 0; i < 9; i++)
                 {
                     Vector2 toOldPosition = fakePlayer.SecondPosition - drawInfo.Position;
@@ -301,6 +308,14 @@ namespace PWing.Content.FakePlayer
 
         private static SpriteDrawBuffer spriteBuffer;
 
+        public static void Unload()
+        {
+            spriteBuffer = null;
+            tailPositions.Clear();
+            tailRotations.Clear();
+            fakePlayerBuffer.Clear();
+        }
+
         public static void DrawFromCache(ref PlayerDrawSet drawinfo)
         {
             List<DrawData> drawDataCache = drawinfo.DrawDataCache;
@@ -370,30 +385,43 @@ namespace PWing.Content.FakePlayer
             }
         }
 
+        // 仅收集指定类型的分身，避免每次绘制都为每个玩家分配新列表并重复扫描
+        private static void CollectFakePlayers(Player player, int fakePlayerType, List<PWingFakePlayer> result)
+        {
+            for (int i = 0; i < Main.projectile.Length; i++)
+            {
+                Projectile proj = Main.projectile[i];
+                if (!proj.active || proj.owner != player.whoAmI)
+                    continue;
+                if (proj.ModProjectile is PWingFakePlayerPossessingProjectile fppp && fppp.FakePlayer != null && fppp.FakePlayer.FakePlayerType == fakePlayerType)
+                {
+                    result.Add(fppp.FakePlayer);
+                }
+            }
+        }
+
         public static void DrawMyFakePlayers(Player player, int drawType, int drawState)
         {
             if (player == null)
                 return;
-            List<PWingFakePlayer> fakePlayers = GetFakePlayers(player);
-            if (fakePlayers == null || fakePlayers.Count <= 0)
+            fakePlayerBuffer.Clear();
+            CollectFakePlayers(player, drawType, fakePlayerBuffer);
+            if (fakePlayerBuffer.Count <= 0)
                 return;
-            for (int i = 0; i < fakePlayers.Count; i++)
+            for (int i = 0; i < fakePlayerBuffer.Count; i++)
             {
-                PWingFakePlayer fakePlayer = fakePlayers[i];
+                PWingFakePlayer fakePlayer = fakePlayerBuffer[i];
                 if (fakePlayer == null)
                     continue;
                 PlayerDrawSet drawInfo = new PlayerDrawSet();
-                if (fakePlayer.FakePlayerType == drawType)
+                bool canIDraw = fakePlayer.PrepareDrawing(ref drawInfo, player, drawState);
+                if (canIDraw)
                 {
-                    bool canIDraw = fakePlayer.PrepareDrawing(ref drawInfo, player, drawState);
-                    if (canIDraw)
-                    {
-                        Main.spriteBatch.End();
-                        Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+                    Main.spriteBatch.End();
+                    Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, DepthStencilState.Default, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
 
-                        DrawFromCache(ref drawInfo);
-                        fakePlayer.DrawFrontHandAndHeldProj(Main.spriteBatch, player, drawState);
-                    }
+                    DrawFromCache(ref drawInfo);
+                    fakePlayer.DrawFrontHandAndHeldProj(Main.spriteBatch, player, drawState);
                 }
             }
         }

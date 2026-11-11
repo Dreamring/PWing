@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
@@ -107,16 +106,14 @@ namespace PWing.Content.FakePlayer
     public static class PWingFakePlayerHelper
     {
         public static HashSet<int> FakePlayerPossessingProjectile;
-        public static int[] FakePlayerItemBlacklist;
         public static HashSet<int> HydroPlayerItemBlacklist;
         public static HashSet<int> CloseRangeItemsForFakePlayer;
-        public static int[] FakePlayerItemWhitelist;
+        public static HashSet<int> FakePlayerItemWhitelist;
 
         public static void Initialize()
         {
             FakePlayerPossessingProjectile = new HashSet<int>();
-            FakePlayerItemBlacklist = new int[] { };
-            FakePlayerItemWhitelist = new int[] {
+            FakePlayerItemWhitelist = new HashSet<int> {
                 ItemID.LawnMower,
                 ItemID.CarbonGuitar,
                 ItemID.IvyGuitar,
@@ -134,13 +131,25 @@ namespace PWing.Content.FakePlayer
                 ItemID.FairyQueenMagicItem
             };
         }
+
+        public static void Unload()
+        {
+            FakePlayerPossessingProjectile = null;
+            FakePlayerItemWhitelist = null;
+            HydroPlayerItemBlacklist = null;
+            CloseRangeItemsForFakePlayer = null;
+            PWingFakePlayerProjectile.OwnerOfThisUpdateCycle = -1;
+            PWingFakePlayerProjectile.OwnerOfThisDrawCycle = -1;
+            PWingFakePlayerProjectile.BeginStartNetUpdate = 0;
+            PWingFakePlayer.SupressNetMessage13and41 = false;
+            PWingFakePlayer.SupressSound = false;
+        }
     }
 
     public class PWingFakePlayerProjectile : GlobalProjectile
     {
         public static int OwnerOfThisUpdateCycle = -1;
         public static int OwnerOfThisDrawCycle = -1;
-        public static bool FullBrightThisDrawCycle = false;
         public static int BeginStartNetUpdate = 0;
 
         public override bool InstancePerEntity => true;
@@ -177,7 +186,7 @@ namespace PWing.Content.FakePlayer
             if (FakeOwnerIdentity == -1)
                 return;
             projectile.ownerHitCheck = false;
-            Projectile fakePlayer = Main.projectile.Where(x => x.identity == FakeOwnerIdentity).FirstOrDefault();
+            Projectile fakePlayer = FindProjectileByIdentity(FakeOwnerIdentity);
             if (fakePlayer == null)
             {
                 return;
@@ -197,11 +206,24 @@ namespace PWing.Content.FakePlayer
             }
         }
 
+        //按 identity 查找宿主弹幕，替代 LINQ 全表扫描，避免每帧产生枚举器与闭包分配
+        private static Projectile FindProjectileByIdentity(int identity)
+        {
+            for (int i = 0; i < Main.projectile.Length; i++)
+            {
+                if (Main.projectile[i].identity == identity)
+                {
+                    return Main.projectile[i];
+                }
+            }
+            return null;
+        }
+
         public PWingFakePlayerPossessingProjectile WhoOwnsMe(Projectile projectile)
         {
             if (FakeOwnerIdentity == -1)
                 return null;
-            Projectile fakePlayer = Main.projectile.Where(x => x.identity == FakeOwnerIdentity).FirstOrDefault();
+            Projectile fakePlayer = FindProjectileByIdentity(FakeOwnerIdentity);
             if (fakePlayer == null)
                 return null;
             if (PWingFakePlayerHelper.FakePlayerPossessingProjectile.Contains(fakePlayer.type) && fakePlayer.active)

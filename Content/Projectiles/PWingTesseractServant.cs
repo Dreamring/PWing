@@ -49,6 +49,11 @@ namespace PWing.Content.Projectiles
         private int timeSinceLastTP = 0;
         private bool runOnce = true;
         private float TotalTesseracts = 1;
+        // 几何绘制缓冲与白像素贴图复用，避免每个面/晶体每帧重复分配
+        private static readonly List<Vector2> facePoints = new List<Vector2>();
+        private static readonly List<float> faceDepths = new List<float>();
+        private static Texture2D whitePixelTexture;
+        private static Texture2D WhitePixelTexture => whitePixelTexture ??= ModContent.Request<Texture2D>("PWing/Common/WhitePixel").Value;
         public int MyUniqueID => (int)Projectile.ai[1] % 10;
 
         private int FindFirstAvailableID()
@@ -96,7 +101,6 @@ namespace PWing.Content.Projectiles
 
             int useItemSlot = 40 + MyUniqueID;
             FakePlayer.OverrideUseSlot = useItemSlot;
-            FakePlayer.TesseractNumber = Projectile.ai[1];
 
             if (!player.HasBuff<PWingTesseractBuff>())
             {
@@ -117,6 +121,14 @@ namespace PWing.Content.Projectiles
         private bool validItem;
         private bool lastSkipDraw = false;
         private int TrailingType = 0;
+        // 上次同步到远端的表现状态，用于把每帧同步降频为“变化 + 心跳”
+        private Vector2 lastSyncedCursorArea;
+        private int lastSyncedDirection;
+        private int lastSyncedItemAnimation;
+        private int lastSyncedItemAnimationMax;
+        private int lastSyncedItemTime;
+        private int lastSyncedTrailingType;
+        private int syncTimer;
 
         public override void AI()
         {
@@ -277,7 +289,9 @@ namespace PWing.Content.Projectiles
 
                     for (float distM = 0.1f; distM < 1; distM += 0.05f)
                     {
-                        if (Main.tile[(int)fromNPC.X / 16, (int)fromNPC.Y / 16].HasTile)
+                        int tileX = (int)fromNPC.X / 16;
+                        int tileY = (int)fromNPC.Y / 16;
+                        if (!WorldGen.InWorld(tileX, tileY) || Main.tile[tileX, tileY].HasTile)
                         {
                             break;
                         }
@@ -383,7 +397,24 @@ namespace PWing.Content.Projectiles
 
             if (Main.myPlayer == player.whoAmI)
             {
-                Projectile.netUpdate = true;
+                syncTimer++;
+                bool cursorMoved = Vector2.DistanceSquared(lastSyncedCursorArea, cursorArea) > 64f;
+                bool stateChanged = lastSyncedDirection != Direction
+                    || lastSyncedItemAnimation != itemAnimation
+                    || lastSyncedItemAnimationMax != itemAnimationMax
+                    || lastSyncedItemTime != itemTime
+                    || lastSyncedTrailingType != TrailingType;
+                if (cursorMoved || syncTimer >= 15 || (stateChanged && syncTimer >= 3))
+                {
+                    syncTimer = 0;
+                    lastSyncedCursorArea = cursorArea;
+                    lastSyncedDirection = Direction;
+                    lastSyncedItemAnimation = itemAnimation;
+                    lastSyncedItemAnimationMax = itemAnimationMax;
+                    lastSyncedItemTime = itemTime;
+                    lastSyncedTrailingType = TrailingType;
+                    Projectile.netUpdate = true;
+                }
             }
         }
 
@@ -423,7 +454,7 @@ namespace PWing.Content.Projectiles
             if (runOnce || FakePlayer == null || aliveCounter <= 3)
                 return false;
 
-            PWingConfig config = PWingConfig.Instance;
+            PWingConfig config = PWing.Config;
             Color drawColor = FakePlayer.MyBorderColor();
             drawColor = Color.Lerp(Color.Gray, drawColor, config.tesseractColorSaturation);
             
@@ -491,7 +522,7 @@ namespace PWing.Content.Projectiles
 
         public void DrawWings(Color color, float innerScale)
         {
-            float animSpeed = PWingConfig.Instance.tesseractAnimationSpeed;
+            float animSpeed = PWing.Config.tesseractAnimationSpeed;
             int counter = (int)(Main.GameUpdateCount * animSpeed);
             for (int j = -1; j <= 1; j += 2)
             {
@@ -505,17 +536,19 @@ namespace PWing.Content.Projectiles
 
         public void DrawCrystal(Color color, float degreesOffset, float size = 8f, float innerScale = 2f)
         {
-            Texture2D whitePixel = ModContent.Request<Texture2D>("PWing/Common/WhitePixel").Value;
+            Texture2D whitePixel = WhitePixelTexture;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float radians = MathHelper.ToRadians(degreesOffset);
             drawPosition += new Vector2(0, -20 - size).RotatedBy(radians);
             float root2 = 3.5f;
-            List<Vector2> points = new List<Vector2>();
-            List<float> depths = new List<float>();
+            List<Vector2> points = facePoints;
+            List<float> depths = faceDepths;
+            points.Clear();
+            depths.Clear();
             float bonus = 0f;
             float northDepth = 0;
             float southDepth = 0;
-            float animSpeed = PWingConfig.Instance.tesseractAnimationSpeed;
+            float animSpeed = PWing.Config.tesseractAnimationSpeed;
             int counter = (int)(Main.GameUpdateCount * 2 * animSpeed);
             for (int a = 0; a < 6; a++)
             {
@@ -558,8 +591,10 @@ namespace PWing.Content.Projectiles
 
         public void DrawTesseract(Color color, float innerScale)
         {
-            outerPoints = new List<Vector2>();
-            outerDepths = new List<float>();
+            outerPoints ??= new List<Vector2>();
+            outerDepths ??= new List<float>();
+            outerPoints.Clear();
+            outerDepths.Clear();
             float scale = 14f;
 
             DrawFace(color, 0, scale, innerScale);
@@ -572,7 +607,7 @@ namespace PWing.Content.Projectiles
             DrawFace(color, 180, 2 * scale, innerScale);
             DrawFace(color, 270, 2 * scale, innerScale);
 
-            Texture2D whitePixel = ModContent.Request<Texture2D>("PWing/Common/WhitePixel").Value;
+            Texture2D whitePixel = WhitePixelTexture;
             int halfWay = outerPoints.Count / 2;
 
             for (int i = 0; i < outerPoints.Count / 2; i++)
@@ -587,14 +622,16 @@ namespace PWing.Content.Projectiles
 
         public void DrawFace(Color color, float degreesOffset, float size = 8f, float innerScale = 2f)
         {
-            Texture2D whitePixel = ModContent.Request<Texture2D>("PWing/Common/WhitePixel").Value;
+            Texture2D whitePixel = WhitePixelTexture;
             Vector2 drawPosition = Projectile.Center - Main.screenPosition;
             float root2 = (float)Math.Sqrt(2);
-            float animSpeed = PWingConfig.Instance.tesseractAnimationSpeed;
+            float animSpeed = PWing.Config.tesseractAnimationSpeed;
             int counter = (int)(Main.GameUpdateCount * animSpeed);
 
-            List<Vector2> points = new List<Vector2>();
-            List<float> depths = new List<float>();
+            List<Vector2> points = facePoints;
+            List<float> depths = faceDepths;
+            points.Clear();
+            depths.Clear();
             float bonus = MathHelper.TwoPi * Projectile.ai[1] / TotalTesseracts;
 
             for (int a = 0; a < 4; a++)
