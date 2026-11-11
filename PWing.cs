@@ -38,9 +38,7 @@ namespace PWing
         {
             //mod消息类型
             SyncBossKills,//同步BOSS击杀记录
-            RequestBossKills,//请求补发BOSS击杀记录
-            SyncTileLocations,//同步位置信息（过渡：与 ImportantTilesWorld 同步删除）
-            RequestTileLocations//请求位置信息（过渡）
+            RequestBossKills//请求补发BOSS击杀记录
         }
         
         //处理网络包

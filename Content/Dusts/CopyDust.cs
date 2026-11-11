@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace PWing.Content.Dusts
@@ -12,7 +13,7 @@ namespace PWing.Content.Dusts
         }
         public override void SetStaticDefaults()
         {
-            UpdateType = 267;
+            UpdateType = DustID.RainbowMk2;
         }
         public override Color? GetAlpha(Dust dust, Color lightColor)
         {
