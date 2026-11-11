@@ -10,11 +10,10 @@ A wings mod with growth mechanics, a tesseract summon weapon, and an auto-miner 
 - Horizontal flight speed improves with each boss defeated
 - Additional stat boosts per boss:
   - +5 Max HP
-  - +1% All Damage
-  - +1% Critical Strike Chance
+  - +20% Damage
+  - +0.5% Damage Reduction
   - +1 Defense
-  - +0.2 Base Attack Damage
-  - +0.1 Life Regeneration
+  - +6 Life Regeneration
   - +5 Max Mana
 - Every 5 boss defeats:
   - +1 Minion Slot
@@ -41,13 +40,13 @@ A wings mod with growth mechanics, a tesseract summon weapon, and an auto-miner 
 - Supports gem mining (Amethyst, Topaz, Sapphire, Emerald, Ruby, Diamond)
 - Whitelist feature to add custom ores or items
 - Visual feedback with particle effects
+- Tile and inventory data stay in sync in multiplayer
 
 ### Configuration
 - Adjustable tesseract rendering: glow, lines, colors, animation speed
 - Toggle planet texture, wings, and weapon display
-- Wing flight parameter customization
+- Miner whitelist for additional ore items
 - Low-fidelity mode for performance optimization
-- Auto-save configuration with boss-triggered saves
 
 ## How to Obtain
 
@@ -65,6 +64,19 @@ Craft at a Heavy Work Bench with:
 - 10 Iron Bars
 
 ## Version History
+
+### v2.1
+- FIXED: Enabling the miner whitelist could throw during initialization and break ore detection
+- FIXED: Miner UI hint text was not displayed
+- FIXED: Tesseract slot borders could be drawn over other UIs such as the miner
+- FIXED: Summon targeting could index tiles outside the world near world edges
+- FIXED: Mined tiles were not synced to remote clients in host & play
+- IMPROVED: Fake player state is always restored if item usage throws
+- IMPROVED: Zero-allocation mining loop while keeping the same mining rate
+- IMPROVED: Lower summon network sync rate and cached rendering resources
+- IMPROVED: Boss kill records are synced by the server in multiplayer
+- REMOVED: Mod-provided auto-save; vanilla saving is used instead
+- CLEANED: Removed dead code and assets, unified localization
 
 ### v2.0
 - NEW: Tesseract Staff - Summon shadow copies that attack with your inventory items
@@ -119,11 +131,10 @@ Enjoy your journey with the Gilded Blade Wings, Tesseract Staff, and Azafure Min
 - 水平飞行速度随击败BOSS数量提升
 - 每个BOSS提供的额外属性加成：
   - +5 最大生命值
-  - +1% 全伤害
-  - +1% 暴击率
+  - +20% 伤害
+  - +0.5% 伤害减免
   - +1 防御力
-  - +0.2 基础攻击力
-  - +0.1 生命恢复
+  - +6 生命再生
   - +5 最大魔力
 - 每击败5个BOSS：
   - +1 召唤栏
@@ -150,13 +161,13 @@ Enjoy your journey with the Gilded Blade Wings, Tesseract Staff, and Azafure Min
 - 支持宝石挖掘（紫宝石、黄宝石、蓝宝石、绿宝石、红宝石、钻石）
 - 白名单功能可添加自定义矿石或物品
 - 粒子效果提供视觉反馈
+- 多人游戏中方块与库存数据保持同步
 
 ### 配置
 - 超立方渲染参数配置：散光、线条、饱和度、动画速度
 - 可开关星球纹理、翅膀、武器显示
-- 翅膀飞行参数调整
+- 采矿机白名单物品设置
 - 低精度模式优化性能
-- 自动保存配置
 
 ## 获取方式
 
@@ -174,6 +185,19 @@ Enjoy your journey with the Gilded Blade Wings, Tesseract Staff, and Azafure Min
 - 10个铁锭
 
 ## 版本历史
+
+### v2.1
+- 修复：开启采矿机白名单后可能导致的初始化异常
+- 修复：采矿机界面提示文本无法显示
+- 修复：超立方体边框在采矿机等其他界面被误绘
+- 修复：分身在世界边缘索敌时可能出现的越界异常
+- 修复：主机开服时采矿机挖掉的方块不同步给其他玩家
+- 优化：分身使用物品出现异常时会安全回退，不再污染玩家状态
+- 优化：采矿机挖掘改为零分配循环，保持原有挖掘效率
+- 优化：分身网络同步降频，武器描边贴图与绘制缓冲复用
+- 优化：BOSS击杀记录在多人游戏中由服务器统一同步
+- 移除：模组自带的自动保存功能，改由游戏原版负责
+- 清理：删除未使用的代码与资源，统一中英文本地化
 
 ### v2.0
 - 新增：超立方杖 - 召唤分身使用物品攻击敌人
