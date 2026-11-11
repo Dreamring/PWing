@@ -17,6 +17,8 @@ namespace PWing.Content.Items.Wings
     [AutoloadEquip(EquipType.Wings)]
     public class GildedBladeWings : ModItem
     {
+        private int lastAppliedBossKills = -1;
+
         public override void SetStaticDefaults()
         {
             this.SetResearchCost(1);
@@ -41,102 +43,103 @@ namespace PWing.Content.Items.Wings
         {
             Color goldenColor = new Color(255, 215, 0);
             Color brightGold = new Color(255, 236, 139);
-            
-            // 保存物品名称提示行
+            const string keyPrefix = "Mods.PWing.Items.GildedBladeWings.";
+
+            // 保存物品名称提示行（名称文本由本地化 DisplayName 提供）
             TooltipLine nameLine = null;
             foreach (var line in tooltips)
             {
                 if (line.Name == "ItemName")
                 {
                     nameLine = line;
-                    nameLine.Text = "梦环";
                     nameLine.OverrideColor = brightGold;
                     break;
                 }
             }
-            
+
             tooltips.Clear();
-            
+
             if (nameLine != null)
             {
                 tooltips.Add(nameLine);
             }
-            
-            tooltips.Add(new TooltipLine(Mod, "Lore1", "「此梦环者，非世间所有，乃幻想之境所化」"));
-            tooltips.Add(new TooltipLine(Mod, "Lore2", "「随主人征战四方，共成长，同进退」"));
-            tooltips.Add(new TooltipLine(Mod, "Lore3", "「每斩一魔，其力愈增，终成神器」"));
-            
+
+            tooltips.Add(new TooltipLine(Mod, "Lore1", Language.GetTextValue(keyPrefix + "Lore1")));
+            tooltips.Add(new TooltipLine(Mod, "Lore2", Language.GetTextValue(keyPrefix + "Lore2")));
+            tooltips.Add(new TooltipLine(Mod, "Lore3", Language.GetTextValue(keyPrefix + "Lore3")));
+
             tooltips.Add(new TooltipLine(Mod, "EmptyLine1", ""));
-            
+
             int bossKills = 0;
             if (Main.LocalPlayer != null)
             {
                 bossKills = PWingWorld.GetBossKillCount(Main.LocalPlayer);
             }
-            
+
             float baseFlightTime = 1f;
             float currentFlightTime = baseFlightTime + bossKills * 0.5f;
             float baseFlightSpeed = 1.5f;
             float currentFlightSpeed = baseFlightSpeed + bossKills * 0.1f;
-            
-            TooltipLine flightTimeLine = new TooltipLine(Mod, "FlightTime", $"【飞行时长】{currentFlightTime:F1}秒");
+
+            TooltipLine flightTimeLine = new TooltipLine(Mod, "FlightTime", Language.GetTextValue(keyPrefix + "FlightTime", currentFlightTime.ToString("F1")));
             flightTimeLine.OverrideColor = new Color(135, 206, 250);
             tooltips.Add(flightTimeLine);
-            
-            TooltipLine flightSpeedLine = new TooltipLine(Mod, "FlightSpeed", $"【飞行速度】{currentFlightSpeed:F1}");
+
+            TooltipLine flightSpeedLine = new TooltipLine(Mod, "FlightSpeed", Language.GetTextValue(keyPrefix + "FlightSpeed", currentFlightSpeed.ToString("F1")));
             flightSpeedLine.OverrideColor = new Color(144, 238, 144);
             tooltips.Add(flightSpeedLine);
-            
-            TooltipLine bossKillsLine = new TooltipLine(Mod, "BossKills", $"【悟道层数】{bossKills}层");
+
+            TooltipLine bossKillsLine = new TooltipLine(Mod, "BossKills", Language.GetTextValue(keyPrefix + "BossKills", bossKills));
             bossKillsLine.OverrideColor = goldenColor;
             tooltips.Add(bossKillsLine);
-            
+
             tooltips.Add(new TooltipLine(Mod, "EmptyLine2", ""));
-            
+
+            // 以下数值必须与 UpdateAccessory 中的实际效果保持一致
             int lifeBonus = bossKills * 5;
             float enduranceBonus = bossKills * 0.5f;
             int defenseBonus = bossKills;
-            float attackBonus = bossKills * 0.2f;
-            float lifeRegenBonus = bossKills * 0.1f;
+            float attackBonusPercent = bossKills * 20f;
+            int lifeRegenBonus = (int)(bossKills * 0.1f * 60);
             int manaBonus = bossKills * 5;
             int extraSlots = bossKills / 5;
-            
-            TooltipLine lifeBonusLine = new TooltipLine(Mod, "LifeBonus", $"气血 +{lifeBonus}");
+
+            TooltipLine lifeBonusLine = new TooltipLine(Mod, "LifeBonus", Language.GetTextValue(keyPrefix + "LifeBonus", lifeBonus));
             lifeBonusLine.OverrideColor = new Color(255, 99, 71);
             tooltips.Add(lifeBonusLine);
-            
-            TooltipLine enduranceBonusLine = new TooltipLine(Mod, "EnduranceBonus", $"减伤 +{enduranceBonus:F1}%");
+
+            TooltipLine enduranceBonusLine = new TooltipLine(Mod, "EnduranceBonus", Language.GetTextValue(keyPrefix + "EnduranceBonus", enduranceBonus.ToString("F1")));
             enduranceBonusLine.OverrideColor = new Color(255, 165, 0);
             tooltips.Add(enduranceBonusLine);
-            
-            TooltipLine defenseBonusLine = new TooltipLine(Mod, "DefenseBonus", $"护体 +{defenseBonus}");
+
+            TooltipLine defenseBonusLine = new TooltipLine(Mod, "DefenseBonus", Language.GetTextValue(keyPrefix + "DefenseBonus", defenseBonus));
             defenseBonusLine.OverrideColor = new Color(50, 205, 50);
             tooltips.Add(defenseBonusLine);
-            
-            TooltipLine attackBonusLine = new TooltipLine(Mod, "AttackBonus", $"力道 +{attackBonus:F1}");
+
+            TooltipLine attackBonusLine = new TooltipLine(Mod, "AttackBonus", Language.GetTextValue(keyPrefix + "AttackBonus", attackBonusPercent.ToString("F1")));
             attackBonusLine.OverrideColor = new Color(0, 191, 255);
             tooltips.Add(attackBonusLine);
-            
-            TooltipLine lifeRegenBonusLine = new TooltipLine(Mod, "LifeRegenBonus", $"回春 +{lifeRegenBonus:F1}");
+
+            TooltipLine lifeRegenBonusLine = new TooltipLine(Mod, "LifeRegenBonus", Language.GetTextValue(keyPrefix + "LifeRegenBonus", lifeRegenBonus));
             lifeRegenBonusLine.OverrideColor = new Color(255, 182, 193);
             tooltips.Add(lifeRegenBonusLine);
-            
-            TooltipLine manaBonusLine = new TooltipLine(Mod, "ManaBonus", $"真元 +{manaBonus}");
+
+            TooltipLine manaBonusLine = new TooltipLine(Mod, "ManaBonus", Language.GetTextValue(keyPrefix + "ManaBonus", manaBonus));
             manaBonusLine.OverrideColor = new Color(148, 0, 211);
             tooltips.Add(manaBonusLine);
-            
+
             if (extraSlots > 0)
             {
-                TooltipLine slotBonusLine = new TooltipLine(Mod, "SlotBonus", $"【神通格】+{extraSlots}");
+                TooltipLine slotBonusLine = new TooltipLine(Mod, "SlotBonus", Language.GetTextValue(keyPrefix + "SlotBonus", extraSlots));
                 slotBonusLine.OverrideColor = goldenColor;
                 tooltips.Add(slotBonusLine);
             }
-            
+
             tooltips.Add(new TooltipLine(Mod, "EmptyLine3", ""));
-            
+
             if (bossKills == 0)
             {
-                TooltipLine growthHintLine = new TooltipLine(Mod, "GrowthHint", "「初醒待悟，斩魔启灵」");
+                TooltipLine growthHintLine = new TooltipLine(Mod, "GrowthHint", Language.GetTextValue(keyPrefix + "GrowthHint"));
                 growthHintLine.OverrideColor = new Color(255, 165, 0);
                 tooltips.Add(growthHintLine);
             }
@@ -144,7 +147,7 @@ namespace PWing.Content.Items.Wings
             {
                 float nextFlightTime = currentFlightTime + 0.5f;
                 float nextFlightSpeed = currentFlightSpeed + 0.1f;
-                TooltipLine nextGrowthLine = new TooltipLine(Mod, "NextGrowth", $"下一层：{nextFlightTime:F1}秒 · {nextFlightSpeed:F1}速");
+                TooltipLine nextGrowthLine = new TooltipLine(Mod, "NextGrowth", Language.GetTextValue(keyPrefix + "NextGrowth", nextFlightTime.ToString("F1"), nextFlightSpeed.ToString("F1")));
                 nextGrowthLine.OverrideColor = new Color(255, 182, 193);
                 tooltips.Add(nextGrowthLine);
             }
@@ -181,8 +184,12 @@ namespace PWing.Content.Items.Wings
             float baseAcceleration = 1f; // 基础加速度
             float currentAcceleration = baseAcceleration + speedIncrease * 0.5f;
             
-            //更新翅膀统计
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats((int)(currentFlightTime * 60), currentFlightSpeed, currentAcceleration);
+            //更新翅膀统计（仅在成长层数变化时写入全局表，避免每帧覆盖）
+            if (lastAppliedBossKills != bossKills)
+            {
+                lastAppliedBossKills = bossKills;
+                ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats((int)(currentFlightTime * 60), currentFlightSpeed, currentAcceleration);
+            }
             
             //添加新的成长属性增益
             //每击败一个BOSS，增加以下属性：
@@ -199,22 +206,9 @@ namespace PWing.Content.Items.Wings
             player.maxMinions += extraSlots; // 增加召唤栏
             player.maxTurrets += extraSlots; // 增加哨兵栏
             
-            //添加额外的视觉效果
-            if (bossKills > 0)
+            // 按住上或下键时附带水平位移（类似天界星盘）
+            if (player.wingsLogic > 0 && player.controlDown != player.controlUp)
             {
-                //每击败一个BOSS，增加一点发光效果
-                // 暂时移除MachinaBooster引用，后续可添加自定义粒子效果
-            }
-            
-            // 添加按住down和Up键进行水平移动的功能（类似天界星盘）
-            if (player.wingsLogic > 0 && player.controlDown && !player.controlUp)
-            {
-                // 按住向下键时的水平移动
-                player.position.X += player.velocity.X * 0.1f;
-            }
-            else if (player.wingsLogic > 0 && player.controlUp && !player.controlDown)
-            {
-                // 按住向上键时的水平移动
                 player.position.X += player.velocity.X * 0.1f;
             }
         }

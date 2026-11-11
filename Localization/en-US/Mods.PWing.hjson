@@ -4,8 +4,52 @@ Items: {
 		Tooltip: An intelligent device that automatically mines and filters ores
 	}
 
-	SlotInfo2: Insert Raw Ore
-	AzMinerOreWarning: Only ore items can be placed in filter slots!
+	GildedBladeWings: {
+		DisplayName: Dream Ring
+		Tooltip: This Dream Ring is not of this world, but born from the realm of fantasy
+		Lore1: This Dream Ring is not of this world, but born from the realm of fantasy
+		Lore2: It follows its master through every battle, growing stronger together
+		Lore3: Each demon slain deepens its power, until it becomes a divine artifact
+		FlightTime: Flight Time: {0}s
+		FlightSpeed: Flight Speed: {0}
+		BossKills: Enlightenment: {0}
+		LifeBonus: Life +{0}
+		EnduranceBonus: Damage Reduction +{0}%
+		DefenseBonus: Defense +{0}
+		AttackBonus: Damage +{0}%
+		LifeRegenBonus: Life Regen +{0}
+		ManaBonus: Mana +{0}
+		SlotBonus: Minion Slots +{0}
+		GrowthHint: Awaiting its first awakening, seeking demons to slay
+		NextGrowth: Next: {0}s · {1} speed
+	}
+
+	PWingTesseract: {
+		DisplayName: P Wing Tesseract
+		Tooltip:
+			'''
+			Summons void clones that attack enemies with items
+			Starting from the bottom-left inventory slot to the bottom-right, each clone uses a different item
+			On first summon, clones wait for your command to decide how to use the item (left or right click) and the duration (charged items)
+			After the first use, clones will keep using the item automatically in the chosen way
+			Clone item damage scales with void and summon damage bonuses, but is reduced by 30% (multiplicative)
+			'''
+	}
+}
+
+SlotInfo2: Insert Raw Ore
+AzMinerOreWarning: Only ore items can be placed in filter slots!
+
+Buffs: {
+	PWingTesseractBuff: {
+		DisplayName: P Wing Tesseract
+		Description: You are everywhere, you have everything, you are always present
+	}
+}
+
+Projectiles: {
+	PWingTesseractLaser.DisplayName: P Wing Tesseract Laser
+	PWingTesseractServant.DisplayName: P Wing Tesseract Servant
 }
 
 Configs: {
@@ -17,66 +61,9 @@ Configs: {
 			Tooltip: Enable low-fidelity rendering mode to improve game performance. Visual effects will be reduced.
 		}
 
-		WingFunction: {
-			Label: Wing Function
-			Tooltip: Toggle flight functionality for the wings
-		}
-
-		CreateFlight: {
-			Label: Creative Flight
-			Tooltip: Enable flight in creative mode
-		}
-
-		Headers: {
-			TesseractConfigs: Tesseract Configuration
-			WingConfigs: Wing Configs Header
-			AutoSaveConfigs: Auto Save Configs Header
-			AzafureMinerConfigs: Azafure Miner Configs Header
-		}
-
-		WeaponWithGrowingDamageToggle: {
-			Label: Weapon Damage Growth
-			Tooltip: Enable weapon damage growth based on boss kills
-		}
-
-		autoSaveInterval: {
-			Label: Auto Save Interval
-			Tooltip: Auto save interval in seconds. Range: 60-3600 seconds.
-		}
-
-		autoSaveEnabled: {
-			Label: Enable Auto Save
-			Tooltip: Enable automatic saving at specified intervals and when defeating bosses.
-		}
-
-		autoSaveOnBossKill: {
-			Label: Save on Boss Kill
-			Tooltip: Enable automatic saving when defeating bosses. Can be disabled independently while keeping timer-based saves.
-		}
-
-		minSaveInterval: {
-			Label: Min Save Interval
-			Tooltip: Minimum time between auto-saves in seconds to prevent frequent saves. Range: 10-300 seconds.
-		}
-
-		UltraSpeedMode: {
-			Label: Ultra Speed Mode
-			Tooltip: Enable to significantly increase flight speed
-		}
-
-		UltraSpeedMultiplier: {
-			Label: Ultra Speed Multiplier
-			Tooltip: Speed multiplier for flight
-		}
-
 		azafureMinerWhitelistEnabled: {
 			Label: Miner Whitelist
 			Tooltip: Enable to add additional ores or items to the miner's whitelist
-		}
-
-		azafureMinerWhitelistTileIDs: {
-			Label: Miner Whitelist Tile IDs
-			Tooltip: Whitelist for directly specifying tile IDs
 		}
 
 		azafureMinerWhitelistItems: {
@@ -118,39 +105,11 @@ Configs: {
 			Label: Show Weapon
 			Tooltip: Whether to display the weapon texture held by the summoned minion.
 		}
-	}
-
-	AzafureMinerConfig: {
-		DisplayName: Azafure Digital Miner Configuration
 
 		Headers: {
-			挖掘参数: Mining Parameters
-			存储参数: Storage Parameters
-		}
-
-		MiningSpeed: {
-			Label: Mining Speed
-			Tooltip: Mining speed in game frames. Lower values mean faster mining.
-		}
-
-		MiningRange: {
-			Label: Mining Range
-			Tooltip: Radius of mining range. Larger values cover more area.
-		}
-
-		ParticleChance: {
-			Label: Particle Effect Chance
-			Tooltip: Chance of producing particle effects when mining. Lower values mean higher chance. Set to 0 for always on.
-		}
-
-		ItemsCount: {
-			Label: Item Slots
-			Tooltip: Number of item storage slots in the miner.
-		}
-
-		FiltersCount: {
-			Label: Filter Slots
-			Tooltip: Number of filter slots for specifying ore types to mine.
+			WingConfigs: Wing Configs
+			AzafureMinerConfigs: Azafure Miner Configs
+			TesseractConfigs: Tesseract Configuration
 		}
 	}
 }
