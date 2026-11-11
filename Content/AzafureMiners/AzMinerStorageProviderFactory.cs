@@ -7,7 +7,7 @@ namespace PWing.Content.AzafureMiners
 {
 	internal class AzMinerStorageProviderFactory : IStorageProviderFactory
 	{
-		public string Identifier => "CE.AzMiner";
+		public string Identifier => "PWing.AzMiner";
 
 		public int Priority => 5;
 

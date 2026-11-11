@@ -13,7 +13,7 @@ namespace PWing.Content.AzafureMiners
 		private readonly PWingAzMinerTP _azMinerTP;
 		private readonly Point16 _position;
 
-		public string Identifier => "CE.AzMiner";
+		public string Identifier => "PWing.AzMiner";
 		public Point16 Position => _position;
 
 		public Vector2 WorldCenter
