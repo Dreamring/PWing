@@ -11,13 +11,25 @@ using Terraria.Graphics.Shaders;
 using Terraria.ID;
 using Terraria.ModLoader;
 using static PWing.Common.PlayerDrawing.MachinaBooster;
-using static PWing.PWing;
 
 namespace PWing.Common.PlayerDrawing
 {
     public class MachinaBooster : PlayerDrawLayer
     {
         public Texture2D[] wingAssets = null;// 用于存储翅膀相关的纹理资源
+        // 贴图缓存，避免每帧重复走资源请求
+        private Texture2D bladeTexture;
+        private Texture2D bladeFlippedTexture;
+        private Texture2D bladeOutlineTexture;
+        private Texture2D bladeOutlineFlippedTexture;
+        private Texture2D bladeHandleTexture;
+        private Texture2D bladeHandleFlippedTexture;
+        private Texture2D pixelTexture;
+        // 绘制数据缓冲复用
+        private static readonly List<DrawData> dataTrailsCache = new List<DrawData>();
+        private static readonly List<DrawData> dataBackCache = new List<DrawData>();
+        private static readonly List<DrawData> dataMiddleCache = new List<DrawData>();
+        private static readonly List<DrawData> dataFrontCache = new List<DrawData>();
         public bool HasBladeWings(PlayerDrawSet drawInfo) => drawInfo.drawPlayer.wings == EquipLoader.GetEquipSlot(Mod, "GildedBladeWings", EquipType.Wings);
         public override Position GetDefaultPosition() => new AfterParent(PlayerDrawLayers.Wings);
         // 可见性
@@ -97,17 +109,21 @@ namespace PWing.Common.PlayerDrawing
             //}a
             Player drawPlayer = drawInfo.drawPlayer;
             MachinaBoosterPlayer mbPlayer = drawPlayer.GetModPlayer<MachinaBoosterPlayer>();
-            List<DrawData> dataTrails = new List<DrawData>();
-            List<DrawData> dataBack = new List<DrawData>();
-            List<DrawData> dataMiddle = new List<DrawData>();
-            List<DrawData> dataFront = new List<DrawData>();
-            Texture2D blade = Mod.Assets.Request<Texture2D>("Assets/Items/Wings/BladeWing", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-            Texture2D bladeF = Mod.Assets.Request<Texture2D>("Assets/Items/Wings/BladeWingFlipped", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-            Texture2D bladeOutline = Mod.Assets.Request<Texture2D>("Assets/Items/Wings/BladeWingOutline", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-            Texture2D bladeOutlineF = Mod.Assets.Request<Texture2D>("Assets/Items/Wings/BladeWingOutlineFlipped", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-            Texture2D bladeHandle = Mod.Assets.Request<Texture2D>("Assets/Items/Wings/BladeWingHandle", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-            Texture2D bladeHandleF = Mod.Assets.Request<Texture2D>("Assets/Items/Wings/BladeWingHandleFlipped", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-            Texture2D pixel = Mod.Assets.Request<Texture2D>("Assets/Items/Secrets/WhitePixel", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            List<DrawData> dataTrails = dataTrailsCache;
+            List<DrawData> dataBack = dataBackCache;
+            List<DrawData> dataMiddle = dataMiddleCache;
+            List<DrawData> dataFront = dataFrontCache;
+            dataTrails.Clear();
+            dataBack.Clear();
+            dataMiddle.Clear();
+            dataFront.Clear();
+            Texture2D blade = bladeTexture ??= Mod.Assets.Request<Texture2D>("Assets/Items/Wings/BladeWing", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D bladeF = bladeFlippedTexture ??= Mod.Assets.Request<Texture2D>("Assets/Items/Wings/BladeWingFlipped", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D bladeOutline = bladeOutlineTexture ??= Mod.Assets.Request<Texture2D>("Assets/Items/Wings/BladeWingOutline", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D bladeOutlineF = bladeOutlineFlippedTexture ??= Mod.Assets.Request<Texture2D>("Assets/Items/Wings/BladeWingOutlineFlipped", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D bladeHandle = bladeHandleTexture ??= Mod.Assets.Request<Texture2D>("Assets/Items/Wings/BladeWingHandle", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D bladeHandleF = bladeHandleFlippedTexture ??= Mod.Assets.Request<Texture2D>("Assets/Items/Wings/BladeWingHandleFlipped", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            Texture2D pixel = pixelTexture ??= Mod.Assets.Request<Texture2D>("Assets/Items/Secrets/WhitePixel", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
 
             float drawX = (int)drawInfo.Position.X + drawPlayer.width / 2;
             float drawY = (int)drawInfo.Position.Y + drawPlayer.height / 2 + (drawPlayer.portableStoolInfo.IsInUse ? 14 : 0);
@@ -261,17 +277,9 @@ namespace PWing.Common.PlayerDrawing
         // MachinaBoosterPlayer 是 ModPlayer 的子类，用于管理玩家与“Machina Booster 翅膀”相关的逻辑（飞行状态、动画、网络同步等）
         public class MachinaBoosterPlayer : ModPlayer
         {
-            // 发送网络包以同步创意飞行状态（creativeFlight 和 SlowFlight）
-            public void SendPacket()
-            {
-                var packet = Mod.GetPacket(); // 创建 Mod 的网络包
-                packet.Write((byte)PWingMessageType.SyncCreativeFlight); // 写入消息类型
-                packet.Write((byte)Player.whoAmI); // 写入玩家 ID
-                packet.Send(); // 发送包到服务器/客户端
-                netUpdate = false; // 标记已同步
-            }
             // 翅膀的默认飞行速度（7f）
             public float wingSpeed = 7f;
+
 
 
 
@@ -279,8 +287,6 @@ namespace PWing.Common.PlayerDrawing
             public int epicWingType = 0;
             // 是否激活陀螺仪效果
             public bool gyro = false;
-            // 是否需要网络更新
-            public bool netUpdate = false;
             // 动画过渡浮点值（用于翅膀动画的平滑切换）
             public float FlightModeFloat = 0f;
             // 动画计数器（控制翅膀旋转和位置偏移）
@@ -514,6 +520,11 @@ namespace PWing.Common.PlayerDrawing
     }
     public class Halo : PlayerDrawLayer
     {
+        private static readonly List<DrawData> haloDrawData0 = new List<DrawData>();
+        private static readonly List<DrawData> haloDrawData1 = new List<DrawData>();
+        private static readonly List<DrawData> haloDrawData2 = new List<DrawData>();
+        private static Texture2D haloPixelTexture;
+
         public bool HasBladeWings(PlayerDrawSet drawInfo) => drawInfo.drawPlayer.wings == EquipLoader.GetEquipSlot(Mod, "GildedBladeWings", EquipType.Wings);
         public override Position GetDefaultPosition() => PlayerDrawLayers.AfterLastVanillaLayer;
         public override bool GetDefaultVisibility(PlayerDrawSet drawInfo)
@@ -540,10 +551,13 @@ namespace PWing.Common.PlayerDrawing
             //    return;
             Player drawPlayer = drawInfo.drawPlayer;
             _ = drawPlayer.GetModPlayer<MachinaBoosterPlayer>();
-            List<DrawData> drawData0 = new List<DrawData>();
-            List<DrawData> drawData1 = new List<DrawData>();
-            List<DrawData> drawData2 = new List<DrawData>();
-            Texture2D pixel = Mod.Assets.Request<Texture2D>("Assets/Items/Secrets/WhitePixel", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
+            List<DrawData> drawData0 = haloDrawData0;
+            List<DrawData> drawData1 = haloDrawData1;
+            List<DrawData> drawData2 = haloDrawData2;
+            drawData0.Clear();
+            drawData1.Clear();
+            drawData2.Clear();
+            Texture2D pixel = haloPixelTexture ??= Mod.Assets.Request<Texture2D>("Assets/Items/Secrets/WhitePixel", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
             int repeats = 40;
             Vector2 center = new Vector2((int)drawPlayer.Center.X, (int)drawPlayer.Center.Y + drawPlayer.gfxOffY) + new Vector2(-10 * drawPlayer.direction, -(drawPlayer.height / 2 + 6) * drawPlayer.gravDir);
             Vector2[] points = new Vector2[repeats];

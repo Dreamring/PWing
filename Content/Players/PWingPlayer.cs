@@ -10,6 +10,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using static PWing.PWing;
 
 namespace PWing.Content.Players
 {
@@ -73,6 +74,17 @@ namespace PWing.Content.Players
             return [];
         }
 
+        public override void OnEnterWorld()
+        {
+            // 多人环境下向服务器请求补发BOSS击杀记录
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+            {
+                var packet = Mod.GetPacket();
+                packet.Write((byte)PWingMessageType.RequestBossKills);
+                packet.Send();
+            }
+        }
+
         public override void SaveData(TagCompound tag)
         {
             if (DefeatedBosses.Count > 0)
@@ -106,16 +118,20 @@ namespace PWing.Content.Players
         {
             for (int i = 0; i < 10; i++)
                 activeTesseractIds[i] = false;
-            
+
             int type = ModContent.ProjectileType<PWingTesseractServant>();
-            for (int i = 0; i < Main.maxProjectiles; i++)
+            // 没有分身时直接跳过全弹幕扫描
+            if (Player.ownedProjectileCounts[type] > 0)
             {
-                Projectile proj = Main.projectile[i];
-                if (proj.active && proj.type == type && proj.owner == Player.whoAmI)
+                for (int i = 0; i < Main.maxProjectiles; i++)
                 {
-                    int id = (int)proj.ai[1] % 10;
-                    if (id >= 0 && id < 10)
-                        activeTesseractIds[id] = true;
+                    Projectile proj = Main.projectile[i];
+                    if (proj.active && proj.type == type && proj.owner == Player.whoAmI)
+                    {
+                        int id = (int)proj.ai[1] % 10;
+                        if (id >= 0 && id < 10)
+                            activeTesseractIds[id] = true;
+                    }
                 }
             }
             for (int i = 0; i < tesseractData.Length; i++)
@@ -131,9 +147,6 @@ namespace PWing.Content.Players
                 }
             }
         }
-
-        public int Probe = -1;
-        public int Probe2 = -1;
 
         public override bool Shoot(Item item, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {

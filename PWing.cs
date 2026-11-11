@@ -4,6 +4,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using PWing.Common.Configs;
 using PWing.Common.Systems;
+using PWing.Content.AzafureMiners;
 using PWing.Content.FakePlayer;
 
 namespace PWing
@@ -18,19 +19,28 @@ namespace PWing
             PWingDetours.Initialize();
             PlayerInventorySlotsManager.Load();
         }
+        public override void PostSetupContent()
+        {
+            //物品与图块数据在此阶段已全部就绪，一次性建立矿石查找表
+            PWingAzMinerTP.SetUpList();
+        }
         public override void Unload()
         {
+            PWingFakePlayer.ClearTextureCache();
+            PWingFakePlayerDrawing.Unload();
+            PWingFakePlayerHelper.Unload();
+            PlayerInventorySlotsManager.Unload();
+            PWingAzMinerTP.UnloadStaticData();
             //卸载操作
             Instance = null;
         }
         internal enum PWingMessageType : int
         {
             //mod消息类型
-            SyncGlobalCounter,//同步全局计数器
-            SyncCreativeFlight,//同步创造飞行
-            SyncTileLocations,//同步位置信息
-            RequestTileLocations,//请求定位图块位置
-            SyncBossKills//同步BOSS击杀记录
+            SyncBossKills,//同步BOSS击杀记录
+            RequestBossKills,//请求补发BOSS击杀记录
+            SyncTileLocations,//同步位置信息（过渡：与 ImportantTilesWorld 同步删除）
+            RequestTileLocations//请求位置信息（过渡）
         }
         
         //处理网络包

@@ -6,31 +6,12 @@ namespace PWing.Common.Configs
     public class PWingConfig : ModConfig
     {
         public override ConfigScope Mode => ConfigScope.ClientSide;
-        public static PWingConfig Instance => PWing.Config;
 
         [BackgroundColor(45, 50, 65, 192)]
         [Header("WingConfigs")]
         [DefaultValue(false)]
         [ReloadRequired]
         public bool lowFidelityMode { get; set; }
-
-        [BackgroundColor(45, 50, 65, 192)]
-        [Header("AutoSaveConfigs")]
-        [DefaultValue(true)]
-        public bool autoSaveEnabled { get; set; }
-
-        [DefaultValue(300)]
-        [Range(60, 3600)]
-        [Increment(30)]
-        public int autoSaveInterval { get; set; }
-
-        [DefaultValue(true)]
-        public bool autoSaveOnBossKill { get; set; }
-
-        [DefaultValue(30)]
-        [Range(10, 300)]
-        [Increment(10)]
-        public int minSaveInterval { get; set; }
 
         [BackgroundColor(45, 50, 65, 192)]
         [Header("AzafureMinerConfigs")]

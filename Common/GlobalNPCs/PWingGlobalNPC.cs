@@ -1,7 +1,6 @@
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using PWing.Common.Configs;
 using PWing.Content.Players;
 using PWing.Common.Systems;
 
@@ -11,31 +10,27 @@ namespace PWing.Common.GlobalNPCs
     {
         public override void OnKill(NPC npc)
         {
-            if (PWingUtils.IsBoss(npc))
+            if (!PWingUtils.IsBoss(npc))
+                return;
+            // 击杀记录以服务器/单人为准，客户端不再各自记账
+            if (Main.netMode == NetmodeID.MultiplayerClient)
+                return;
+            // 遍历所有玩家，更新他们的BOSS击杀记录
+            foreach (Player player in Main.player)
             {
-                // 遍历所有玩家，更新他们的BOSS击杀记录
-                foreach (Player player in Main.player)
+                if (player.active)
                 {
-                    if (player.active)
+                    PWingPlayer modPlayer = player.GetModPlayer<PWingPlayer>();
+                    // 记录BOSS击杀
+                    if (!modPlayer.DefeatedBosses.Contains(npc.type))
                     {
-                        PWingPlayer modPlayer = player.GetModPlayer<PWingPlayer>();
-                        // 记录BOSS击杀
-                        if (!modPlayer.DefeatedBosses.Contains(npc.type))
+                        modPlayer.DefeatedBosses.Add(npc.type);
+                        // 仅在服务器端同步
+                        if (Main.netMode == NetmodeID.Server)
                         {
-                            modPlayer.DefeatedBosses.Add(npc.type);
-                            // 仅在服务器端同步
-                            if (Main.netMode == NetmodeID.Server)
-                            {
-                                PWingWorld.SyncBossKills(player);
-                            }
+                            PWingWorld.SyncBossKills(player);
                         }
                     }
-                }
-
-                // BOSS击败时自动保存（检查配置开关）
-                if (PWingConfig.Instance.autoSaveOnBossKill)
-                {
-                    PWingWorld.PerformAutoSave("击败BOSS");
                 }
             }
         }
