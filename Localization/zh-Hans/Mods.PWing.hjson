@@ -22,6 +22,7 @@ Items: {
 		SlotBonus: 「召唤栏」+{0}
 		GrowthHint: 「初醒待悟，斩魔启灵」
 		NextGrowth: 下一层：{0}秒 · {1}速
+		ExpandHint: 按住 Shift 查看属性
 	}
 
 	PWingTesseract: {

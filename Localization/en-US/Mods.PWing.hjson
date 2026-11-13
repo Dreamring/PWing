@@ -22,6 +22,7 @@ Items: {
 		SlotBonus: Minion Slots +{0}
 		GrowthHint: Awaiting its first awakening, seeking demons to slay
 		NextGrowth: Next: {0}s · {1} speed
+		ExpandHint: Hold Shift to view stats
 	}
 
 	PWingTesseract: {

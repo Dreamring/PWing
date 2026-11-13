@@ -22,8 +22,8 @@ namespace PWing.Content.Items.Wings
         public override void SetStaticDefaults()
         {
             this.SetResearchCost(1);
-            //初始设置为雏翼的基础飞行能力
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(60, 1.5f, 1f); //雏翼基础：1秒飞行时间
+            //初始设置为雏翼的基础飞行能力，并开启按住下键悬浮（同天界星盘）
+            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(60, 1.5f, 1f, true, 6f, 1.5f); //雏翼基础：1秒飞行时间
         }
         public override void SetDefaults()
         {
@@ -69,6 +69,17 @@ namespace PWing.Content.Items.Wings
             tooltips.Add(new TooltipLine(Mod, "Lore3", Language.GetTextValue(keyPrefix + "Lore3")));
 
             tooltips.Add(new TooltipLine(Mod, "EmptyLine1", ""));
+
+            //未按住Shift时折叠属性区，仅显示展开提示
+            bool shiftHeld = Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift)
+                || Main.keyState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift);
+            if (!shiftHeld)
+            {
+                TooltipLine expandHintLine = new TooltipLine(Mod, "ExpandHint", Language.GetTextValue(keyPrefix + "ExpandHint"));
+                expandHintLine.OverrideColor = new Color(180, 180, 180);
+                tooltips.Add(expandHintLine);
+                return;
+            }
 
             int bossKills = 0;
             if (Main.LocalPlayer != null)
@@ -185,10 +196,12 @@ namespace PWing.Content.Items.Wings
             float currentAcceleration = baseAcceleration + speedIncrease * 0.5f;
             
             //更新翅膀统计（仅在成长层数变化时写入全局表，避免每帧覆盖）
+            //悬浮参数：按住下键+跳跃键悬浮时可水平移动，速度与水平飞行速度一致
             if (lastAppliedBossKills != bossKills)
             {
                 lastAppliedBossKills = bossKills;
-                ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats((int)(currentFlightTime * 60), currentFlightSpeed, currentAcceleration);
+                float hoverSpeed = 6f + Math.Min(bossKills * 0.1f, 3f);
+                ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats((int)(currentFlightTime * 60), currentFlightSpeed, currentAcceleration, true, hoverSpeed, 1.5f);
             }
             
             //添加新的成长属性增益
@@ -496,6 +509,39 @@ namespace PWing.Content.Items.Wings
                     spriteBatch.Draw(PixelTexture, bonusPoint, null, finalColor2, 0f, new Vector2(1, 1), 1.2f * scale, SpriteEffects.None, 0f);
                 }
             }
+        }
+    }
+
+    //按住下键+跳跃键时悬浮（效果同原版顶级飞行翅膀）
+    public class GildedBladeWingsHoverPlayer : ModPlayer
+    {
+        public override void PreUpdateMovement()
+        {
+            //仅在本地玩家装备梦环时生效
+            if (Player.whoAmI != Main.myPlayer || Player.mount.Active || Player.wingTime <= 0f)
+            {
+                return;
+            }
+            if (Player.wingsLogic != EquipLoader.GetEquipSlot(Mod, nameof(GildedBladeWings), EquipType.Wings))
+            {
+                return;
+            }
+            if (!Player.controlJump || !Player.TryingToHoverDown || Player.TryingToHoverUp)
+            {
+                return;
+            }
+            //在地面时不触发，避免抵消起跳
+            Vector2 groundCheckPos = new Vector2(Player.position.X, Player.position.Y + Player.height);
+            if (Collision.SolidCollision(groundCheckPos, Player.width, 8))
+            {
+                return;
+            }
+
+            //悬浮：保留极小非零垂直速度
+            //若设为0，原版会把玩家当作处于“落地”状态，触发自动跳跃分支并在每帧把飞行时间重置为上限，导致无限悬停
+            Player.velocity.Y = -0.001f;
+
+            //飞行时间由原版飞行逻辑正常扣除，此处不再手动扣除，避免重复消耗
         }
     }
     
