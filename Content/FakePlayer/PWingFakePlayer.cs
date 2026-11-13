@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -1087,8 +1088,22 @@ namespace PWing.Content.FakePlayer
         {
             foreach (Texture2D texture in solidTextureCache.Values)
             {
-                if (texture != null && !texture.IsDisposed)
+                if (texture == null || texture.IsDisposed)
+                    continue;
+
+                try
+                {
                     texture.Dispose();
+                }
+                catch (ThreadStateException)
+                {
+                    //模组卸载可能不在 FNA 主线程上执行，此时无法释放 GPU 资源。
+                    //跳过并继续清理缓存，避免卸载流程中断；剩余资源由进程退出时回收。
+                }
+                catch (InvalidOperationException)
+                {
+                    //图形设备已释放或设备丢失时同样跳过。
+                }
             }
             solidTextureCache.Clear();
             ownValueFieldCache.Clear();

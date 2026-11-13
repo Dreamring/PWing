@@ -1,10 +1,10 @@
-# Gilded Blade Wings & Tesseract Staff
+# Gilded Blade Wings — Growth Wings, Tesseract Summons & Anime Vanities
 
-A wings mod with growth mechanics, a tesseract summon weapon, and an auto-miner for Terraria.
+A Terraria tModLoader mod featuring growth wings, a tesseract summon weapon, an automatic miner, and a built-in anime texture pack with selectable vanity outfits.
 
-## Key Features
+## Features
 
-### Gilded Blade Wings Growth System
+### Gilded Blade Wings
 - Wings grow stronger as you defeat bosses
 - Each boss defeat increases flight time by 0.5 seconds
 - Horizontal flight speed improves with each boss defeated
@@ -19,10 +19,10 @@ A wings mod with growth mechanics, a tesseract summon weapon, and an auto-miner 
   - +1 Minion Slot
   - +1 Sentinel Slot
 
-### Tesseract Staff (超立方杖)
+### Tesseract Staff
 - Summons up to 10 shadow copies that attack using items from your inventory
 - Each summon uses 2 minion slots, maximum 10 simultaneous summons
-- Copies use items from inventory slots 40-49
+- Copies use the 10 inventory slots along the bottom row
 - Projectiles fire from the copy's position, not the player
 - Unique cube rendering with configurable parameters:
   - Glow intensity
@@ -30,8 +30,7 @@ A wings mod with growth mechanics, a tesseract summon weapon, and an auto-miner 
   - Color saturation
   - Animation speed
   - Toggle planet texture, wings, and weapon display
-- Damage displays as "???", actual damage depends on the equipped item in each slot
-- Crafted with Finch Staff at a Workbench
+- Damage displays as "???", actual damage depends on the item used by each copy
 
 ### Azafure Digital Miner
 - Automatically mines ores from the world
@@ -39,8 +38,13 @@ A wings mod with growth mechanics, a tesseract summon weapon, and an auto-miner 
 - 35 item storage slots
 - Supports gem mining (Amethyst, Topaz, Sapphire, Emerald, Ruby, Diamond)
 - Whitelist feature to add custom ores or items
-- Visual feedback with particle effects
 - Tile and inventory data stay in sync in multiplayer
+
+### Anime Texture Pack & Vanities
+- Client-side replacement of player body parts, hairstyles, wings, back accessories, extra effects, glow masks, and projectiles
+- 5 vanity sets (15 pieces total): Lily Asuka, Khoir Bach, Rias Gremory, Ram, and Rem
+- Every vanity piece is crafted at a Loom with 5 Silk
+- Vanity Wardrobe: new characters start with one. Use it to open the selection UI, claim a full set, and the wardrobe is consumed
 
 ### Configuration
 - Adjustable tesseract rendering: glow, lines, colors, animation speed
@@ -57,93 +61,52 @@ Craft at a Workbench with:
 
 ### Tesseract Staff
 Craft at a Workbench with:
-- 1 Finch Staff (Item ID: 4281)
+- 1 Finch Staff
 
 ### Azafure Miner
 Craft at a Heavy Work Bench with:
 - 10 Iron Bars
 
-## Version History
+### Vanities
+Craft each piece at a Loom with:
+- 5 Silk
 
-### v2.1
-- FIXED: Enabling the miner whitelist could throw during initialization and break ore detection
-- FIXED: Miner UI hint text was not displayed
-- FIXED: Tesseract slot borders could be drawn over other UIs such as the miner
-- FIXED: Summon targeting could index tiles outside the world near world edges
-- FIXED: Mined tiles were not synced to remote clients in host & play
-- IMPROVED: Fake player state is always restored if item usage throws
-- IMPROVED: Zero-allocation mining loop while keeping the same mining rate
-- IMPROVED: Lower summon network sync rate and cached rendering resources
-- IMPROVED: Boss kill records are synced by the server in multiplayer
-- REMOVED: Mod-provided auto-save; vanilla saving is used instead
-- CLEANED: Removed dead code and assets, unified localization
+### Vanity Wardrobe
+Given to newly created characters automatically.
 
-### v2.0
-- NEW: Tesseract Staff - Summon shadow copies that attack with your inventory items
-- NEW: Tesseract rendering configuration (glow, lines, saturation, animation)
-- REMOVED: CalamityMod dependency - mod is now fully independent
-- FIXED: Summon rendering issues (broken lines, invisible weapons)
-- IMPROVED: Summon ID allocation for stable inventory-to-summon mapping
+## Requirement
 
-### v1.5
-- NEW: Azafure Digital Miner - Automatically mine and filter ores
-- Code optimization: Refactored duplicate code for better maintainability
-- Performance improvements: Optimized visual effects rendering
-- Bug fixes and stability improvements
+- InnoVault
 
-### v1.4
-- Added auto-save functionality
-- Updated wings name to "Gilded Blade Wings"
-- Improved growth system
-- Enhanced visual effects
+## Credits
 
-### v1.3
-- Added growth mechanics
-- Improved flight controls
-- Added stat boosts
+Built-in texture pack: Khoir Anime Frame Overhaul by Khoir (Steam Workshop ID 2505056400).
 
-### v1.2
-- Added horizontal flight speed
-- Improved visual effects
+# 耀刃之翼 —— 成长型翅膀、超立方召唤与动漫时装
 
-### v1.1
-- Initial release
-- Basic wings functionality
-
-## Notes
-
-- This mod requires InnoVault
-- Inspired by wings designs from other mods, but completely redeveloped
-- Compatible with most Terraria versions
-- Regular updates planned with new features
-
-Enjoy your journey with the Gilded Blade Wings, Tesseract Staff, and Azafure Miner!
-
-# 耀刃之翼 & 超立方杖
-
-一个具有成长机制、超立方召唤物和数字采矿机的独特模组。
+一个包含成长型翅膀、超立方召唤物、自动采矿机，以及内置动漫材质包与可选时装的 Terraria tModLoader 模组。
 
 ## 主要特性
 
-### 翅膀成长系统
-- 翅膀会随着你击败BOSS而变得更强大
-- 每击败一个BOSS，飞行时间增加0.5秒
-- 水平飞行速度随击败BOSS数量提升
-- 每个BOSS提供的额外属性加成：
+### 耀刃之翼成长系统
+- 翅膀会随着你击败 BOSS 而变得更强大
+- 每击败一个 BOSS，飞行时间增加 0.5 秒
+- 水平飞行速度随击败 BOSS 数量提升
+- 每个 BOSS 提供的额外属性加成：
   - +5 最大生命值
   - +20% 伤害
   - +0.5% 伤害减免
   - +1 防御力
   - +6 生命再生
   - +5 最大魔力
-- 每击败5个BOSS：
+- 每击败 5 个 BOSS：
   - +1 召唤栏
   - +1 哨兵栏
 
 ### 超立方杖
-- 召唤最多10个虚空分身使用背包物品攻击敌人
-- 每个分身占用2个召唤栏，最多同时存在10个
-- 分身使用背包40-49号槽位中的物品
+- 召唤最多 10 个虚空分身使用背包物品攻击敌人
+- 每个分身占用 2 个召唤栏，最多同时存在 10 个
+- 分身使用背包底部一排的 10 个槽位
 - 弹幕从分身位置发射，而非玩家位置
 - 独特的立方体线条渲染，支持配置：
   - 散光强度
@@ -151,17 +114,21 @@ Enjoy your journey with the Gilded Blade Wings, Tesseract Staff, and Azafure Min
   - 颜色饱和度
   - 动画速度
   - 可开关星球纹理、翅膀、武器显示
-- 攻击力显示为"???"，实际伤害取决于槽位中的物品
-- 使用雀杖在工作台合成
+- 攻击力显示为“???”，实际伤害取决于槽位中的物品
 
 ### 阿萨福勒数字型采矿机
 - 自动挖掘世界中的矿石
-- 6个过滤器槽位用于设置要挖掘的矿石类型
-- 35个物品存储槽位
+- 6 个过滤器槽位用于设置要挖掘的矿石类型
+- 35 个物品存储槽位
 - 支持宝石挖掘（紫宝石、黄宝石、蓝宝石、绿宝石、红宝石、钻石）
-- 白名单功能可添加自定义矿石或物品
-- 粒子效果提供视觉反馈
+- 白名单功能可添加额外的矿石或物品
 - 多人游戏中方块与库存数据保持同步
+
+### 动漫材质包与时装
+- 客户端替换玩家体型、发型、翅膀、背后饰品、Extra 光效、发光遮罩与弹幕外观
+- 5 套独立时装（共 15 件）：莉莉·阿斯卡、科尔·巴赫、莉雅丝·吉蒙里、拉姆、蕾姆
+- 每件时装在织布机处使用 5 个丝绸合成
+- 时装衣橱：新建角色初始携带。使用后打开选择界面，领取整套时装后衣橱消失
 
 ### 配置
 - 超立方渲染参数配置：散光、线条、饱和度、动画速度
@@ -173,69 +140,28 @@ Enjoy your journey with the Gilded Blade Wings, Tesseract Staff, and Azafure Min
 
 ### 耀刃之翼
 在工作台合成：
-- 20个铁锭
-- 20个落星
+- 20 个铁锭
+- 20 个落星
 
 ### 超立方杖
 在工作台合成：
-- 1根雀杖（Finch Staff，物品ID：4281）
+- 1 根雀杖（Finch Staff）
 
 ### 阿萨福勒采矿机
 在重型工作台合成：
-- 10个铁锭
+- 10 个铁锭
 
-## 版本历史
+### 时装
+在织布机合成：
+- 每件 5 个丝绸
 
-### v2.1
-- 修复：开启采矿机白名单后可能导致的初始化异常
-- 修复：采矿机界面提示文本无法显示
-- 修复：超立方体边框在采矿机等其他界面被误绘
-- 修复：分身在世界边缘索敌时可能出现的越界异常
-- 修复：主机开服时采矿机挖掉的方块不同步给其他玩家
-- 优化：分身使用物品出现异常时会安全回退，不再污染玩家状态
-- 优化：采矿机挖掘改为零分配循环，保持原有挖掘效率
-- 优化：分身网络同步降频，武器描边贴图与绘制缓冲复用
-- 优化：BOSS击杀记录在多人游戏中由服务器统一同步
-- 移除：模组自带的自动保存功能，改由游戏原版负责
-- 清理：删除未使用的代码与资源，统一中英文本地化
+### 时装衣橱
+新建角色时自动放入物品栏。
 
-### v2.0
-- 新增：超立方杖 - 召唤分身使用物品攻击敌人
-- 新增：超立方渲染配置（散光、线条、饱和度、动画）
-- 移除：CalamityMod依赖 - 模组完全独立
-- 修复：召唤物渲染问题（线条断裂、武器不显示）
-- 优化：召唤物ID分配，物品栏对应更稳定
+## 依赖
 
-### v1.5
-- 新增：阿萨福勒数字型采矿机 - 自动挖掘并过滤矿石
-- 代码优化：重构重复代码，提升可维护性
-- 性能改进：优化视觉效果渲染逻辑
-- 修复已知问题，提升稳定性
+- InnoVault
 
-### v1.4
-- 添加自动保存功能
-- 更新翅膀名称为"耀刃之翼"
-- 改进成长系统
-- 增强视觉效果
+## 致谢
 
-### v1.3
-- 添加成长机制
-- 改进飞行控制
-- 添加属性加成
-
-### v1.2
-- 添加水平飞行速度
-- 改进视觉效果
-
-### v1.1
-- 初始发布
-- 基础翅膀功能
-
-## 注意事项
-
-- 本模组需要 InnoVault
-- 灵感来源于其他模组的翅膀设计，但完全重新开发
-- 兼容大多数Terraria版本
-- 计划定期更新并添加新功能
-
-享受你与耀刃之翼、超立方杖和阿萨福勒采矿机的冒险之旅！
+内置材质包：Khoir Anime Frame Overhaul，作者 Khoir（Steam 创意工坊 ID 2505056400）。
