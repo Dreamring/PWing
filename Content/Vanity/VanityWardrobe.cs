@@ -6,8 +6,6 @@ namespace PWing.Content.Vanity
 {
     public class VanityWardrobe : ModItem
     {
-        public override string Texture => $"Terraria/Images/Item_{ItemID.Dresser}";
-
         public override void SetDefaults()
         {
             Item.width = 32;

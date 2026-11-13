@@ -7,9 +7,9 @@ Items: {
 	GildedBladeWings: {
 		DisplayName: 梦环
 		Tooltip: 「此梦环者，非世间所有，乃幻想之境所化」
-		Lore1: 「此梦环者，非世间所有，乃幻想之境所化」
-		Lore2: 「随主人征战四方，共成长，同进退」
-		Lore3: 「每斩一魔，其力愈增，终成神器」
+		Lore: 「此梦环者，非世间所有，乃幻想之境所化；随主人征战四方，共成长；每斩一魔，其力愈增」
+		CreativeFlightLocked: 创造飞行未解锁
+		CreativeFlightUnlocked: 创造飞行已解禁
 		FlightTime: 「飞行时长」{0}秒
 		FlightSpeed: 「飞行速度」{0}
 		BossKills: 「等级」{0}层
@@ -35,6 +35,11 @@ Items: {
 			物品首次使用后，分身将按照指定方式自动使用物品
 			分身使用的物品受虚空和召唤伤害加成影响，但伤害会降低30%（乘法计算）
 			'''
+	}
+
+	WorldMagnet: {
+		DisplayName: 世界磁铁
+		Tooltip: 左键使用，将全世界的掉落物吸引到身边
 	}
 
 	VanityWardrobe: {

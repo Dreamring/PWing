@@ -2,6 +2,7 @@ using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using PWing.Content.Items.Magnet;
 using PWing.Content.Players;
 using static PWing.PWing;
 
@@ -73,6 +74,12 @@ namespace PWing.Common.Systems
                                 modPlayer.DefeatedBosses.Add(bossType);
                             }
                         }
+                    }
+                    break;
+                case PWingMessageType.WorldMagnet:
+                    if (Main.netMode == NetmodeID.Server && whoAmI >= 0 && whoAmI < Main.player.Length && Main.player[whoAmI].active)
+                    {
+                        WorldMagnet.AttractAllItems(Main.player[whoAmI]);
                     }
                     break;
             }

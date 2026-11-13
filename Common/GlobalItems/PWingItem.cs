@@ -37,6 +37,18 @@ public override bool WingUpdate(int wings, Player player, bool inUse)
             if (wings == EquipLoader.GetEquipSlot(Mod, "GildedBladeWings", EquipType.Wings) || wings == -10)
             {
                 MachinaBoosterPlayer machinaBoosterPlayer = player.GetModPlayer<MachinaBoosterPlayer>(); // 获取玩家数据
+                GildedBladeWingsPlayer wingPlayer = player.GetModPlayer<GildedBladeWingsPlayer>();
+                //创造飞行：始终保持悬浮姿态，仅做轻微晃动，不进行明显煽动
+                if (wingPlayer.CreativeFlight)
+                {
+                    player.wingFrame = 2;
+                    if (wings == -10)
+                    {
+                        machinaBoosterPlayer.FlightCounter += 1;
+                        machinaBoosterPlayer.FlightModeFloat = MathHelper.Lerp(machinaBoosterPlayer.FlightModeFloat, player.wingFrame, 0.24f);
+                    }
+                    return true;
+                }
                 bool isHovering = player.controlDown && player.controlJump && player.wingTime > 0f;//检测悬停：同时按住跳跃和向下
                 if (isHovering || player.velocity.Y != 0f)//&& (machinaBoosterPlayer.PlayerWasLastOnASlope < 0)
                 {

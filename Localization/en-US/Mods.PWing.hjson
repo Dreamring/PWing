@@ -7,9 +7,9 @@ Items: {
 	GildedBladeWings: {
 		DisplayName: Dream Ring
 		Tooltip: This Dream Ring is not of this world, but born from the realm of fantasy
-		Lore1: This Dream Ring is not of this world, but born from the realm of fantasy
-		Lore2: It follows its master through every battle, growing stronger together
-		Lore3: Each demon slain deepens its power, until it becomes a divine artifact
+		Lore: This Dream Ring is not of this world, but born from the realm of fantasy; it follows its master through every battle, growing stronger with each demon slain
+		CreativeFlightLocked: Creative Flight locked
+		CreativeFlightUnlocked: Creative Flight unlocked
 		FlightTime: Flight Time: {0}s
 		FlightSpeed: Flight Speed: {0}
 		BossKills: Enlightenment: {0}
@@ -35,6 +35,11 @@ Items: {
 			After the first use, clones will keep using the item automatically in the chosen way
 			Clone item damage scales with void and summon damage bonuses, but is reduced by 30% (multiplicative)
 			'''
+	}
+
+	WorldMagnet: {
+		DisplayName: World Magnet
+		Tooltip: Left-click to pull every dropped item in the world to you
 	}
 
 	VanityWardrobe: {

@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using PWing.Common;
 using PWing.Common.Systems;
+using ReLogic.Content;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,11 @@ namespace PWing.Content.Items.Wings
     [AutoloadEquip(EquipType.Wings)]
     public class GildedBladeWings : ModItem
     {
+        //创造飞行解锁所需击杀的BOSS数量
+        public const int CreativeFlightUnlockBossKills = 5;
+        //创造飞行模式下飞行性能相对正常模式的倍率
+        public const float CreativeFlightPerformanceMultiplier = 0.6f;
+
         private int lastAppliedBossKills = -1;
 
         public override void SetStaticDefaults()
@@ -42,7 +48,6 @@ namespace PWing.Content.Items.Wings
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
             Color goldenColor = new Color(255, 215, 0);
-            Color brightGold = new Color(255, 236, 139);
             const string keyPrefix = "Mods.PWing.Items.GildedBladeWings.";
 
             // 保存物品名称提示行（名称文本由本地化 DisplayName 提供）
@@ -52,7 +57,6 @@ namespace PWing.Content.Items.Wings
                 if (line.Name == "ItemName")
                 {
                     nameLine = line;
-                    nameLine.OverrideColor = brightGold;
                     break;
                 }
             }
@@ -61,12 +65,33 @@ namespace PWing.Content.Items.Wings
 
             if (nameLine != null)
             {
+                //名字使用流动的彩色
+                nameLine.OverrideColor = ColorHelper.Pastel(MathHelper.ToRadians(PWingWorld.GlobalCounter), true);
                 tooltips.Add(nameLine);
             }
 
-            tooltips.Add(new TooltipLine(Mod, "Lore1", Language.GetTextValue(keyPrefix + "Lore1")));
-            tooltips.Add(new TooltipLine(Mod, "Lore2", Language.GetTextValue(keyPrefix + "Lore2")));
-            tooltips.Add(new TooltipLine(Mod, "Lore3", Language.GetTextValue(keyPrefix + "Lore3")));
+            int bossKills = 0;
+            if (Main.LocalPlayer != null)
+            {
+                bossKills = PWingWorld.GetBossKillCount(Main.LocalPlayer);
+            }
+
+            //三段描述合并为一行
+            tooltips.Add(new TooltipLine(Mod, "Lore", Language.GetTextValue(keyPrefix + "Lore")));
+
+            //创造飞行解锁状态提示
+            bool creativeFlightUnlocked = bossKills >= CreativeFlightUnlockBossKills;
+            TooltipLine creativeFlightLine = new TooltipLine(Mod, "CreativeFlight",
+                Language.GetTextValue(keyPrefix + (creativeFlightUnlocked ? "CreativeFlightUnlocked" : "CreativeFlightLocked")));
+            if (creativeFlightUnlocked)
+            {
+                creativeFlightLine.OverrideColor = ColorHelper.Pastel(MathHelper.ToRadians(PWingWorld.GlobalCounter * 2), true);
+            }
+            else
+            {
+                creativeFlightLine.OverrideColor = new Color(150, 150, 150);
+            }
+            tooltips.Add(creativeFlightLine);
 
             tooltips.Add(new TooltipLine(Mod, "EmptyLine1", ""));
 
@@ -79,12 +104,6 @@ namespace PWing.Content.Items.Wings
                 expandHintLine.OverrideColor = new Color(180, 180, 180);
                 tooltips.Add(expandHintLine);
                 return;
-            }
-
-            int bossKills = 0;
-            if (Main.LocalPlayer != null)
-            {
-                bossKills = PWingWorld.GetBossKillCount(Main.LocalPlayer);
             }
 
             float baseFlightTime = 1f;
@@ -180,6 +199,24 @@ namespace PWing.Content.Items.Wings
         }
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
+            GildedBladeWingsPlayer wingPlayer = player.GetModPlayer<GildedBladeWingsPlayer>();
+
+            //装备在饰品栏中时，右键点击翅膀切换创造飞行模式
+            if (player.whoAmI == Main.myPlayer && Main.mouseRight && Main.mouseRightRelease && Main.HoverItem.type == Item.type)
+            {
+                if (PWingWorld.GetBossKillCount(player) >= CreativeFlightUnlockBossKills)
+                {
+                    wingPlayer.CreativeFlight = !wingPlayer.CreativeFlight;
+                    //关闭创造飞行时恢复翅膀飞行时间，避免空中切换后直接坠落
+                    if (!wingPlayer.CreativeFlight)
+                    {
+                        player.wingTime = player.wingTimeMax;
+                    }
+                }
+                //消耗这次右键点击，避免同一次点击触发其他逻辑
+                Main.mouseRightRelease = false;
+            }
+
             //根据BOSS击败数量动态调整飞行能力
             int bossKills = PWingWorld.GetBossKillCount(player);
             
@@ -219,8 +256,8 @@ namespace PWing.Content.Items.Wings
             player.maxMinions += extraSlots; // 增加召唤栏
             player.maxTurrets += extraSlots; // 增加哨兵栏
             
-            // 按住上或下键时附带水平位移（类似天界星盘）
-            if (player.wingsLogic > 0 && player.controlDown != player.controlUp)
+            // 按住上或下键时附带水平位移（类似天界星盘），创造飞行由专门的移动逻辑处理
+            if (!wingPlayer.CreativeFlight && player.wingsLogic > 0 && player.controlDown != player.controlUp)
             {
                 player.position.X += player.velocity.X * 0.1f;
             }
@@ -264,20 +301,20 @@ namespace PWing.Content.Items.Wings
             if (PWing.Config.lowFidelityMode)
             {
                 //低精度模式：简化绘制
-                Main.spriteBatch.Draw(WingTexture, position, null, baseColor * alpha, rotation, origin, scale, SpriteEffects.None, 0f);
-                Main.spriteBatch.Draw(WingGlowTexture2, position, null, ColorHelper.Pastel(MathHelper.ToRadians(PWingWorld.GlobalCounter), true) * 0.8f * alpha, rotation, origin, scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(WingTexture, position, null, baseColor * alpha, rotation, origin, scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(WingGlowTexture2, position, null, ColorHelper.Pastel(MathHelper.ToRadians(PWingWorld.GlobalCounter), true) * 0.8f * alpha, rotation, origin, scale, SpriteEffects.None, 0f);
             }
             else
             {
                 //高精度模式：完整绘制
                 DrawHalo(spriteBatch, position, scale, rotation);
-                Main.spriteBatch.Draw(WingTexture, position, null, baseColor * alpha, rotation, origin, scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(WingTexture, position, null, baseColor * alpha, rotation, origin, scale, SpriteEffects.None, 0f);
                 for (int k = 0; k < 8; k++)
                 {
                     Vector2 offset = new Vector2(2, 0).RotatedBy(k * MathHelper.PiOver4 + MathHelper.ToRadians(PWingWorld.GlobalCounter * 2));
-                    Main.spriteBatch.Draw(WingGlowTexture, position + offset, null, color * alpha, rotation, origin, scale, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(WingGlowTexture, position + offset, null, color * alpha, rotation, origin, scale, SpriteEffects.None, 0f);
                 }
-                Main.spriteBatch.Draw(WingGlowTexture2, position, null, ColorHelper.Pastel(MathHelper.ToRadians(PWingWorld.GlobalCounter), true) * 1.2f * alpha, rotation, origin, scale, SpriteEffects.None, 0f);
+                spriteBatch.Draw(WingGlowTexture2, position, null, ColorHelper.Pastel(MathHelper.ToRadians(PWingWorld.GlobalCounter), true) * 1.2f * alpha, rotation, origin, scale, SpriteEffects.None, 0f);
             }
         }
 
@@ -290,7 +327,14 @@ namespace PWing.Content.Items.Wings
             因此，所提供的参数可以传递给 SpriteBatch.DrawString（SpriteFont，string，Vector2，Color，float，Vector2，float，SpriteEffects，float）函数，以按照常规方式绘制纹理。 仅向本地客户端发出请求。 默认情况下返回值为真。
              */
             //在物品栏中绘制图标逻辑
-            DrawWing(spriteBatch, position, origin, scale, 0f, drawColor);
+            try
+            {
+                DrawWing(spriteBatch, position, origin, scale, 0f, drawColor);
+            }
+            catch (Exception ex)
+            {
+                LogDrawError("PreDrawInInventory", ex);
+            }
             return false;
         }
         public override bool PreDrawInWorld(SpriteBatch spriteBatch, Color lightColor, Color alphaColor, ref float rotation, ref float scale, int whoAmI)
@@ -301,62 +345,43 @@ namespace PWing.Content.Items.Wings
             float alpha = (1f - (Item.alpha / 255f));
             
             //使用通用绘制方法
-            DrawWing(spriteBatch, drawPos, drawOrigin, scale, rotation, lightColor, alpha);
+            try
+            {
+                DrawWing(spriteBatch, drawPos, drawOrigin, scale, rotation, lightColor, alpha);
+            }
+            catch (Exception ex)
+            {
+                LogDrawError("PreDrawInWorld", ex);
+            }
             return false;
         }
-        //缓存纹理资源
-        private Texture2D _wingTexture;
-        private Texture2D _wingGlowTexture;
-        private Texture2D _wingGlowTexture2;
-        private Texture2D _pixelTexture;
-        
-        private Texture2D WingTexture
+
+        //限流记录绘制异常，避免贴图缺失时完全静默
+        private static uint lastDrawErrorTick;
+        private void LogDrawError(string stage, Exception ex)
         {
-            get
+            if (Main.GameUpdateCount - lastDrawErrorTick < 60)
             {
-                if (_wingTexture == null)
-                {
-                    _wingTexture = Mod.Assets.Request<Texture2D>("Assets/Items/Wings/GildedBladeWings").Value;
-                }
-                return _wingTexture;
+                return;
             }
+            lastDrawErrorTick = Main.GameUpdateCount;
+            Mod.Logger.Error("GildedBladeWings " + stage + " error: " + ex);
         }
-        
-        private Texture2D WingGlowTexture
-        {
-            get
-            {
-                if (_wingGlowTexture == null)
-                {
-                    _wingGlowTexture = Mod.Assets.Request<Texture2D>("Assets/Items/Wings/GildedBladeWingsGlow").Value;
-                }
-                return _wingGlowTexture;
-            }
-        }
-        
-        private Texture2D WingGlowTexture2
-        {
-            get
-            {
-                if (_wingGlowTexture2 == null)
-                {
-                    _wingGlowTexture2 = Mod.Assets.Request<Texture2D>("Assets/Items/Wings/GildedBladeWingsGlow2").Value;
-                }
-                return _wingGlowTexture2;
-            }
-        }
-        
-        private Texture2D PixelTexture
-        {
-            get
-            {
-                if (_pixelTexture == null)
-                {
-                    _pixelTexture = Mod.Assets.Request<Texture2D>("Assets/Items/Secrets/WhitePixel", ReLogic.Content.AssetRequestMode.ImmediateLoad).Value;
-                }
-                return _pixelTexture;
-            }
-        }
+        //纹理使用静态缓存：物品克隆实例各自缓存纹理时可能导致部分实例贴图缺失
+        private static Texture2D _wingTexture;
+        private static Texture2D _wingGlowTexture;
+        private static Texture2D _wingGlowTexture2;
+        private static Texture2D _pixelTexture;
+
+        private static Texture2D RequestTexture(string path) => PWing.Instance.Assets.Request<Texture2D>(path, AssetRequestMode.ImmediateLoad).Value;
+
+        private static Texture2D WingTexture => _wingTexture ??= RequestTexture("Assets/Items/Wings/GildedBladeWings");
+
+        private static Texture2D WingGlowTexture => _wingGlowTexture ??= RequestTexture("Assets/Items/Wings/GildedBladeWingsGlow");
+
+        private static Texture2D WingGlowTexture2 => _wingGlowTexture2 ??= RequestTexture("Assets/Items/Wings/GildedBladeWingsGlow2");
+
+        private static Texture2D PixelTexture => _pixelTexture ??= RequestTexture("Assets/Items/Secrets/WhitePixel");
         
         private void DrawHalo(SpriteBatch spriteBatch, Vector2 position, float scale, float s_rotation)
         {
@@ -512,13 +537,51 @@ namespace PWing.Content.Items.Wings
         }
     }
 
-    //按住下键+跳跃键时悬浮（效果同原版顶级飞行翅膀）
-    public class GildedBladeWingsHoverPlayer : ModPlayer
+    //创造飞行与按住下键+跳跃键悬浮（悬浮效果同原版顶级飞行翅膀）
+    public class GildedBladeWingsPlayer : ModPlayer
     {
+        //创造飞行模式是否开启
+        public bool CreativeFlight { get; set; }
+
+        //创造飞行解锁条件：击败指定数量的BOSS
+        public bool CreativeFlightUnlocked => PWingWorld.GetBossKillCount(Player) >= GildedBladeWings.CreativeFlightUnlockBossKills;
+
+        public override void PostUpdateEquips()
+        {
+            if (!CreativeFlight)
+            {
+                return;
+            }
+
+            //失去翅膀、骑乘或不再满足解锁条件时自动退出创造飞行
+            if (!CanUseCreativeFlight())
+            {
+                CreativeFlight = false;
+                return;
+            }
+
+            //原版每帧开始时都会把重力重置为默认值，因此必须在移动逻辑执行前清零
+            Player.gravity = 0f;
+            Player.noFallDmg = true;
+            //禁用原版翅膀推进，避免与创造飞行叠加
+            Player.wingTime = -1f;
+        }
+
         public override void PreUpdateMovement()
         {
+            if (Player.whoAmI != Main.myPlayer)
+            {
+                return;
+            }
+
+            if (CreativeFlight)
+            {
+                CreativeFlightMovement();
+                return;
+            }
+
             //仅在本地玩家装备梦环时生效
-            if (Player.whoAmI != Main.myPlayer || Player.mount.Active || Player.wingTime <= 0f)
+            if (Player.mount.Active || Player.wingTime <= 0f)
             {
                 return;
             }
@@ -531,8 +594,7 @@ namespace PWing.Content.Items.Wings
                 return;
             }
             //在地面时不触发，避免抵消起跳
-            Vector2 groundCheckPos = new Vector2(Player.position.X, Player.position.Y + Player.height);
-            if (Collision.SolidCollision(groundCheckPos, Player.width, 8))
+            if (HasTilesBelow())
             {
                 return;
             }
@@ -542,6 +604,55 @@ namespace PWing.Content.Items.Wings
             Player.velocity.Y = -0.001f;
 
             //飞行时间由原版飞行逻辑正常扣除，此处不再手动扣除，避免重复消耗
+        }
+
+        private bool CanUseCreativeFlight()
+        {
+            return !Player.mount.Active && CreativeFlightUnlocked &&
+                Player.wingsLogic == EquipLoader.GetEquipSlot(Mod, nameof(GildedBladeWings), EquipType.Wings);
+        }
+
+        private void CreativeFlightMovement()
+        {
+            if (!CanUseCreativeFlight())
+            {
+                CreativeFlight = false;
+                return;
+            }
+
+            //创造飞行性能取正常模式速度与加速度的60%
+            int bossKills = PWingWorld.GetBossKillCount(Player);
+            float normalSpeed = 6f + Math.Min(bossKills * 0.1f, 3f);
+            float normalAcceleration = 1.5f + Math.Min(bossKills * 0.1f, 3f) * 0.5f;
+            float maxSpeed = normalSpeed * GildedBladeWings.CreativeFlightPerformanceMultiplier;
+            float acceleration = normalAcceleration * GildedBladeWings.CreativeFlightPerformanceMultiplier;
+
+            bool up = (Player.controlUp || Player.controlJump) && !Player.controlDown;
+            bool down = Player.controlDown && !(Player.controlUp || Player.controlJump) && !HasTilesBelow();
+            bool left = Player.controlLeft && !Player.controlRight;
+            bool right = Player.controlRight && !Player.controlLeft;
+
+            //不具备惯性：有方向输入时加速，松开后立即停止
+            ApplyCreativeFlightVelocity(ref Player.velocity.X, left, right, maxSpeed, acceleration);
+            ApplyCreativeFlightVelocity(ref Player.velocity.Y, up, down, maxSpeed, acceleration);
+        }
+
+        private static void ApplyCreativeFlightVelocity(ref float velocity, bool negative, bool positive, float maxSpeed, float acceleration)
+        {
+            if (!negative && !positive)
+            {
+                velocity = 0f;
+                return;
+            }
+
+            float target = positive ? maxSpeed : -maxSpeed;
+            velocity = MathHelper.Clamp(velocity + Math.Sign(target) * acceleration, -maxSpeed, maxSpeed);
+        }
+
+        private bool HasTilesBelow()
+        {
+            Vector2 groundCheckPos = new Vector2(Player.position.X, Player.position.Y + Player.height);
+            return Collision.SolidCollision(groundCheckPos, Player.width, 8);
         }
     }
     

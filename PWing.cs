@@ -41,7 +41,8 @@ namespace PWing
         {
             //mod消息类型
             SyncBossKills,//同步BOSS击杀记录
-            RequestBossKills//请求补发BOSS击杀记录
+            RequestBossKills,//请求补发BOSS击杀记录
+            WorldMagnet//请求将全世界掉落物吸引到玩家身边
         }
         
         //处理网络包
