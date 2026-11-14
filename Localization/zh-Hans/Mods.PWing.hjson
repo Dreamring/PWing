@@ -138,6 +138,17 @@ UI: {
 			Rem: 蕾姆
 		}
 	}
+
+	Extractinator: {
+		InsertToExtractinator: 将物品放入此处以提取
+		InsertToChloroExtractinator:
+			'''
+			将物品放入此处以提取或
+			转换
+			'''
+		LimitsToInventory: 背包空间不足时停止提取
+		IgnoresInventory: 无视背包剩余空间全部提取
+	}
 }
 
 SlotInfo2: 放入矿石以设置过滤器

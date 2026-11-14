@@ -1,6 +1,6 @@
 # Gilded Blade Wings — Growth Wings, Tesseract Summons & Anime Vanities
 
-A Terraria tModLoader mod featuring growth wings, a tesseract summon weapon, an automatic miner, and a built-in anime texture pack with selectable vanity outfits.
+A Terraria tModLoader mod featuring growth wings, a tesseract summon weapon, an automatic miner, bulk extractinator support, and a built-in anime texture pack with selectable vanity outfits.
 
 ## Features
 
@@ -39,6 +39,13 @@ A Terraria tModLoader mod featuring growth wings, a tesseract summon weapon, an 
 - Supports gem mining (Amethyst, Topaz, Sapphire, Emerald, Ruby, Diamond)
 - Whitelist feature to add custom ores or items
 - Tile and inventory data stay in sync in multiplayer
+
+### Bulk Extractinator
+- Right-click an Extractinator or Chlorophyte Extractinator to open the extraction UI
+- Processes a whole stack of extractable items at once, sending results straight to your inventory and Void Vault
+- Toggle between stopping when your inventory is full and extracting everything regardless of space
+- Chlorophyte Extractinator supports bulk ore conversion
+- Hold Shift and click to quickly move extractable items into the extraction slot
 
 ### Anime Texture Pack & Vanities
 - Client-side replacement of player body parts, hairstyles, wings, back accessories, extra effects, glow masks, and projectiles
@@ -84,7 +91,7 @@ Built-in texture pack: Khoir Anime Frame Overhaul by Khoir (Steam Workshop ID 25
 
 # 耀刃之翼 —— 成长型翅膀、超立方召唤与动漫时装
 
-一个包含成长型翅膀、超立方召唤物、自动采矿机，以及内置动漫材质包与可选时装的 Terraria tModLoader 模组。
+一个包含成长型翅膀、超立方召唤物、自动采矿机、批量提取，以及内置动漫材质包与可选时装的 Terraria tModLoader 模组。
 
 ## 主要特性
 
@@ -123,6 +130,13 @@ Built-in texture pack: Khoir Anime Frame Overhaul by Khoir (Steam Workshop ID 25
 - 支持宝石挖掘（紫宝石、黄宝石、蓝宝石、绿宝石、红宝石、钻石）
 - 白名单功能可添加额外的矿石或物品
 - 多人游戏中方块与库存数据保持同步
+
+### 批量提取
+- 右键提取机或叶绿提取机打开提取界面
+- 一次处理整组可提取物，产物自动进入背包与虚空袋
+- 可切换“背包空间不足时停止”与“无视背包剩余空间全部提取”
+- 叶绿提取机支持批量矿物互换
+- 按住 Shift 点击可将可提取物快速放入提取槽
 
 ### 动漫材质包与时装
 - 客户端替换玩家体型、发型、翅膀、背后饰品、Extra 光效、发光遮罩与弹幕外观

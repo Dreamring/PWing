@@ -5,6 +5,7 @@ using Terraria.ModLoader;
 using PWing.Common.Configs;
 using PWing.Common.Systems;
 using PWing.Content.AzafureMiners;
+using PWing.Content.Extractinator;
 using PWing.Content.FakePlayer;
 using PWing.Content.Vanity;
 
@@ -49,6 +50,22 @@ namespace PWing
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
             PWingWorld.HandlePacket(reader, whoAmI);
+        }
+
+        //跨模组接口：供其他模组注册自定义提取机方块
+        public override object Call(params object[] args)
+        {
+            if (args != null && args.Length >= 2 && args[0] is string command && int.TryParse(args[1].ToString(), out int tileType))
+            {
+                switch (command)
+                {
+                    case "AddExtractinatorTileID":
+                        return PWingExtractinatorRegistry.RegisterTile(tileType, false);
+                    case "AddChlorophyteExtractinatorTileID":
+                        return PWingExtractinatorRegistry.RegisterTile(tileType, true);
+                }
+            }
+            return base.Call(args);
         }
         
         public static PWingConfig Config
