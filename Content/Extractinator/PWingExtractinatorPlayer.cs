@@ -185,7 +185,6 @@ namespace PWing.Content.Extractinator
 
             ExtractinatorSlotItem.position = Player.Center;
             int itemIndex = Item.NewItem(Player.GetSource_DropAsItem(), Player.Center, ExtractinatorSlotItem.type, ExtractinatorSlotItem.stack, false, ExtractinatorSlotItem.prefix, true);
-            Main.item[itemIndex].netDefaults(ExtractinatorSlotItem.netID);
             Main.item[itemIndex] = ExtractinatorSlotItem.Clone();
             Main.item[itemIndex].newAndShiny = false;
             if (Main.netMode == NetmodeID.MultiplayerClient)
